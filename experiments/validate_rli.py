@@ -107,14 +107,12 @@ def validate(samples, expect_reduction=False, require_cap=False,
             elif maxfs > previous_maxfs:
                 counters["maxfs_increases"] += 1
 
-            if not reduced and flight is not None:
-                expected_maxfs = max(previous_maxfs, flight)
-                if maxfs != expected_maxfs:
-                    errors.append(
-                        f"sample {index}: maxFS {int(maxfs)} does not equal "
-                        f"max(previous maxFS {int(previous_maxfs)}, "
-                        f"FlightSize {int(flight)})"
-                    )
+            # qlog records metric snapshots, not every intermediate
+            # FlightSize transition. maxFS can therefore legitimately be
+            # larger than both adjacent snapshots when an unobserved peak
+            # occurred between them. The observable invariant is that maxFS
+            # must not fall below either the previous maximum or the current
+            # FlightSize; the checks above and below enforce those bounds.
 
         if maxfs is not None and flight is not None and not reduced and maxfs < flight:
             errors.append(

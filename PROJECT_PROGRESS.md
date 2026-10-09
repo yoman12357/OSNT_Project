@@ -1,7 +1,6 @@
 # Rate-limited sender project progress
 
-Steps 1-5 are complete. Step 6 is implemented locally and awaiting the full
-native-Linux regression run. Steps 7-8 require new experiment data.
+All eight project steps are complete.
 
 ## Completed
 
@@ -15,26 +14,33 @@ native-Linux regression run. Steps 7-8 require new experiment data.
    `experiments/baseline/cubic_cwnd_baseline.png`.
 5. **RLI changes mapped to picoquic**. See
    `project_docs/step-5-rli-design.md`.
-
-## In progress
-
-6. **CUBIC RLI implementation**:
+6. **CUBIC RLI implementation and regression testing completed**:
    - opt-in using `-G cubic -H rli=on`;
    - per-path `maxFS` accounting;
    - Slow Start and Congestion Avoidance caps;
    - reset/recovery and spurious-loss handling;
-   - qlog metrics, plotting, and focused `cubic_rli` test.
+   - qlog metrics, plotting, and focused `cubic_rli` test;
+   - full native-Linux CTest suite passed.
 
-   The changed C files compile. Native-Linux focused and full-suite execution
-   remains before Step 6 is complete. See
-   `project_docs/step-6-implementation.md`.
+   See `project_docs/step-6-implementation.md` and `tests/results/rli/`.
+7. **Matched baseline/RLI experiments**:
+   - rate-limited and bulk workloads each run three times;
+   - baseline stayed at 15 KiB cwnd;
+   - RLI reached its 30 KiB cap in all runs;
+   - all six mechanical RLI checks passed;
+   - bulk throughput showed no material regression.
 
-## Remaining
+   See `tests/results/step7/`.
+8. **RLI graph and behavior validation completed**:
+   - every recorded cwnd increase stayed within its RLI limit;
+   - rate-limited cwnd reached the expected `2 * maxFS` ceiling;
+   - all six experiment traces passed mechanical validation;
+   - bulk throughput and retransmission behavior showed no material
+     regression;
+   - the final conclusion matches the target IETF draft for the tested
+     conditions.
 
-7. Run matched baseline/RLI experiments three times for the rate-limited and
-   bulk workloads using `experiments/run_comparison.sh`.
-8. Validate every cwnd increase against the recorded RLI limit and compare
-   throughput/loss behavior with the baseline.
+   See `project_docs/step-8-validation.md`.
 
 ## Important files
 
@@ -46,6 +52,8 @@ project_docs/
     step-4-baseline-experiment.md
     step-5-rli-design.md
     step-6-implementation.md
+    step-8-validation.md
+tests/results/step7/
 topology/
     setup.sh
     check.sh

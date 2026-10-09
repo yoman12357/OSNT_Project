@@ -1,0 +1,2 @@
+samples=848, cwnd_increases=13, cwnd_reductions=0, maxfs_resets=0, maxfs_increases=0, cap_active_samples=819
+PASS: observed RLI measurements satisfy the checked invariants
