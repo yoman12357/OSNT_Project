@@ -43,8 +43,11 @@ typedef struct st_qlog_fns_path_context_t {
     uint64_t pacing_packet_time;
     uint64_t cc_state;
     uint64_t cc_param;
+    uint64_t rli_max_flight_size;
+    uint64_t rli_cwin_limit;
 
     unsigned int last_bw_estimate_path_limited : 1;
+    unsigned int rli_capped : 1;
 } qlog_fns_path_context_t;
 
 
@@ -829,7 +832,11 @@ void qlog_fns_cc_dump_path(picoquic_path_t* path,
 #endif
             path->rtt_min != path_ctx->rtt_min || 
             path->bytes_in_transit != path_ctx->bytes_in_transit ||
-            path->pacing.packet_time_microsec != path_ctx->pacing_packet_time
+            path->pacing.packet_time_microsec != path_ctx->pacing_packet_time ||
+            (path->is_rli_enabled &&
+                (path->rli_max_flight_size != path_ctx->rli_max_flight_size ||
+                    path->rli_cwin_limit != path_ctx->rli_cwin_limit ||
+                    path->was_cwin_limited_by_rli != path_ctx->rli_capped))
 #if 1
         /* Bug compatibility with first implementation */
 #else
@@ -882,7 +889,24 @@ void qlog_fns_cc_dump_path(picoquic_path_t* path,
         if (path->last_bw_estimate_path_limited != path_ctx->last_bw_estimate_path_limited) {
             fprintf(f, "%s\"app_limited\": %u", comma, path->last_bw_estimate_path_limited);
             path_ctx->last_bw_estimate_path_limited = path->last_bw_estimate_path_limited;
-            /* comma = ","; (not useful since last block of function) */
+            comma = ",";
+        }
+
+        if (path->is_rli_enabled && path->rli_max_flight_size != path_ctx->rli_max_flight_size) {
+            fprintf(f, "%s\"rli_max_flight_size\": %" PRIu64, comma, path->rli_max_flight_size);
+            path_ctx->rli_max_flight_size = path->rli_max_flight_size;
+            comma = ",";
+        }
+
+        if (path->is_rli_enabled && path->rli_cwin_limit != path_ctx->rli_cwin_limit) {
+            fprintf(f, "%s\"rli_cwnd_limit\": %" PRIu64, comma, path->rli_cwin_limit);
+            path_ctx->rli_cwin_limit = path->rli_cwin_limit;
+            comma = ",";
+        }
+
+        if (path->is_rli_enabled && path->was_cwin_limited_by_rli != path_ctx->rli_capped) {
+            fprintf(f, "%s\"rli_capped\": %u", comma, path->was_cwin_limited_by_rli);
+            path_ctx->rli_capped = path->was_cwin_limited_by_rli;
         }
 
         fprintf(f, "}]");

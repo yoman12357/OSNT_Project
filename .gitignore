@@ -1,4 +1,5 @@
 /build/
+/build-rli/
 */Debug
 Debug
 */Release
@@ -30,6 +31,7 @@ Release
 
 # Rate-limited sender project — experiment artifacts
 experiments/**/*.qlog
+/experiments/results/
 demo_ticket_store.bin
 demo_token_store.bin
 file_20M.bin
@@ -37,6 +39,7 @@ client_cubic.log
 server_cubic.log
 *.qlog
 *.pcap
+__pycache__/
 
 # picoquic_ct test artifacts
 ECCF_Fuzz_report.csv

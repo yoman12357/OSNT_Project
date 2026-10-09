@@ -459,6 +459,7 @@ static const picoquic_test_def_t test_table[] = {
     { "crypto_hs_offset", crypto_hs_offset_test },
     { "cubic", cubic_test },
     { "cubic_jitter", cubic_jitter_test },
+    { "cubic_rli", cubic_rli_test },
     { "c4", c4_test },
     { "c4_jitter", c4_jitter_test },
     { "fastcc", fastcc_test },

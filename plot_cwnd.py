@@ -1,109 +1,221 @@
 #!/usr/bin/env python3
-"""
-Plot picoquic CUBIC cwnd evolution from a qlog file.
+"""Plot picoquic congestion metrics from a qlog file.
 
-qlog format used by picoquic:
-    Preamble declares "configuration": {"time_units": "us"} or "ms".
-    Each event is a JSON array: [time, category, event_name, data_dict].
-    cwnd is inside data_dict of "metrics_updated" events in the "recovery"
-    category.
+The script works with the Step 4 baseline logs and also understands the RLI
+fields produced by the Step 6 implementation. qlog metrics are deltas, so the
+parser carries the last value of every metric forward.
 
 Usage:
-    python3 plot_cwnd.py <server.qlog> [output.png]
+    python3 plot_cwnd.py <sender.qlog> [output.png]
 """
-import sys
+
+import argparse
 import json
 import os
-import matplotlib.pyplot as plt
+import sys
+
+
+METRICS = (
+    "cwnd",
+    "bytes_in_flight",
+    "app_limited",
+    "rli_max_flight_size",
+    "rli_cwnd_limit",
+    "rli_capped",
+)
 
 
 def detect_time_divisor(path):
-    """Return (seconds_divisor) based on 'time_units' in the qlog preamble."""
-    with open(path, "r", encoding="utf-8", errors="ignore") as f:
-        head = f.read(2000)
-    if '"time_units": "ms"' in head:
+    """Return the number of qlog time units per second."""
+    with open(path, "r", encoding="utf-8", errors="ignore") as qlog_file:
+        preamble = qlog_file.read(2000)
+    if '"time_units": "ms"' in preamble:
         return 1_000.0
-    if '"time_units": "us"' in head:
+    if '"time_units": "us"' in preamble:
         return 1_000_000.0
-    # picoquic default is microseconds
     return 1_000_000.0
 
 
-def parse_qlog(path):
-    """Extract (time_sec, cwnd_bytes) samples from a picoquic qlog file."""
+def parse_qlog(path, selected_path=None):
+    """Return per-path snapshots for recovery:metrics_updated events.
+
+    Picoquic can emit either the usual four-element qlog event or a
+    five-element event containing a numeric path/flow ID after the timestamp.
+    State is maintained independently for every path so delta events from
+    multipath traces cannot contaminate each other.
+    """
     divisor = detect_time_divisor(path)
-    print(f"Detected time unit divisor: {divisor:g}")
+    states = {}
+    samples = []
 
-    times = []
-    cwnds = []
-
-    with open(path, "r", encoding="utf-8", errors="ignore") as f:
-        for line in f:
-            line = line.strip()
+    with open(path, "r", encoding="utf-8", errors="ignore") as qlog_file:
+        for raw_line in qlog_file:
+            line = raw_line.strip().rstrip(",")
             if not line.startswith("["):
                 continue
-            line = line.rstrip(",")
             try:
-                ev = json.loads(line)
+                event = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if not (isinstance(ev, list) and len(ev) >= 4):
+            if not (isinstance(event, list) and len(event) >= 4):
                 continue
-            t_raw = ev[0]
-            category = ev[1]
-            name = ev[2]
-            data = ev[3]
+
+            if len(event) >= 5 and isinstance(event[1], (int, float)):
+                raw_time, path_id, category, name, data = event[:5]
+            else:
+                raw_time, category, name, data = event[:4]
+                path_id = 0
 
             if category != "recovery" or name != "metrics_updated":
                 continue
-            if not isinstance(data, dict) or "cwnd" not in data:
+            if not isinstance(data, dict):
+                continue
+            if selected_path is not None and path_id != selected_path:
                 continue
 
-            times.append(t_raw / divisor)
-            cwnds.append(float(data["cwnd"]))
+            state = states.setdefault(
+                path_id, {metric: None for metric in METRICS}
+            )
 
-    return times, cwnds
+            for metric in METRICS:
+                if metric in data:
+                    state[metric] = float(data[metric])
+
+            if state["cwnd"] is not None:
+                sample = dict(state)
+                sample["time"] = float(raw_time) / divisor
+                sample["path_id"] = path_id
+                samples.append(sample)
+
+    return sorted(samples, key=lambda sample: (sample["time"], sample["path_id"]))
+
+
+def kib(value):
+    return value / 1024.0
+
+
+def plot_metrics(samples, output_path):
+    try:
+        import matplotlib.pyplot as plt
+    except ModuleNotFoundError as error:
+        raise RuntimeError(
+            "matplotlib is required; run: python3 -m pip install -r "
+            "experiments/requirements.txt"
+        ) from error
+
+    path_ids = sorted({sample["path_id"] for sample in samples})
+    if len(path_ids) != 1:
+        raise RuntimeError(
+            "qlog contains multiple paths; select one with --path-id "
+            + ",".join(str(path_id) for path_id in path_ids)
+        )
+
+    times = [sample["time"] for sample in samples]
+    cwnd = [kib(sample["cwnd"]) for sample in samples]
+    has_rli = any(sample["rli_cwnd_limit"] is not None for sample in samples)
+
+    figure, axis = plt.subplots(figsize=(11, 5.5))
+    axis.plot(times, cwnd, label="cwnd", color="#1f77b4", linewidth=1.3)
+
+    if any(sample["bytes_in_flight"] is not None for sample in samples):
+        flight = [
+            kib(sample["bytes_in_flight"] or 0.0) for sample in samples
+        ]
+        axis.plot(
+            times,
+            flight,
+            label="bytes in flight",
+            color="#7f7f7f",
+            linewidth=0.9,
+            alpha=0.75,
+        )
+
+    if has_rli:
+        max_flight = [
+            kib(sample["rli_max_flight_size"] or 0.0) for sample in samples
+        ]
+        limit = [kib(sample["rli_cwnd_limit"] or 0.0) for sample in samples]
+        axis.plot(times, max_flight, label="RLI maxFS", color="#2ca02c")
+        axis.plot(
+            times,
+            limit,
+            label="RLI cwnd limit",
+            color="#d62728",
+            linestyle="--",
+        )
+
+        capped_times = [
+            sample["time"] for sample in samples if sample["rli_capped"] == 1
+        ]
+        capped_cwnd = [
+            kib(sample["cwnd"])
+            for sample in samples
+            if sample["rli_capped"] == 1
+        ]
+        if capped_times:
+            axis.scatter(
+                capped_times,
+                capped_cwnd,
+                label="RLI cap active",
+                color="#d62728",
+                marker="x",
+                s=18,
+                zorder=3,
+            )
+
+    axis.set_title(
+        "Picoquic CUBIC congestion metrics"
+        + (" with Rate-Limited Increase" if has_rli else " (baseline)")
+    )
+    axis.set_xlabel("Time (seconds)")
+    axis.set_ylabel("Window / flight size (KiB)")
+    axis.grid(True, linestyle="--", alpha=0.5)
+    axis.legend()
+    figure.tight_layout()
+    figure.savefig(output_path, dpi=300)
+    plt.close(figure)
+
+    print(f"Saved plot to: {output_path}")
+    print(
+        f"cwnd range: min={min(cwnd):.1f} KiB, max={max(cwnd):.1f} KiB, "
+        f"avg={sum(cwnd) / len(cwnd):.1f} KiB, duration={times[-1]:.2f} s"
+    )
+    if has_rli:
+        capped_count = sum(sample["rli_capped"] == 1 for sample in samples)
+        print(f"RLI cap-active samples: {capped_count}")
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python3 plot_cwnd.py <server.qlog> [output.png]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Plot picoquic congestion metrics from a sender qlog."
+    )
+    parser.add_argument("qlog", help="sender qlog")
+    parser.add_argument("output", nargs="?", default="cubic_cwnd.png")
+    parser.add_argument(
+        "--path-id", type=int, default=None,
+        help="path ID to plot when the qlog contains multiple paths",
+    )
+    args = parser.parse_args()
 
-    qlog_path = sys.argv[1]
-    out_path = sys.argv[2] if len(sys.argv) > 2 else "cubic_cwnd.png"
-
-    if not os.path.exists(qlog_path):
+    qlog_path = args.qlog
+    output_path = args.output
+    if not os.path.isfile(qlog_path):
         print(f"Error: {qlog_path} not found")
-        sys.exit(1)
+        return 1
 
-    print(f"Parsing {qlog_path} ...")
-    times, cwnds = parse_qlog(qlog_path)
-    print(f"Extracted {len(cwnds)} cwnd samples")
+    samples = parse_qlog(qlog_path, args.path_id)
+    print(f"Extracted {len(samples)} congestion metric samples")
+    if not samples:
+        print("Error: no recovery:metrics_updated samples containing cwnd found")
+        return 1
 
-    if not cwnds:
-        print("ERROR: no cwnd samples found. Check the qlog format.")
-        sys.exit(1)
-
-    # Sort by time
-    pairs = sorted(zip(times, cwnds))
-    times = [p[0] for p in pairs]
-    cwnds_kb = [p[1] / 1024.0 for p in pairs]
-
-    plt.figure(figsize=(10, 5))
-    plt.plot(times, cwnds_kb, label="CUBIC cwnd", color="#1f77b4", linewidth=1.2)
-    plt.title("Picoquic CUBIC Congestion Window — Baseline (20 Mbps, 50 ms RTT)")
-    plt.xlabel("Time (seconds)")
-    plt.ylabel("Congestion Window (KB)")
-    plt.grid(True, linestyle="--", alpha=0.6)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=300)
-    print(f"Saved plot to: {out_path}")
-    print(f"cwnd range: min={min(cwnds_kb):.1f} KB, max={max(cwnds_kb):.1f} KB, "
-          f"avg={sum(cwnds_kb)/len(cwnds_kb):.1f} KB, "
-          f"duration={times[-1]:.2f} s")
+    try:
+        plot_metrics(samples, output_path)
+    except RuntimeError as error:
+        print(f"Error: {error}")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

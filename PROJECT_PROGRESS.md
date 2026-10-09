@@ -1,51 +1,61 @@
 # Rate-limited sender project progress
 
-Steps 1–5 are complete in this fork. Steps 6, 7, and 8 remain.
+Steps 1-5 are complete. Step 6 is implemented locally and awaiting the full
+native-Linux regression run. Steps 7-8 require new experiment data.
 
 ## Completed
 
 1. **Picoquic installed and verified** on native Linux. See
    `project_docs/step-1-installation-and-verification.md`.
-2. **Congestion-control architecture and CUBIC implementation studied**
-   and documented. See `project_docs/step-2-congestion-control-study.md`.
-3. **Linux network-namespace dumbbell topology created and tested**. See
-   `topology/` for the scripts and `topology/VERIFICATION.md`.
-4. **Baseline CUBIC experiment and cwnd plot**. A 20 MB transfer over the
-   20 Mbit/s / 50 ms topology with CUBIC was captured as qlog and plotted.
-   See `project_docs/step-4-baseline-experiment.md` and
+2. **Congestion-control architecture and CUBIC studied**. See
+   `project_docs/step-2-congestion-control-study.md`.
+3. **Linux netns dumbbell topology created and tested**. See `topology/`.
+4. **Baseline bulk CUBIC experiment and cwnd plot captured**. See
+   `project_docs/step-4-baseline-experiment.md` and
    `experiments/baseline/cubic_cwnd_baseline.png`.
-5. **CUBIC changes required by the draft identified**. Analysis documented
-   in `project_docs/step-2-congestion-control-study.md`, section
-   "Mapping the IETF draft to picoquic".
+5. **RLI changes mapped to picoquic**. See
+   `project_docs/step-5-rli-design.md`.
+
+## In progress
+
+6. **CUBIC RLI implementation**:
+   - opt-in using `-G cubic -H rli=on`;
+   - per-path `maxFS` accounting;
+   - Slow Start and Congestion Avoidance caps;
+   - reset/recovery and spurious-loss handling;
+   - qlog metrics, plotting, and focused `cubic_rli` test.
+
+   The changed C files compile. Native-Linux focused and full-suite execution
+   remains before Step 6 is complete. See
+   `project_docs/step-6-implementation.md`.
 
 ## Remaining
 
-6. Implement the rate-limited increase functionality in `picoquic/cubic.c`
-   and validate against the regression suite.
-7. Repeat the Step 4 experiment with the functionality enabled.
-8. Compare and validate the cwnd graphs.
+7. Run matched baseline/RLI experiments three times for the rate-limited and
+   bulk workloads using `experiments/run_comparison.sh`.
+8. Validate every cwnd increase against the recorded RLI limit and compare
+   throughput/loss behavior with the baseline.
 
-## Repository layout
+## Important files
 
-    project_docs/
-        step-1-installation-and-verification.md
-        step-2-congestion-control-study.md
-        step-4-baseline-experiment.md
-    topology/
-        setup.sh            create the four-namespace dumbbell
-        check.sh            verify namespaces, routes, qdiscs, ping
-        cleanup.sh          remove all four namespaces
-        README.md           topology description and how to run
-        VERIFICATION.md     recorded verification of Step 3
-    experiments/
-        baseline/
-            cubic_cwnd_baseline.png        Step 4 plot
-    plot_cwnd.py            qlog-to-cwnd-plot converter
-    picoquic/
-        cubic.c             unchanged CUBIC implementation (baseline)
-
-## How to reproduce
-
-See `project_docs/step-1-installation-and-verification.md` for the build
-and `project_docs/step-4-baseline-experiment.md` for the experiment. The
-`topology/README.md` file describes the network setup.
+```text
+IMPLEMENTATION_PLAN.md
+project_docs/
+    step-1-installation-and-verification.md
+    step-2-congestion-control-study.md
+    step-4-baseline-experiment.md
+    step-5-rli-design.md
+    step-6-implementation.md
+topology/
+    setup.sh
+    check.sh
+    cleanup.sh
+experiments/
+    README.md
+    run_comparison.sh
+    baseline/cubic_cwnd_baseline.png
+plot_cwnd.py
+picoquic/cubic.c
+picoquic/sender.c
+picoquictest/congestion_test.c
+```

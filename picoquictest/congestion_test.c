@@ -115,6 +115,374 @@ int cubic_jitter_test(void)
     return congestion_control_test(picoquic_cubic_algorithm, 3550000, 5000, 5);
 }
 
+int cubic_rli_test(void)
+{
+    picoquic_cnx_t cnx;
+    picoquic_path_t path;
+    picoquic_per_ack_state_t ack_state;
+    picoquic_packet_t packet;
+    uint64_t initial_cwin = PICOQUIC_CWIN_INITIAL;
+    uint64_t ca_start_cwin;
+    uint64_t cwin_before_cap;
+    uint64_t post_reduction_maxfs;
+    int ret = 0;
+
+    memset(&cnx, 0, sizeof(cnx));
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    if (path.congestion_alg_state == NULL || !path.is_rli_enabled ||
+        path.rli_max_flight_size != initial_cwin) {
+        DBG_PRINTF("RLI initialization failed, enabled=%u, maxFS=%llu",
+            path.is_rli_enabled, (unsigned long long)path.rli_max_flight_size);
+        ret = -1;
+        goto exit;
+    }
+
+    /* Verify that send-time accounting captures a peak FlightSize. */
+    path.bytes_in_transit = initial_cwin + path.send_mtu;
+    picoquic_update_max_flight_size(&path);
+    if (path.rli_max_flight_size != path.bytes_in_transit) {
+        DBG_PRINTF("RLI maxFS update failed, maxFS=%llu, flight=%llu",
+            (unsigned long long)path.rli_max_flight_size,
+            (unsigned long long)path.bytes_in_transit);
+        ret = -1;
+        goto exit;
+    }
+
+    /* Return to the initial state and verify the Slow Start ceiling. */
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_reset, &ack_state, 0);
+    ack_state.nb_bytes_acknowledged = 2 * initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
+    if (path.cwin != 2 * initial_cwin || !path.was_cwin_limited_by_rli) {
+        DBG_PRINTF("RLI Slow Start cap failed, cwin=%llu, limit=%llu, capped=%u",
+            (unsigned long long)path.cwin,
+            (unsigned long long)path.rli_cwin_limit,
+            path.was_cwin_limited_by_rli);
+        ret = -1;
+        goto exit;
+    }
+
+    /* A second application-limited burst cannot grow beyond the same
+     * ceiling if the sender has not demonstrated a larger FlightSize. */
+    ack_state.nb_bytes_acknowledged = path.send_mtu;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 2000);
+    if (path.cwin != 2 * initial_cwin || !path.was_cwin_limited_by_rli) {
+        DBG_PRINTF("RLI repeated-burst cap failed, cwin=%llu, limit=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)path.rli_cwin_limit);
+        ret = -1;
+        goto exit;
+    }
+
+    /* Once a larger flight is observed, the ceiling advances and growth is
+     * allowed again. */
+    path.bytes_in_transit = 2 * initial_cwin;
+    picoquic_update_max_flight_size(&path);
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 3000);
+    if (path.cwin <= 2 * initial_cwin || path.cwin > 4 * initial_cwin) {
+        DBG_PRINTF("RLI maxFS ceiling advance failed, cwin=%llu, maxFS=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)path.rli_max_flight_size);
+        ret = -1;
+        goto exit;
+    }
+
+    /* ECN enters recovery, reduces cwnd, and must reset maxFS to zero. */
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_ecn_ec, &ack_state,
+        path.smoothed_rtt + 2000);
+    if (path.rli_max_flight_size != 0) {
+        DBG_PRINTF("RLI recovery reset failed, maxFS=%llu",
+            (unsigned long long)path.rli_max_flight_size);
+        ret = -1;
+        goto exit;
+    }
+
+    /* Exercise the live send queue rather than only calling the maxFS helper:
+     * the first packet flight after a reduction must reinitialize maxFS. */
+    path.bytes_in_transit = 0;
+    memset(&packet, 0, sizeof(packet));
+    packet.length = path.send_mtu;
+    packet.send_path = &path;
+    packet.pc = picoquic_packet_context_application;
+    packet.ptype = picoquic_packet_1rtt_protected;
+    picoquic_queue_for_retransmit(&cnx, &path, &packet, packet.length, 4000);
+    if (path.bytes_in_transit != packet.length ||
+        path.rli_max_flight_size != packet.length) {
+        DBG_PRINTF("RLI live send accounting failed, maxFS=%llu, flight=%llu",
+            (unsigned long long)path.rli_max_flight_size,
+            (unsigned long long)path.bytes_in_transit);
+        ret = -1;
+        goto exit;
+    }
+
+    /* A spurious-loss correction restores CUBIC's window but not historical
+     * pre-reduction FlightSize observations. */
+    post_reduction_maxfs = path.rli_max_flight_size;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_spurious_repeat, &ack_state, 5000);
+    if (path.rli_max_flight_size != post_reduction_maxfs) {
+        DBG_PRINTF("RLI spurious recovery restored stale maxFS=%llu, expected=%llu",
+            (unsigned long long)path.rli_max_flight_size,
+            (unsigned long long)post_reduction_maxfs);
+        ret = -1;
+        goto exit;
+    }
+
+    /* RLI limits an attempted increase but must not reduce an already larger
+     * cwnd when the post-reduction maxFS implies a lower ceiling. */
+    cwin_before_cap = path.cwin;
+    ack_state.nb_bytes_acknowledged = path.send_mtu;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 6000);
+    if (path.cwin != cwin_before_cap || !path.was_cwin_limited_by_rli) {
+        DBG_PRINTF("RLI cap reduced or grew an already-larger cwnd=%llu, previous=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)cwin_before_cap);
+        ret = -1;
+        goto exit;
+    }
+
+    (void)picoquic_dequeue_retransmit_packet(&cnx,
+        &cnx.pkt_ctx[picoquic_packet_context_application], &packet, 0, 0);
+    if (path.bytes_in_transit != 0 ||
+        path.rli_max_flight_size != post_reduction_maxfs) {
+        DBG_PRINTF("RLI live dequeue accounting failed, maxFS=%llu, flight=%llu",
+            (unsigned long long)path.rli_max_flight_size,
+            (unsigned long long)path.bytes_in_transit);
+        ret = -1;
+        goto exit;
+    }
+
+    picoquic_cubic_algorithm->alg_delete(&path);
+
+    /* A timeout is an immediate congestion response and resets maxFS. */
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
+    path.rli_max_flight_size = path.cwin;
+    ack_state.lost_packet_number = 1;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_timeout, &ack_state,
+        path.smoothed_rtt + 1);
+    if (path.rli_max_flight_size != 0 || path.cwin != PICOQUIC_CWIN_MINIMUM) {
+        DBG_PRINTF("RLI timeout reset failed, cwin=%llu, maxFS=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)path.rli_max_flight_size);
+        ret = -1;
+        goto exit;
+    }
+    picoquic_cubic_algorithm->alg_delete(&path);
+
+    /* CUBIC's loss filter ignores the first isolated repeat and reacts once
+     * the smoothed loss threshold is crossed. The accepted reduction resets
+     * maxFS exactly like ECN and timeout. */
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
+    path.rli_max_flight_size = path.cwin;
+    ack_state.lost_packet_number = 1;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_repeat, &ack_state,
+        path.smoothed_rtt + 1);
+    if (path.rli_max_flight_size == 0) {
+        DBG_PRINTF("%s", "RLI isolated loss reduced cwnd unexpectedly");
+        ret = -1;
+        goto exit;
+    }
+    ack_state.lost_packet_number = 2;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_repeat, &ack_state,
+        path.smoothed_rtt + 2);
+    if (path.rli_max_flight_size == 0) {
+        DBG_PRINTF("%s", "RLI loss filter reacted before its configured threshold");
+        ret = -1;
+        goto exit;
+    }
+    ack_state.lost_packet_number = 3;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_repeat, &ack_state,
+        path.smoothed_rtt + 3);
+    if (path.rli_max_flight_size != 0) {
+        DBG_PRINTF("RLI accepted loss did not reset maxFS=%llu",
+            (unsigned long long)path.rli_max_flight_size);
+        ret = -1;
+        goto exit;
+    }
+    picoquic_cubic_algorithm->alg_delete(&path);
+
+    /* Seed a new instance into Congestion Avoidance, then use a long epoch
+     * to make the normal CUBIC candidate exceed maxFS + SMSS. */
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
+    ca_start_cwin = path.cwin;
+    path.rli_max_flight_size = ca_start_cwin;
+    ack_state.nb_bytes_acknowledged = path.send_mtu;
+    /* Near the start of the epoch, the Reno-friendly estimate should grow
+     * below the CA ceiling without being capped. */
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
+    if (path.cwin <= ca_start_cwin ||
+        path.cwin > ca_start_cwin + path.send_mtu ||
+        path.was_cwin_limited_by_rli) {
+        DBG_PRINTF("RLI Reno-friendly CA growth failed, cwin=%llu, limit=%llu, capped=%u",
+            (unsigned long long)path.cwin,
+            (unsigned long long)path.rli_cwin_limit,
+            path.was_cwin_limited_by_rli);
+        ret = -1;
+        goto exit;
+    }
+
+    /* Far into the epoch, the cubic candidate exceeds the same Section 3
+     * ceiling and must be capped. */
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 10000000);
+    if (path.cwin != ca_start_cwin + path.send_mtu ||
+        path.rli_cwin_limit != ca_start_cwin + path.send_mtu ||
+        !path.was_cwin_limited_by_rli) {
+        DBG_PRINTF("RLI Congestion Avoidance cap failed, cwin=%llu, expected=%llu, limit=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)(ca_start_cwin + path.send_mtu),
+            (unsigned long long)path.rli_cwin_limit);
+        ret = -1;
+        goto exit;
+    }
+
+    picoquic_cubic_algorithm->alg_delete(&path);
+
+    /* RFC 9438 requires application-limited time to be excluded from t. A
+     * recent sender-limited timestamp prevents a long-idle cubic jump. */
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
+    ca_start_cwin = path.cwin;
+    path.rli_max_flight_size = ca_start_cwin;
+    path.last_sender_limited_time = 9999000;
+    ack_state.nb_bytes_acknowledged = path.send_mtu;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 10000000);
+    if (path.cwin <= ca_start_cwin ||
+        path.cwin >= ca_start_cwin + path.send_mtu ||
+        path.was_cwin_limited_by_rli) {
+        DBG_PRINTF("RLI application-limited epoch exclusion failed, cwin=%llu, limit=%llu, capped=%u",
+            (unsigned long long)path.cwin,
+            (unsigned long long)path.rli_cwin_limit,
+            path.was_cwin_limited_by_rli);
+        ret = -1;
+        goto exit;
+    }
+
+    picoquic_cubic_algorithm->alg_delete(&path);
+
+    /* The feature is opt-in, so a CUBIC instance without -H rli=on keeps
+     * the existing application-limited behavior. */
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    picoquic_cubic_algorithm->alg_init(&path, NULL, 0);
+    ack_state.nb_bytes_acknowledged = initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
+    if (path.is_rli_enabled || path.cwin != initial_cwin) {
+        DBG_PRINTF("CUBIC legacy mode changed, enabled=%u, cwin=%llu",
+            path.is_rli_enabled, (unsigned long long)path.cwin);
+        ret = -1;
+        goto exit;
+    }
+
+    /* The opt-out path must also retain ordinary growth for a sender that is
+     * both data-ACKed after the last limited time and cwnd-blocked. */
+    cnx.cwin_blocked = 1;
+    path.last_sender_limited_time = 1;
+    path.last_time_acked_data_frame_sent = 2;
+    ack_state.nb_bytes_acknowledged = path.send_mtu;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 2000);
+    if (path.cwin <= initial_cwin) {
+        DBG_PRINTF("CUBIC legacy cwnd-blocked growth was suppressed, cwin=%llu",
+            (unsigned long long)path.cwin);
+        ret = -1;
+        goto exit;
+    }
+
+    picoquic_cubic_algorithm->alg_delete(&path);
+
+    /* Legacy Congestion Avoidance must still suppress an application-limited
+     * ACK and grow once an ACK from post-limited data is observed. */
+    memset(&path, 0, sizeof(path));
+    memset(&ack_state, 0, sizeof(ack_state));
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    picoquic_cubic_algorithm->alg_init(&path, NULL, 0);
+    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
+    ca_start_cwin = path.cwin;
+    ack_state.nb_bytes_acknowledged = path.send_mtu;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
+    if (path.cwin != ca_start_cwin) {
+        DBG_PRINTF("Legacy application-limited CA grew unexpectedly, cwin=%llu, previous=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)ca_start_cwin);
+        ret = -1;
+        goto exit;
+    }
+    path.last_sender_limited_time = 1;
+    path.last_time_acked_data_frame_sent = 2;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack_state, 10000000);
+    if (path.cwin <= ca_start_cwin) {
+        DBG_PRINTF("Legacy non-limited CA growth was suppressed, cwin=%llu, previous=%llu",
+            (unsigned long long)path.cwin,
+            (unsigned long long)ca_start_cwin);
+        ret = -1;
+    }
+
+exit:
+    if (path.congestion_alg_state != NULL) {
+        picoquic_cubic_algorithm->alg_delete(&path);
+    }
+    return ret;
+}
+
 int c4_test(void)
 {
     return congestion_control_test(c4_algorithm, 3600000, 0, 0);
