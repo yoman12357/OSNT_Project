@@ -670,6 +670,15 @@ size_t picoquic_protect_packet(picoquic_cnx_t* cnx,
  * Final steps in packet transmission: queue for retransmission, etc
  */
 
+void picoquic_update_max_flight_size(picoquic_path_t* path_x)
+{
+    if (path_x->is_rli_enabled &&
+        path_x->bytes_in_transit > path_x->rli_max_flight_size) {
+        path_x->rli_max_flight_size = path_x->bytes_in_transit;
+        path_x->is_cc_data_updated = 1;
+    }
+}
+
 void picoquic_queue_for_retransmit(picoquic_cnx_t* cnx, picoquic_path_t * path_x, picoquic_packet_t* packet,
     size_t length, uint64_t current_time)
 {
@@ -697,6 +706,10 @@ void picoquic_queue_for_retransmit(picoquic_cnx_t* cnx, picoquic_path_t * path_x
     if (!packet->is_ack_trap) {
         /* Account for bytes in transit, for congestion control */
         path_x->bytes_in_transit += length;
+        /* The draft requires maxFS to observe every FlightSize update. Doing
+         * this at send time preserves peaks that would already be gone by
+         * the time an acknowledgement is processed. */
+        picoquic_update_max_flight_size(path_x);
         path_x->is_cc_data_updated = 1;
         /* Update the pacing data */
         picoquic_update_pacing_after_send(path_x, length, current_time);
@@ -736,6 +749,11 @@ picoquic_packet_t* picoquic_dequeue_retransmit_packet(picoquic_cnx_t* cnx,
         else {
             p->send_path->bytes_in_transit = 0;
         }
+        /* This normally cannot raise maxFS, but it matters immediately after
+         * a congestion response reset maxFS while older packets remain in
+         * flight. The first subsequent FlightSize measurement must
+         * reinitialize maxFS, even when that measurement is a decrease. */
+        picoquic_update_max_flight_size(p->send_path);
         p->send_path->is_cc_data_updated = 1;
     }
 

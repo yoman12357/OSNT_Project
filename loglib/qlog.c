@@ -56,6 +56,8 @@ typedef struct qlog_context_st {
     uint64_t pacing_packet_time;
     uint64_t cc_state;
     uint64_t cc_param;
+    uint64_t rli_max_flight_size;
+    uint64_t rli_cwin_limit;
 
     unsigned int trace_flow_id : 1;
     unsigned int key_phase_sent_last : 1;
@@ -65,6 +67,7 @@ typedef struct qlog_context_st {
     unsigned int spin_bit_sent_last : 1;
     unsigned int spin_bit_sent : 1;
     unsigned int app_limited : 1;
+    unsigned int rli_capped : 1;
 
     int state;
 } qlog_context_t;
@@ -1414,6 +1417,9 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
     uint64_t bw_max = 0;
     uint64_t bytes_in_transit = 0;
     uint64_t app_limited = 0;
+    uint64_t rli_max_flight_size = 0;
+    uint64_t rli_cwin_limit = 0;
+    uint64_t rli_capped = 0;
     qlog_context_t* ctx = (qlog_context_t*)ptr;
     FILE* f = ctx->f_txtlog;
 
@@ -1445,6 +1451,10 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
     ret |= byteread_vint(s, &bytes_in_transit);
     /* Not checking the app limited return, because it is not present in old bin logs */
     (void) byteread_vint(s, &app_limited);
+    /* These optional fields are absent from logs produced before RLI support. */
+    (void) byteread_vint(s, &rli_max_flight_size);
+    (void) byteread_vint(s, &rli_cwin_limit);
+    (void) byteread_vint(s, &rli_capped);
 
     if (ret == 0 && cc_state != ctx->cc_state) {
         int64_t delta_time = time - ctx->start_time;
@@ -1469,8 +1479,11 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
 
     if (ret == 0 &&
         (cwin != ctx->cwin || rtt_sample != ctx->rtt_sample || SRTT != ctx->SRTT ||
-            RTT_min != ctx->RTT_min || bytes_in_transit != ctx->bytes_in_transit || 
-            pacing_packet_time != ctx->pacing_packet_time)) {
+            RTT_min != ctx->RTT_min || bytes_in_transit != ctx->bytes_in_transit ||
+            pacing_packet_time != ctx->pacing_packet_time ||
+            rli_max_flight_size != ctx->rli_max_flight_size ||
+            rli_cwin_limit != ctx->rli_cwin_limit ||
+            rli_capped != ctx->rli_capped)) {
         /* Something changed. Report the event. */
         int64_t delta_time = time - ctx->start_time;
         char* comma = "";
@@ -1524,7 +1537,24 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
         if (app_limited != ctx->app_limited) {
             fprintf(f, "%s\"app_limited\": %" PRIu64, comma, app_limited);
             ctx->app_limited = (app_limited != 0);
-            /* comma = ","; (not useful since last block of function) */
+            comma = ",";
+        }
+
+        if (rli_max_flight_size != ctx->rli_max_flight_size) {
+            fprintf(f, "%s\"rli_max_flight_size\": %" PRIu64, comma, rli_max_flight_size);
+            ctx->rli_max_flight_size = rli_max_flight_size;
+            comma = ",";
+        }
+
+        if (rli_cwin_limit != ctx->rli_cwin_limit) {
+            fprintf(f, "%s\"rli_cwnd_limit\": %" PRIu64, comma, rli_cwin_limit);
+            ctx->rli_cwin_limit = rli_cwin_limit;
+            comma = ",";
+        }
+
+        if (rli_capped != ctx->rli_capped) {
+            fprintf(f, "%s\"rli_capped\": %" PRIu64, comma, rli_capped);
+            ctx->rli_capped = (rli_capped != 0);
         }
 
         fprintf(f, "}]");

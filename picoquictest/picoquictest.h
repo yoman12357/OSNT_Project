@@ -325,6 +325,7 @@ int ready_to_zfin_test(void);
 int crypto_hs_offset_test(void);
 int cubic_test(void);
 int cubic_jitter_test(void);
+int cubic_rli_test(void);
 int c4_test(void);
 int c4_jitter_test(void);
 int cc_compete_cubic2_test(void);

@@ -1154,11 +1154,18 @@ typedef struct st_picoquic_path_t {
     /* Congestion control state */
     uint64_t cwin;
     uint64_t bytes_in_transit;
+    /* Rate-Limited Increase state. `rli_max_flight_size` tracks the largest
+     * bytes-in-flight value since congestion control started or the most
+     * recent congestion-window reduction. */
+    uint64_t rli_max_flight_size;
+    uint64_t rli_cwin_limit;
     uint64_t last_sender_limited_time;
     uint64_t last_cwin_blocked_time;
     uint64_t last_time_acked_data_frame_sent;
     void* congestion_alg_state;
     picoquic_pacing_t pacing;
+    unsigned int is_rli_enabled : 1;
+    unsigned int was_cwin_limited_by_rli : 1;
 
     /* MTU safety tracking */
     uint64_t nb_mtu_losses;
@@ -1657,6 +1664,7 @@ uint64_t picoquic_remove_not_before_cid(picoquic_cnx_t* cnx, uint64_t unique_pat
 int picoquic_renew_path_connection_id(picoquic_cnx_t* cnx, picoquic_path_t* path_x);
 
 /* handling of retransmission queue */
+void picoquic_update_max_flight_size(picoquic_path_t* path_x);
 void picoquic_queue_for_retransmit(picoquic_cnx_t* cnx, picoquic_path_t* path_x, picoquic_packet_t* packet,
     size_t length, uint64_t current_time);
 picoquic_packet_t* picoquic_dequeue_retransmit_packet(picoquic_cnx_t* cnx, picoquic_packet_context_t* pkt_ctx,

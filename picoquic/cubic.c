@@ -50,6 +50,73 @@ typedef struct st_picoquic_cubic_state_t {
     picoquic_min_max_rtt_t rtt_filter;
 } picoquic_cubic_state_t;
 
+static int cubic_rli_option_enabled(char const* option_string)
+{
+    return option_string != NULL &&
+        (strcmp(option_string, "rli") == 0 ||
+            strcmp(option_string, "rli=on") == 0 ||
+            strcmp(option_string, "on") == 0);
+}
+
+static uint64_t cubic_rli_saturating_add(uint64_t x, uint64_t y)
+{
+    return (x > UINT64_MAX - y) ? UINT64_MAX : x + y;
+}
+
+static uint64_t cubic_rli_limit(picoquic_cubic_state_t const* cubic_state,
+    picoquic_path_t const* path_x)
+{
+    uint64_t limit;
+
+    if (cubic_state->alg_state == picoquic_cubic_alg_congestion_avoidance) {
+        /* draft-ietf-ccwg-ratelimited-increase-11, Section 3, specifies
+         * limit(maxFS) = maxFS + SMSS in Congestion Avoidance. CUBIC still
+         * computes both W_cubic and its Reno-friendly estimate; this limit
+         * is applied afterwards to whichever candidate is larger. */
+        limit = cubic_rli_saturating_add(path_x->rli_max_flight_size,
+            path_x->send_mtu);
+    }
+    else {
+        /* Slow Start permits at most one additional maxFS-sized flight. */
+        limit = (path_x->rli_max_flight_size > UINT64_MAX / 2) ?
+            UINT64_MAX : 2 * path_x->rli_max_flight_size;
+    }
+
+    return limit;
+}
+
+static void cubic_rli_reset_after_reduction(picoquic_path_t* path_x)
+{
+    if (path_x->is_rli_enabled) {
+        path_x->rli_max_flight_size = 0;
+        path_x->rli_cwin_limit = 0;
+        path_x->was_cwin_limited_by_rli = 0;
+    }
+}
+
+static void cubic_rli_apply_limit(picoquic_cubic_state_t* cubic_state,
+    picoquic_path_t* path_x, uint64_t previous_cwin)
+{
+    if (path_x->is_rli_enabled) {
+        uint64_t limit = cubic_rli_limit(cubic_state, path_x);
+        path_x->rli_cwin_limit = limit;
+        path_x->was_cwin_limited_by_rli = 0;
+
+        if (path_x->cwin > previous_cwin && path_x->cwin > limit) {
+            /* RLI limits increases; it does not reduce an already larger
+             * congestion window. Window decay is handled by CWV, not RLI. */
+            path_x->cwin = (previous_cwin < limit) ? limit : previous_cwin;
+            path_x->was_cwin_limited_by_rli = 1;
+        }
+
+        /* Do not leave the Reno-friendly shadow window above the window
+         * actually permitted by RLI, or a later ACK could cause a jump. */
+        if (cubic_state->W_reno > (double)path_x->cwin) {
+            cubic_state->W_reno = (double)path_x->cwin;
+        }
+    }
+}
+
 static void cubic_reset(picoquic_cubic_state_t* cubic_state, picoquic_path_t* path_x, uint64_t current_time) {
     memset(&cubic_state->rtt_filter, 0, sizeof(picoquic_min_max_rtt_t));
     memset(cubic_state, 0, sizeof(picoquic_cubic_state_t));
@@ -65,15 +132,31 @@ static void cubic_reset(picoquic_cubic_state_t* cubic_state, picoquic_path_t* pa
     cubic_state->previous_ssthresh = UINT64_MAX;
     cubic_state->W_reno = PICOQUIC_CWIN_INITIAL;
     cubic_state->recovery_sequence = 0;
+    path_x->rli_max_flight_size = path_x->is_rli_enabled ? PICOQUIC_CWIN_INITIAL : 0;
+    path_x->rli_cwin_limit = path_x->is_rli_enabled ? 2 * PICOQUIC_CWIN_INITIAL : 0;
+    path_x->was_cwin_limited_by_rli = 0;
 }
 
-static void cubic_init(picoquic_path_t* path_x, char const* UNUSED(option_string), uint64_t current_time)
+static void cubic_init(picoquic_path_t* path_x, char const* option_string, uint64_t current_time)
 {
     /* Initialize the state of the congestion control algorithm */
+    picoquic_cubic_state_t* cubic_state = (picoquic_cubic_state_t*)malloc(sizeof(picoquic_cubic_state_t));
+    path_x->is_rli_enabled = cubic_rli_option_enabled(option_string);
+    path_x->congestion_alg_state = (void*)cubic_state;
+    if (cubic_state != NULL) {
+        cubic_reset(cubic_state, path_x, current_time);
+    }
+}
+
+static void dcubic_init(picoquic_path_t* path_x, char const* UNUSED(option_string), uint64_t current_time)
+{
+    /* RLI is implemented for CUBIC only. DCUBIC shares most of the CUBIC
+     * machinery, so use a separate initializer to keep its behavior intact. */
     picoquic_cubic_state_t* cubic_state = (picoquic_cubic_state_t*)malloc(sizeof(picoquic_cubic_state_t));
 #ifdef _WINDOWS
     UNREFERENCED_PARAMETER(option_string);
 #endif
+    path_x->is_rli_enabled = 0;
     path_x->congestion_alg_state = (void*)cubic_state;
     if (cubic_state != NULL) {
         cubic_reset(cubic_state, path_x, current_time);
@@ -201,6 +284,8 @@ static void cubic_enter_recovery(picoquic_cnx_t * cnx,
             path_x->cwin = win_cubic;
         }
     }
+
+    cubic_rli_reset_after_reduction(path_x);
 }
 
 /* On spurious repeat notification, restore the previous congestion control.
@@ -231,6 +316,15 @@ static void cubic_correct_spurious(picoquic_path_t* path_x,
             path_x->cwin = cubic_state->previous_cwin;
             cubic_state->W_reno = (double)cubic_state->previous_cwin;
         }
+
+        if (path_x->is_rli_enabled) {
+            /* The draft resets maxFS whenever cwnd is reduced, for any
+             * reason. A later spurious-loss correction can restore cwnd and
+             * CUBIC's epoch, but it must not restore FlightSize observations
+             * from before that reduction. */
+            path_x->rli_cwin_limit = cubic_rli_limit(cubic_state, path_x);
+            path_x->was_cwin_limited_by_rli = 0;
+        }
     }
 }
 
@@ -255,36 +349,56 @@ static void cubic_notify(
             case picoquic_congestion_notification_acknowledgement:
                 switch (cubic_state->alg_state) {
                     case picoquic_cubic_alg_slow_start:
+                    {
+                        uint64_t previous_cwin = path_x->cwin;
+                        int cwin_was_updated = 0;
                         /* Increase cwin based on bandwidth estimation. */
                         path_x->cwin = picoquic_cc_update_target_cwin_estimation(path_x);
 
-                        if (path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
-                            //if (path_x->bytes_in_transit > path_x->cwin) {
-                                path_x->cwin += picoquic_cc_slow_start_increase_ex(path_x, ack_state->nb_bytes_acknowledged, 0);
+                        if (path_x->is_rli_enabled) {
+                            /* The legacy slow-start helper suppresses growth
+                             * unless the sender was cwnd-blocked. RLI instead
+                             * permits ACK-driven growth and bounds it below. */
+                            path_x->cwin = cubic_rli_saturating_add(path_x->cwin,
+                                ack_state->nb_bytes_acknowledged);
+                            cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
+                            cwin_was_updated = 1;
+                        }
+                        else if (path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
+                            path_x->cwin += picoquic_cc_slow_start_increase_ex(path_x,
+                                ack_state->nb_bytes_acknowledged, 0);
+                            cwin_was_updated = 1;
+                        }
 
-                                /* if cnx->cwin exceeds SSTHRESH, exit and go to CA */
-                                if (path_x->cwin >= cubic_state->ssthresh) {
-                                    cubic_state->W_reno = ((double)path_x->cwin) / 2.0;
-                                    path_x->is_ssthresh_initialized = 1;
-                                    cubic_enter_avoidance(cubic_state, current_time);
-                                }
-                            //}
+                        /* if cnx->cwin exceeds SSTHRESH, exit and go to CA */
+                        if (cwin_was_updated && path_x->cwin >= cubic_state->ssthresh) {
+                            cubic_state->W_reno = ((double)path_x->cwin) / 2.0;
+                            path_x->is_ssthresh_initialized = 1;
+                            cubic_enter_avoidance(cubic_state, current_time);
                         }
                         break;
+                    }
                     /* TODO discuss
                      * picoquic_cubic_alg_recovery is not entered anyway
                      */
                     case picoquic_cubic_alg_recovery:
+                    {
+                        uint64_t previous_cwin = path_x->cwin;
                         /* exit recovery, move to CA or SS, depending on CWIN */
                         cubic_state->alg_state = picoquic_cubic_alg_slow_start;
-                        path_x->cwin += ack_state->nb_bytes_acknowledged;
+                        path_x->cwin = cubic_rli_saturating_add(path_x->cwin,
+                            ack_state->nb_bytes_acknowledged);
+                        cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
                         /* if cnx->cwin exceeds SSTHRESH, exit and go to CA */
                         if (path_x->cwin >= cubic_state->ssthresh) {
                             cubic_state->alg_state = picoquic_cubic_alg_congestion_avoidance;
                         }
                         break;
+                    }
                     case picoquic_cubic_alg_congestion_avoidance:
-                        if (path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
+                        if (path_x->is_rli_enabled ||
+                            path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
+                            uint64_t previous_cwin = path_x->cwin;
                             double W_cubic;
                             uint64_t win_cubic;
                             /* Protection against limited senders. */
@@ -305,6 +419,8 @@ static void cubic_notify(
                             else {
                                 path_x->cwin = (uint64_t)cubic_state->W_reno;
                             }
+
+                            cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
                         }
                         break;
                 }
@@ -393,9 +509,11 @@ static void cubic_notify(
             case picoquic_congestion_notification_seed_cwin:
                 if (cubic_state->alg_state == picoquic_cubic_alg_slow_start) {
                     if (cubic_state->ssthresh == UINT64_MAX) {
+                        uint64_t previous_cwin = path_x->cwin;
                         if (path_x->cwin < ack_state->nb_bytes_acknowledged) {
                             path_x->cwin = ack_state->nb_bytes_acknowledged;
                         }
+                        cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
                         cubic_state->ssthresh = ack_state->nb_bytes_acknowledged;
                         cubic_state->W_max = (double)path_x->cwin / (double)path_x->send_mtu;
                         cubic_state->W_last_max = cubic_state->W_max;
@@ -555,6 +673,10 @@ static void cubic_delete(picoquic_path_t* path_x)
         free(path_x->congestion_alg_state);
         path_x->congestion_alg_state = NULL;
     }
+    path_x->is_rli_enabled = 0;
+    path_x->was_cwin_limited_by_rli = 0;
+    path_x->rli_max_flight_size = 0;
+    path_x->rli_cwin_limit = 0;
 }
 
 /* Observe the state of congestion control */
@@ -582,7 +704,7 @@ picoquic_congestion_algorithm_t picoquic_cubic_algorithm_struct = {
 
 picoquic_congestion_algorithm_t picoquic_dcubic_algorithm_struct = {
     picoquic_dcubic_ID, PICOQUIC_CC_ALGO_NUMBER_DCUBIC, PICOQUIC_ECN_ECT_0,
-    cubic_init,
+    dcubic_init,
     dcubic_notify,
     cubic_delete,
     cubic_observe

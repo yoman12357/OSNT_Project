@@ -2342,6 +2342,13 @@ namespace UnitTest1
             Assert::AreEqual(ret, 0);
         }
 
+        TEST_METHOD(cubic_rli)
+        {
+            int ret = cubic_rli_test();
+
+            Assert::AreEqual(ret, 0);
+        }
+
         TEST_METHOD(c4)
         {
             int ret = c4_test();
