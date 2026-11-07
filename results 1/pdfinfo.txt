@@ -2,7 +2,7 @@ Title:           Rate-Limited Sender Functionality in picoquic
 Author:          Aryan Bokolia; Affan Arshad; Soumyadeep Raj; Kevin Shiju George; Aryan Sanjay palimkar
 Creator:         LaTeX with hyperref
 Producer:        xdvipdfmx (0.1)
-CreationDate:    Sat Nov  7 18:36:20 2026 IST
+CreationDate:    Sat Nov  7 18:48:07 2026 IST
 Custom Metadata: no
 Metadata Stream: no
 Tagged:          no
@@ -14,6 +14,6 @@ Pages:           24
 Encrypted:       no
 Page size:       595.28 x 841.89 pts (A4)
 Page rot:        0
-File size:       2944313 bytes
+File size:       2944252 bytes
 Optimized:       no
 PDF version:     1.5

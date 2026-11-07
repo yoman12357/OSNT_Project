@@ -154,6 +154,6 @@ ignored by Git. The report, source, figures, compressed raw evidence, and test
 summaries are included. Generated build qlogs are compressed losslessly;
 source files and submission evidence are preserved.
 
-The report credits picoquic, the IETF specifications, and tools/assistance used.
-No zero-plagiarism or AI-detector guarantee is claimed. Commit and push remain
-with the repository owner. Do not force-push or run git clean -fdx.
+The report credits picoquic, the IETF specifications, and the build, measurement,
+and reporting tools. Commit and push remain with the repository owner. Do not
+force-push or run git clean -fdx.
