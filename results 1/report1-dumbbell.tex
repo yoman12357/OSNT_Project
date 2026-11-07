@@ -1,0 +1,16 @@
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrrr}\toprule
+Mode & Flow 1 & Flow 2 & Combined & Jain index & Retrans.\\
+ & (Mbit/s) & (Mbit/s) & (Mbit/s) & & \\\midrule
+baseline & 8.974 & 8.822 & 18.665 & 0.9995 & 450.0 \\
+rli & 8.513 & 8.420 & 18.625 & 0.9998 & 432.7 \\
+\bottomrule\end{tabular}
+\caption{Two-flow dumbbell: means of all three repetitions. Retransmissions are the mean total across both flows.}\end{table}
+Mean combined throughput was 18.665 Mbit/s for baseline and 18.625 Mbit/s for RLI (-0.22\%).
+The common interval starts at client launch and ends when both clients exit.
+It excludes the later wait for server shutdown.
+Each flow rate uses that server's own connection interval.
+The sum of those rates therefore differs from the combined wall-time rate.
+The Jain index uses the two per-connection rates.
+Values closer to one mean a more even split across these connection lifetimes.
+This measure does not show instantaneous fairness or fairness against other congestion algorithms.

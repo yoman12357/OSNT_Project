@@ -94,6 +94,9 @@ ech_ticket_store.bin
 /results 1/archive/
 /results 1/report.log
 /results 1/report-extracted.txt
+/results 1/report1-preview/
+/results 1/report1.log
+/results 1/report1-extracted.txt
 # Raw report evidence is shipped losslessly in raw-evidence.tar.gz.
 /results 1/runs/
 /results 1/dumbbell/baseline/
