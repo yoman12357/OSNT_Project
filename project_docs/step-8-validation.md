@@ -1,5 +1,11 @@
 # Step 8: validation of rate-limited CUBIC
 
+This document preserves the October experiment assessment. The final
+7 November 2026 report, repeated source-revision comparison, full dumbbell
+tests, and qualification of the CUBIC congestion-avoidance interpretation are
+in `results 1/`; see `SUBMISSION.md` for the submission index. Small numerical
+differences between experiment dates are measured run variation.
+
 ## Conclusion
 
 The rate-limited sender implementation behaves as expected for the tested

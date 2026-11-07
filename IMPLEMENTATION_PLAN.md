@@ -9,14 +9,19 @@ validating the result against the IETF draft.
 This plan targets `draft-ietf-ccwg-ratelimited-increase-11`. Before merging the
 implementation, recheck the datatracker in case the draft has changed.
 
-## Current status
+## Final status — 7 November 2026
 
-- Steps 1-5 are complete: setup, congestion-control study, netns topology,
-  baseline experiment/plot, and the RLI design.
-- Step 6 has an opt-in first implementation and focused test. The modified C
-  sources compile, but the full suite must still pass on native Linux.
-- Steps 7-8 have not been run. The repeatable comparison runner and RLI-aware
-  plotter are ready for those Linux experiments.
+- The native Linux baseline and implementation passed the full registered
+  CTest suites; the separate `cubic_rli` test passed.
+- All eight steps have implementation and experimental evidence for the
+  documented scope. The final report includes 12 single-flow experiments and
+  six additional two-flow dumbbell experiments.
+- Final report, source, plots, and compressed evidence: `results 1/`.
+- Submission index and current commands: `SUBMISSION.md`.
+
+The remaining sections preserve the original development plan. Proposed paths,
+branch names, and template commands below are historical design notes rather
+than the final reproduction workflow.
 
 ## Required behavior from the draft
 

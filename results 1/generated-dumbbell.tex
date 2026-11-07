@@ -1,0 +1,14 @@
+% Generated from the six supplementary dumbbell experiments.
+\begin{table}[H]\centering\small
+\begin{tabular}{llrrrrr}\toprule
+Run & Mode & Flow 1 & Flow 2 & Combined & Jain index & Retrans.\\
+ & & (Mbit/s) & (Mbit/s) & (Mbit/s) & & \\\midrule
+1 & baseline & 8.737 & 8.734 & 18.669 & 1.000 & 615 \\
+1 & rli & 8.743 & 8.781 & 18.680 & 1.000 & 445 \\
+2 & baseline & 9.430 & 8.776 & 18.662 & 0.999 & 443 \\
+2 & rli & 8.045 & 7.707 & 18.574 & 1.000 & 477 \\
+3 & baseline & 8.754 & 8.955 & 18.665 & 1.000 & 292 \\
+3 & rli & 8.753 & 8.773 & 18.621 & 1.000 & 376 \\
+\bottomrule\end{tabular}
+\caption{Two-flow dumbbell results. Flow rates use each server's connection CSV. Combined rate uses both byte counts divided by the common client wall time, including connection completion.}\end{table}
+The mean combined wall-time rates were 18.665 Mbit/s for baseline and 18.625 Mbit/s for RLI (-0.22\%). The combined wall interval starts at client launch and ends when both clients exit; it excludes the later wait for server shutdown. The per-flow CSV rates use each server's own connection interval, so their sum is not the combined wall-time rate. The Jain index uses the two per-connection rates; values closer to one indicate a more even split. It describes this pair of flows over their connection lifetimes, not instantaneous fairness or fairness against other congestion algorithms.

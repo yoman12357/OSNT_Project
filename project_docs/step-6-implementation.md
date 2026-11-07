@@ -2,10 +2,11 @@
 
 ## Status
 
-The first implementation is on branch `feature/rate-limited-cubic`. The
-changed translation units compile with GCC/MinGW. Full picoquic linkage and
-test execution still need to be performed on the project's native Linux
-environment before this step can be marked complete.
+Implemented and tested on native Linux. The evaluated implementation revision
+is `60323926df8ef75c440f959789ac4d043071879d`, which includes the RLI work
+from `test/rli-implementation`. Both full CTest entries pass (563 picoquic
+subtests and 105 picohttp subtests), and the focused `cubic_rli` test passes.
+See `results 1/` for the final report, new experiments, and verification logs.
 
 ## What was implemented
 

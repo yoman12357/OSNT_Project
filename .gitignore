@@ -85,3 +85,16 @@ token_store_test.bin
 ack_disorder_test.csv
 ack_horizon_test.csv
 ech_ticket_store.bin
+
+# Local toolchains, virtual environments, and rebuildable report previews.
+/.local-deps/
+/.venv/
+/results 1/__pycache__/
+/results 1/pdf-preview/
+/results 1/archive/
+/results 1/report.log
+/results 1/report-extracted.txt
+# Raw report evidence is shipped losslessly in raw-evidence.tar.gz.
+/results 1/runs/
+/results 1/dumbbell/baseline/
+/results 1/dumbbell/rli/

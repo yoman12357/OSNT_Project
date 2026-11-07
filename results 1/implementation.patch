@@ -1,0 +1,1667 @@
+diff --git a/UnitTest1/unittest1.cpp b/UnitTest1/unittest1.cpp
+index 677a668d..4bf779f0 100644
+--- a/UnitTest1/unittest1.cpp
++++ b/UnitTest1/unittest1.cpp
+@@ -2342,6 +2342,13 @@ namespace UnitTest1
+             Assert::AreEqual(ret, 0);
+         }
+ 
++        TEST_METHOD(cubic_rli)
++        {
++            int ret = cubic_rli_test();
++
++            Assert::AreEqual(ret, 0);
++        }
++
+         TEST_METHOD(c4)
+         {
+             int ret = c4_test();
+diff --git a/experiments/run_comparison.sh b/experiments/run_comparison.sh
+new file mode 100644
+index 00000000..45873cd4
+--- /dev/null
++++ b/experiments/run_comparison.sh
+@@ -0,0 +1,161 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++# Run one reproducible CUBIC experiment in the existing netns topology.
++# Usage: sudo ./experiments/run_comparison.sh baseline|rli [rate-limited|bulk]
++
++MODE=${1:-}
++WORKLOAD=${2:-rate-limited}
++PYTHON_BIN=${PYTHON_BIN:-python3}
++
++if [[ ${EUID} -ne 0 ]]; then
++    echo "Run as root: sudo $0 baseline|rli [rate-limited|bulk]" >&2
++    exit 1
++fi
++
++if [[ ${MODE} != baseline && ${MODE} != rli ]]; then
++    echo "Mode must be 'baseline' or 'rli'." >&2
++    exit 1
++fi
++
++if [[ ${WORKLOAD} != rate-limited && ${WORKLOAD} != bulk ]]; then
++    echo "Workload must be 'rate-limited' or 'bulk'." >&2
++    exit 1
++fi
++
++for command_name in ip git sha256sum; do
++    if ! command -v "${command_name}" >/dev/null 2>&1; then
++        echo "Required command not found: ${command_name}" >&2
++        exit 1
++    fi
++done
++if ! "${PYTHON_BIN}" --version >/dev/null 2>&1; then
++    echo "Python interpreter is not executable: ${PYTHON_BIN}" >&2
++    exit 1
++fi
++
++SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
++REPO_ROOT=$(cd -- "${SCRIPT_DIR}/.." && pwd)
++BUILD_DIR=${BUILD_DIR:-"${REPO_ROOT}/build"}
++DEMO="${BUILD_DIR}/picoquicdemo"
++RLI_OPTION=rli=off
++if [[ ${MODE} == rli ]]; then
++    RLI_OPTION=rli=on
++fi
++
++for required in "${DEMO}" "${REPO_ROOT}/certs/cert.pem" \
++    "${REPO_ROOT}/certs/key.pem" "${REPO_ROOT}/certs/test-ca.crt"; do
++    if [[ ! -e ${required} ]]; then
++        echo "Required file not found: ${required}" >&2
++        exit 1
++    fi
++done
++
++for namespace in rls-client rls-r1 rls-r2 rls-server; do
++    if ! ip netns list | awk '{print $1}' | grep -Fxq "${namespace}"; then
++        echo "Topology is not active. Run: sudo ${REPO_ROOT}/topology/setup.sh" >&2
++        exit 1
++    fi
++done
++
++RUN_ID=$(date -u +%Y%m%dT%H%M%SZ)
++RESULT_DIR="${REPO_ROOT}/experiments/results/${MODE}/${WORKLOAD}/${RUN_ID}"
++mkdir -p "${RESULT_DIR}"
++
++SERVER_LOG="${RESULT_DIR}/server.stdout.log"
++CLIENT_LOG="${RESULT_DIR}/client.stdout.log"
++SERVER_PERF="${RESULT_DIR}/server-performance.csv"
++CLIENT_PERF="${RESULT_DIR}/client-performance.csv"
++
++server_pid=
++stop_server() {
++    if [[ -n ${server_pid} ]] && kill -0 "${server_pid}" 2>/dev/null; then
++        kill "${server_pid}" 2>/dev/null || true
++        wait "${server_pid}" 2>/dev/null || true
++    fi
++}
++trap stop_server EXIT INT TERM
++
++ip netns exec rls-server "${DEMO}" -1 -p 4443 \
++    -c "${REPO_ROOT}/certs/cert.pem" \
++    -k "${REPO_ROOT}/certs/key.pem" \
++    -w "${REPO_ROOT}" -G cubic -H "${RLI_OPTION}" \
++    -q "${RESULT_DIR}" -L -F "${SERVER_PERF}" \
++    >"${SERVER_LOG}" 2>&1 &
++server_pid=$!
++sleep 1
++
++if [[ ${WORKLOAD} == rate-limited ]]; then
++    # 20 frames/s * 1200 bytes for 400 frames: about 192 kbit/s for 20 s.
++    # The server is intentionally well below the 20 Mbit/s bottleneck.
++    PERF_SCENARIO='=rli:s20:n400:1200:G20:I1200;'
++    ip netns exec rls-client "${DEMO}" -D -a perf \
++        -G cubic -H "${RLI_OPTION}" \
++        -t "${REPO_ROOT}/certs/test-ca.crt" -n test.example.com \
++        -q "${RESULT_DIR}" -L -F "${CLIENT_PERF}" \
++        10.10.2.2 4443 "${PERF_SCENARIO}" \
++        >"${CLIENT_LOG}" 2>&1
++else
++    BULK_FILE="${REPO_ROOT}/file_20M.bin"
++    if [[ ! -f ${BULK_FILE} ]]; then
++        dd if=/dev/urandom of="${BULK_FILE}" bs=1M count=20 status=none
++    fi
++    ip netns exec rls-client "${DEMO}" -D \
++        -G cubic -H "${RLI_OPTION}" \
++        -t "${REPO_ROOT}/certs/test-ca.crt" -n test.example.com \
++        -q "${RESULT_DIR}" -L -F "${CLIENT_PERF}" \
++        10.10.2.2 4443 /file_20M.bin \
++        >"${CLIENT_LOG}" 2>&1
++fi
++
++wait "${server_pid}"
++server_pid=
++
++SERVER_QLOG=$(find "${RESULT_DIR}" -maxdepth 1 -type f -name '*.server.qlog' -print -quit)
++if [[ -z ${SERVER_QLOG} ]]; then
++    echo "No sender qlog was produced; inspect ${SERVER_LOG}." >&2
++    exit 1
++fi
++
++"${PYTHON_BIN}" "${REPO_ROOT}/plot_cwnd.py" "${SERVER_QLOG}" \
++    "${RESULT_DIR}/cubic-${MODE}-${WORKLOAD}.png"
++
++if [[ ${MODE} == rli ]]; then
++    VALIDATION_ARGS=(check "${SERVER_QLOG}")
++    if [[ ${WORKLOAD} == rate-limited ]]; then
++        # A rate-limited comparison is only meaningful if the implementation
++        # was exercised strongly enough for at least one cap to be observed.
++        VALIDATION_ARGS+=(--require-cap)
++    fi
++    "${PYTHON_BIN}" "${REPO_ROOT}/experiments/validate_rli.py" \
++        "${VALIDATION_ARGS[@]}" | tee "${RESULT_DIR}/validation.txt"
++fi
++
++GIT_COMMIT=$(git -C "${REPO_ROOT}" rev-parse HEAD)
++GIT_DIFF_HASH=$(git -C "${REPO_ROOT}" diff --binary | git hash-object --stdin)
++if [[ -n $(git -C "${REPO_ROOT}" status --porcelain=v1) ]]; then
++    GIT_TREE_STATE=dirty
++else
++    GIT_TREE_STATE=clean
++fi
++git -C "${REPO_ROOT}" status --porcelain=v1 >"${RESULT_DIR}/git-status.txt"
++
++{
++    echo "git_commit=${GIT_COMMIT}"
++    echo "git_tree_state=${GIT_TREE_STATE}"
++    echo "tracked_diff_hash=${GIT_DIFF_HASH}"
++    echo "mode=${MODE}"
++    echo "rli_option=${RLI_OPTION}"
++    echo "workload=${WORKLOAD}"
++    echo "utc_run_id=${RUN_ID}"
++    echo "kernel=$(uname -srmo)"
++    echo "demo=${DEMO}"
++    echo "demo_sha256=$(sha256sum "${DEMO}" | awk '{print $1}')"
++    echo "python=${PYTHON_BIN}"
++    echo "invocation=$0 ${MODE} ${WORKLOAD}"
++} >"${RESULT_DIR}/metadata.txt"
++
++find "${RESULT_DIR}" -maxdepth 1 -type f ! -name manifest.sha256 \
++    -print0 | sort -z | xargs -0 sha256sum >"${RESULT_DIR}/manifest.sha256"
++
++echo "Experiment completed: ${RESULT_DIR}"
+diff --git a/experiments/validate_rli.py b/experiments/validate_rli.py
+new file mode 100644
+index 00000000..f6c11d95
+--- /dev/null
++++ b/experiments/validate_rli.py
+@@ -0,0 +1,300 @@
++#!/usr/bin/env python3
++"""Validate RLI invariants and compare measured picoquic qlog runs."""
++
++import argparse
++import csv
++import os
++import sys
++
++REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++if REPO_ROOT not in sys.path:
++    sys.path.insert(0, REPO_ROOT)
++
++from plot_cwnd import parse_qlog
++
++
++DEFAULT_INITIAL_CWND = 10 * 1536
++
++
++def validate(samples, expect_reduction=False, require_cap=False,
++             initial_cwnd=DEFAULT_INITIAL_CWND):
++    """Return errors and counters derived only from observed qlog samples."""
++    errors = []
++    counters = {
++        "samples": len(samples),
++        "cwnd_increases": 0,
++        "cwnd_reductions": 0,
++        "maxfs_resets": 0,
++        "maxfs_increases": 0,
++        "cap_active_samples": 0,
++    }
++
++    if not samples:
++        return ["qlog contains no congestion metric samples"], counters
++
++    path_ids = sorted({sample["path_id"] for sample in samples})
++    if len(path_ids) != 1:
++        errors.append(
++            "validation requires one path; select one path ID from: "
++            + ", ".join(str(path_id) for path_id in path_ids)
++        )
++        return errors, counters
++
++    rli_samples = [
++        sample for sample in samples
++        if sample["rli_max_flight_size"] is not None
++        and sample["rli_cwnd_limit"] is not None
++    ]
++    if not rli_samples:
++        errors.append("qlog does not contain both maxFS and RLI limit metrics")
++        return errors, counters
++
++    first_maxfs = rli_samples[0]["rli_max_flight_size"]
++    if first_maxfs < initial_cwnd:
++        errors.append(
++            f"first observed maxFS {int(first_maxfs)} is below initcwnd "
++            f"{initial_cwnd}"
++        )
++
++    previous = samples[0]
++    for index, sample in enumerate(samples[1:], start=2):
++        cwnd = sample["cwnd"]
++        previous_cwnd = previous["cwnd"]
++        limit = sample["rli_cwnd_limit"]
++        maxfs = sample["rli_max_flight_size"]
++        previous_maxfs = previous["rli_max_flight_size"]
++        flight = sample["bytes_in_flight"]
++        capped = sample["rli_capped"] == 1
++        reduced = (
++            cwnd is not None and previous_cwnd is not None
++            and cwnd < previous_cwnd
++        )
++
++        if capped:
++            counters["cap_active_samples"] += 1
++            if limit is None:
++                errors.append(f"sample {index}: cap flag set without an RLI limit")
++            elif previous_cwnd is not None and cwnd > max(previous_cwnd, limit):
++                errors.append(
++                    f"sample {index}: capped cwnd {int(cwnd)} exceeds both the "
++                    f"previous cwnd {int(previous_cwnd)} and limit {int(limit)}"
++                )
++
++        if cwnd is not None and previous_cwnd is not None:
++            if cwnd > previous_cwnd:
++                counters["cwnd_increases"] += 1
++                if limit is None:
++                    errors.append(
++                        f"sample {index}: cwnd increased without an RLI limit"
++                    )
++                elif cwnd > limit:
++                    errors.append(
++                        f"sample {index}: cwnd {int(cwnd)} exceeds limit "
++                        f"{int(limit)} during an increase"
++                    )
++            elif reduced:
++                counters["cwnd_reductions"] += 1
++
++        if maxfs is not None and previous_maxfs is not None:
++            if maxfs < previous_maxfs:
++                if reduced:
++                    counters["maxfs_resets"] += 1
++                else:
++                    errors.append(
++                        f"sample {index}: maxFS fell from {int(previous_maxfs)} "
++                        f"to {int(maxfs)} without a visible cwnd reduction"
++                    )
++            elif maxfs > previous_maxfs:
++                counters["maxfs_increases"] += 1
++
++            # qlog records metric snapshots, not every intermediate
++            # FlightSize transition. maxFS can therefore legitimately be
++            # larger than both adjacent snapshots when an unobserved peak
++            # occurred between them. The observable invariant is that maxFS
++            # must not fall below either the previous maximum or the current
++            # FlightSize; the checks above and below enforce those bounds.
++
++        if maxfs is not None and flight is not None and not reduced and maxfs < flight:
++            errors.append(
++                f"sample {index}: maxFS {int(maxfs)} is below FlightSize "
++                f"{int(flight)}"
++            )
++
++        previous = sample
++
++    if counters["cwnd_increases"] == 0:
++        errors.append("no cwnd increase was observed; the growth cap was not tested")
++    if require_cap and counters["cap_active_samples"] == 0:
++        errors.append("no active RLI cap was observed in a cap-required workload")
++    if expect_reduction:
++        if counters["cwnd_reductions"] == 0:
++            errors.append("no cwnd reduction was observed in a reduction workload")
++        if counters["maxfs_resets"] == 0:
++            errors.append(
++                "no maxFS reset was observed alongside a cwnd reduction"
++            )
++
++    return errors, counters
++
++
++def time_weighted_average(samples, metric):
++    usable = [sample for sample in samples if sample[metric] is not None]
++    if not usable:
++        return None
++    if len(usable) == 1 or usable[-1]["time"] <= usable[0]["time"]:
++        return usable[-1][metric]
++
++    weighted = 0.0
++    duration = usable[-1]["time"] - usable[0]["time"]
++    for current, following in zip(usable, usable[1:]):
++        weighted += current[metric] * (following["time"] - current["time"])
++    return weighted / duration
++
++
++def summarize(samples):
++    cwnds = [sample["cwnd"] for sample in samples if sample["cwnd"] is not None]
++    flights = [
++        sample["bytes_in_flight"] for sample in samples
++        if sample["bytes_in_flight"] is not None
++    ]
++    return {
++        "duration_seconds": samples[-1]["time"] - samples[0]["time"],
++        "cwnd_min_bytes": min(cwnds),
++        "cwnd_max_bytes": max(cwnds),
++        "cwnd_final_bytes": cwnds[-1],
++        "cwnd_time_average_bytes": time_weighted_average(samples, "cwnd"),
++        "flight_max_bytes": max(flights) if flights else None,
++        "flight_time_average_bytes": time_weighted_average(
++            samples, "bytes_in_flight"
++        ),
++        "app_limited_time_fraction": time_weighted_average(
++            samples, "app_limited"
++        ),
++        "rli_capped_time_fraction": time_weighted_average(
++            samples, "rli_capped"
++        ),
++    }
++
++
++def print_counters(counters):
++    print(", ".join(f"{key}={value}" for key, value in counters.items()))
++
++
++def check_command(args):
++    samples = parse_qlog(args.qlog, args.path_id)
++    errors, counters = validate(
++        samples,
++        expect_reduction=args.expect_reduction,
++        require_cap=args.require_cap,
++        initial_cwnd=args.initial_cwnd,
++    )
++    print_counters(counters)
++    if errors:
++        for error in errors:
++            print(f"FAIL: {error}")
++        return 1
++    print("PASS: observed RLI measurements satisfy the checked invariants")
++    return 0
++
++
++def compare_command(args):
++    baseline = parse_qlog(args.baseline_qlog, args.path_id)
++    rli = parse_qlog(args.rli_qlog, args.path_id)
++    if not baseline or not rli:
++        if not baseline:
++            print("FAIL: baseline qlog contains no congestion samples")
++        if not rli:
++            print("FAIL: RLI qlog contains no congestion samples")
++        return 1
++
++    errors, counters = validate(
++        rli,
++        require_cap=args.workload == "rate-limited",
++        initial_cwnd=args.initial_cwnd,
++    )
++    print_counters(counters)
++    if errors:
++        for error in errors:
++            print(f"FAIL: {error}")
++        return 1
++
++    baseline_summary = summarize(baseline)
++    rli_summary = summarize(rli)
++    rows = []
++    for metric, baseline_value in baseline_summary.items():
++        rli_value = rli_summary[metric]
++        if baseline_value is None or rli_value is None:
++            delta = None
++            percent = None
++        else:
++            delta = rli_value - baseline_value
++            percent = (
++                100.0 * delta / baseline_value if baseline_value != 0 else None
++            )
++        rows.append((metric, baseline_value, rli_value, delta, percent))
++
++    print("metric,baseline,rli,delta,rli_change_percent")
++    for row in rows:
++        print(",".join(
++            "" if value is None else
++            value if isinstance(value, str) else
++            f"{value:.6g}"
++            for value in row
++        ))
++
++    if args.output:
++        with open(args.output, "w", newline="", encoding="utf-8") as output_file:
++            writer = csv.writer(output_file)
++            writer.writerow(
++                ["metric", "baseline", "rli", "delta", "rli_change_percent"]
++            )
++            writer.writerows(rows)
++        print(f"Saved comparison to: {args.output}")
++
++    print(
++        "PASS: comparison uses observed values; it does not assume that a "
++        "larger or smaller cwnd is inherently better"
++    )
++    return 0
++
++
++def build_parser():
++    parser = argparse.ArgumentParser(
++        description="Validate RLI qlogs or compare baseline and RLI runs."
++    )
++    subparsers = parser.add_subparsers(dest="command", required=True)
++
++    check = subparsers.add_parser("check", help="validate one RLI qlog")
++    check.add_argument("qlog")
++    check.add_argument("--expect-reduction", action="store_true")
++    check.add_argument("--require-cap", action="store_true")
++    check.add_argument("--initial-cwnd", type=int, default=DEFAULT_INITIAL_CWND)
++    check.add_argument("--path-id", type=int, default=None)
++    check.set_defaults(handler=check_command)
++
++    compare = subparsers.add_parser(
++        "compare", help="compare measured baseline and RLI qlogs"
++    )
++    compare.add_argument("baseline_qlog")
++    compare.add_argument("rli_qlog")
++    compare.add_argument(
++        "--workload", choices=("rate-limited", "bulk"), required=True
++    )
++    compare.add_argument("--output")
++    compare.add_argument("--initial-cwnd", type=int, default=DEFAULT_INITIAL_CWND)
++    compare.add_argument("--path-id", type=int, default=None)
++    compare.set_defaults(handler=compare_command)
++    return parser
++
++
++def main():
++    # Preserve the original one-positional-argument interface.
++    arguments = sys.argv[1:]
++    if arguments and arguments[0] not in ("check", "compare", "-h", "--help"):
++        arguments.insert(0, "check")
++    args = build_parser().parse_args(arguments)
++    return args.handler(args)
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/loglib/qlog.c b/loglib/qlog.c
+index 8f661f71..367894bf 100644
+--- a/loglib/qlog.c
++++ b/loglib/qlog.c
+@@ -56,6 +56,8 @@ typedef struct qlog_context_st {
+     uint64_t pacing_packet_time;
+     uint64_t cc_state;
+     uint64_t cc_param;
++    uint64_t rli_max_flight_size;
++    uint64_t rli_cwin_limit;
+ 
+     unsigned int trace_flow_id : 1;
+     unsigned int key_phase_sent_last : 1;
+@@ -65,6 +67,7 @@ typedef struct qlog_context_st {
+     unsigned int spin_bit_sent_last : 1;
+     unsigned int spin_bit_sent : 1;
+     unsigned int app_limited : 1;
++    unsigned int rli_capped : 1;
+ 
+     int state;
+ } qlog_context_t;
+@@ -1414,6 +1417,9 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
+     uint64_t bw_max = 0;
+     uint64_t bytes_in_transit = 0;
+     uint64_t app_limited = 0;
++    uint64_t rli_max_flight_size = 0;
++    uint64_t rli_cwin_limit = 0;
++    uint64_t rli_capped = 0;
+     qlog_context_t* ctx = (qlog_context_t*)ptr;
+     FILE* f = ctx->f_txtlog;
+ 
+@@ -1445,6 +1451,10 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
+     ret |= byteread_vint(s, &bytes_in_transit);
+     /* Not checking the app limited return, because it is not present in old bin logs */
+     (void) byteread_vint(s, &app_limited);
++    /* These optional fields are absent from logs produced before RLI support. */
++    (void) byteread_vint(s, &rli_max_flight_size);
++    (void) byteread_vint(s, &rli_cwin_limit);
++    (void) byteread_vint(s, &rli_capped);
+ 
+     if (ret == 0 && cc_state != ctx->cc_state) {
+         int64_t delta_time = time - ctx->start_time;
+@@ -1469,8 +1479,11 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
+ 
+     if (ret == 0 &&
+         (cwin != ctx->cwin || rtt_sample != ctx->rtt_sample || SRTT != ctx->SRTT ||
+-            RTT_min != ctx->RTT_min || bytes_in_transit != ctx->bytes_in_transit || 
+-            pacing_packet_time != ctx->pacing_packet_time)) {
++            RTT_min != ctx->RTT_min || bytes_in_transit != ctx->bytes_in_transit ||
++            pacing_packet_time != ctx->pacing_packet_time ||
++            rli_max_flight_size != ctx->rli_max_flight_size ||
++            rli_cwin_limit != ctx->rli_cwin_limit ||
++            rli_capped != ctx->rli_capped)) {
+         /* Something changed. Report the event. */
+         int64_t delta_time = time - ctx->start_time;
+         char* comma = "";
+@@ -1524,7 +1537,24 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
+         if (app_limited != ctx->app_limited) {
+             fprintf(f, "%s\"app_limited\": %" PRIu64, comma, app_limited);
+             ctx->app_limited = (app_limited != 0);
+-            /* comma = ","; (not useful since last block of function) */
++            comma = ",";
++        }
++
++        if (rli_max_flight_size != ctx->rli_max_flight_size) {
++            fprintf(f, "%s\"rli_max_flight_size\": %" PRIu64, comma, rli_max_flight_size);
++            ctx->rli_max_flight_size = rli_max_flight_size;
++            comma = ",";
++        }
++
++        if (rli_cwin_limit != ctx->rli_cwin_limit) {
++            fprintf(f, "%s\"rli_cwnd_limit\": %" PRIu64, comma, rli_cwin_limit);
++            ctx->rli_cwin_limit = rli_cwin_limit;
++            comma = ",";
++        }
++
++        if (rli_capped != ctx->rli_capped) {
++            fprintf(f, "%s\"rli_capped\": %" PRIu64, comma, rli_capped);
++            ctx->rli_capped = (rli_capped != 0);
+         }
+ 
+         fprintf(f, "}]");
+diff --git a/loglib/qlog_fns.c b/loglib/qlog_fns.c
+index 54c0097d..c74d041f 100644
+--- a/loglib/qlog_fns.c
++++ b/loglib/qlog_fns.c
+@@ -43,8 +43,11 @@ typedef struct st_qlog_fns_path_context_t {
+     uint64_t pacing_packet_time;
+     uint64_t cc_state;
+     uint64_t cc_param;
++    uint64_t rli_max_flight_size;
++    uint64_t rli_cwin_limit;
+ 
+     unsigned int last_bw_estimate_path_limited : 1;
++    unsigned int rli_capped : 1;
+ } qlog_fns_path_context_t;
+ 
+ 
+@@ -829,7 +832,11 @@ void qlog_fns_cc_dump_path(picoquic_path_t* path,
+ #endif
+             path->rtt_min != path_ctx->rtt_min || 
+             path->bytes_in_transit != path_ctx->bytes_in_transit ||
+-            path->pacing.packet_time_microsec != path_ctx->pacing_packet_time
++            path->pacing.packet_time_microsec != path_ctx->pacing_packet_time ||
++            (path->is_rli_enabled &&
++                (path->rli_max_flight_size != path_ctx->rli_max_flight_size ||
++                    path->rli_cwin_limit != path_ctx->rli_cwin_limit ||
++                    path->was_cwin_limited_by_rli != path_ctx->rli_capped))
+ #if 1
+         /* Bug compatibility with first implementation */
+ #else
+@@ -882,7 +889,24 @@ void qlog_fns_cc_dump_path(picoquic_path_t* path,
+         if (path->last_bw_estimate_path_limited != path_ctx->last_bw_estimate_path_limited) {
+             fprintf(f, "%s\"app_limited\": %u", comma, path->last_bw_estimate_path_limited);
+             path_ctx->last_bw_estimate_path_limited = path->last_bw_estimate_path_limited;
+-            /* comma = ","; (not useful since last block of function) */
++            comma = ",";
++        }
++
++        if (path->is_rli_enabled && path->rli_max_flight_size != path_ctx->rli_max_flight_size) {
++            fprintf(f, "%s\"rli_max_flight_size\": %" PRIu64, comma, path->rli_max_flight_size);
++            path_ctx->rli_max_flight_size = path->rli_max_flight_size;
++            comma = ",";
++        }
++
++        if (path->is_rli_enabled && path->rli_cwin_limit != path_ctx->rli_cwin_limit) {
++            fprintf(f, "%s\"rli_cwnd_limit\": %" PRIu64, comma, path->rli_cwin_limit);
++            path_ctx->rli_cwin_limit = path->rli_cwin_limit;
++            comma = ",";
++        }
++
++        if (path->is_rli_enabled && path->was_cwin_limited_by_rli != path_ctx->rli_capped) {
++            fprintf(f, "%s\"rli_capped\": %u", comma, path->was_cwin_limited_by_rli);
++            path_ctx->rli_capped = path->was_cwin_limited_by_rli;
+         }
+ 
+         fprintf(f, "}]");
+diff --git a/picoquic/cubic.c b/picoquic/cubic.c
+index 17feead4..9cbb3569 100644
+--- a/picoquic/cubic.c
++++ b/picoquic/cubic.c
+@@ -50,6 +50,73 @@ typedef struct st_picoquic_cubic_state_t {
+     picoquic_min_max_rtt_t rtt_filter;
+ } picoquic_cubic_state_t;
+ 
++static int cubic_rli_option_enabled(char const* option_string)
++{
++    return option_string != NULL &&
++        (strcmp(option_string, "rli") == 0 ||
++            strcmp(option_string, "rli=on") == 0 ||
++            strcmp(option_string, "on") == 0);
++}
++
++static uint64_t cubic_rli_saturating_add(uint64_t x, uint64_t y)
++{
++    return (x > UINT64_MAX - y) ? UINT64_MAX : x + y;
++}
++
++static uint64_t cubic_rli_limit(picoquic_cubic_state_t const* cubic_state,
++    picoquic_path_t const* path_x)
++{
++    uint64_t limit;
++
++    if (cubic_state->alg_state == picoquic_cubic_alg_congestion_avoidance) {
++        /* draft-ietf-ccwg-ratelimited-increase-11, Section 3, specifies
++         * limit(maxFS) = maxFS + SMSS in Congestion Avoidance. CUBIC still
++         * computes both W_cubic and its Reno-friendly estimate; this limit
++         * is applied afterwards to whichever candidate is larger. */
++        limit = cubic_rli_saturating_add(path_x->rli_max_flight_size,
++            path_x->send_mtu);
++    }
++    else {
++        /* Slow Start permits at most one additional maxFS-sized flight. */
++        limit = (path_x->rli_max_flight_size > UINT64_MAX / 2) ?
++            UINT64_MAX : 2 * path_x->rli_max_flight_size;
++    }
++
++    return limit;
++}
++
++static void cubic_rli_reset_after_reduction(picoquic_path_t* path_x)
++{
++    if (path_x->is_rli_enabled) {
++        path_x->rli_max_flight_size = 0;
++        path_x->rli_cwin_limit = 0;
++        path_x->was_cwin_limited_by_rli = 0;
++    }
++}
++
++static void cubic_rli_apply_limit(picoquic_cubic_state_t* cubic_state,
++    picoquic_path_t* path_x, uint64_t previous_cwin)
++{
++    if (path_x->is_rli_enabled) {
++        uint64_t limit = cubic_rli_limit(cubic_state, path_x);
++        path_x->rli_cwin_limit = limit;
++        path_x->was_cwin_limited_by_rli = 0;
++
++        if (path_x->cwin > previous_cwin && path_x->cwin > limit) {
++            /* RLI limits increases; it does not reduce an already larger
++             * congestion window. Window decay is handled by CWV, not RLI. */
++            path_x->cwin = (previous_cwin < limit) ? limit : previous_cwin;
++            path_x->was_cwin_limited_by_rli = 1;
++        }
++
++        /* Do not leave the Reno-friendly shadow window above the window
++         * actually permitted by RLI, or a later ACK could cause a jump. */
++        if (cubic_state->W_reno > (double)path_x->cwin) {
++            cubic_state->W_reno = (double)path_x->cwin;
++        }
++    }
++}
++
+ static void cubic_reset(picoquic_cubic_state_t* cubic_state, picoquic_path_t* path_x, uint64_t current_time) {
+     memset(&cubic_state->rtt_filter, 0, sizeof(picoquic_min_max_rtt_t));
+     memset(cubic_state, 0, sizeof(picoquic_cubic_state_t));
+@@ -65,15 +132,31 @@ static void cubic_reset(picoquic_cubic_state_t* cubic_state, picoquic_path_t* pa
+     cubic_state->previous_ssthresh = UINT64_MAX;
+     cubic_state->W_reno = PICOQUIC_CWIN_INITIAL;
+     cubic_state->recovery_sequence = 0;
++    path_x->rli_max_flight_size = path_x->is_rli_enabled ? PICOQUIC_CWIN_INITIAL : 0;
++    path_x->rli_cwin_limit = path_x->is_rli_enabled ? 2 * PICOQUIC_CWIN_INITIAL : 0;
++    path_x->was_cwin_limited_by_rli = 0;
+ }
+ 
+-static void cubic_init(picoquic_path_t* path_x, char const* UNUSED(option_string), uint64_t current_time)
++static void cubic_init(picoquic_path_t* path_x, char const* option_string, uint64_t current_time)
+ {
+     /* Initialize the state of the congestion control algorithm */
+     picoquic_cubic_state_t* cubic_state = (picoquic_cubic_state_t*)malloc(sizeof(picoquic_cubic_state_t));
++    path_x->is_rli_enabled = cubic_rli_option_enabled(option_string);
++    path_x->congestion_alg_state = (void*)cubic_state;
++    if (cubic_state != NULL) {
++        cubic_reset(cubic_state, path_x, current_time);
++    }
++}
++
++static void dcubic_init(picoquic_path_t* path_x, char const* UNUSED(option_string), uint64_t current_time)
++{
++    /* RLI is implemented for CUBIC only. DCUBIC shares most of the CUBIC
++     * machinery, so use a separate initializer to keep its behavior intact. */
++    picoquic_cubic_state_t* cubic_state = (picoquic_cubic_state_t*)malloc(sizeof(picoquic_cubic_state_t));
+ #ifdef _WINDOWS
+     UNREFERENCED_PARAMETER(option_string);
+ #endif
++    path_x->is_rli_enabled = 0;
+     path_x->congestion_alg_state = (void*)cubic_state;
+     if (cubic_state != NULL) {
+         cubic_reset(cubic_state, path_x, current_time);
+@@ -201,6 +284,8 @@ static void cubic_enter_recovery(picoquic_cnx_t * cnx,
+             path_x->cwin = win_cubic;
+         }
+     }
++
++    cubic_rli_reset_after_reduction(path_x);
+ }
+ 
+ /* On spurious repeat notification, restore the previous congestion control.
+@@ -231,6 +316,15 @@ static void cubic_correct_spurious(picoquic_path_t* path_x,
+             path_x->cwin = cubic_state->previous_cwin;
+             cubic_state->W_reno = (double)cubic_state->previous_cwin;
+         }
++
++        if (path_x->is_rli_enabled) {
++            /* The draft resets maxFS whenever cwnd is reduced, for any
++             * reason. A later spurious-loss correction can restore cwnd and
++             * CUBIC's epoch, but it must not restore FlightSize observations
++             * from before that reduction. */
++            path_x->rli_cwin_limit = cubic_rli_limit(cubic_state, path_x);
++            path_x->was_cwin_limited_by_rli = 0;
++        }
+     }
+ }
+ 
+@@ -255,36 +349,56 @@ static void cubic_notify(
+             case picoquic_congestion_notification_acknowledgement:
+                 switch (cubic_state->alg_state) {
+                     case picoquic_cubic_alg_slow_start:
++                    {
++                        uint64_t previous_cwin = path_x->cwin;
++                        int cwin_was_updated = 0;
+                         /* Increase cwin based on bandwidth estimation. */
+                         path_x->cwin = picoquic_cc_update_target_cwin_estimation(path_x);
+ 
+-                        if (path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
+-                            //if (path_x->bytes_in_transit > path_x->cwin) {
+-                                path_x->cwin += picoquic_cc_slow_start_increase_ex(path_x, ack_state->nb_bytes_acknowledged, 0);
+-
+-                                /* if cnx->cwin exceeds SSTHRESH, exit and go to CA */
+-                                if (path_x->cwin >= cubic_state->ssthresh) {
+-                                    cubic_state->W_reno = ((double)path_x->cwin) / 2.0;
+-                                    path_x->is_ssthresh_initialized = 1;
+-                                    cubic_enter_avoidance(cubic_state, current_time);
+-                                }
+-                            //}
++                        if (path_x->is_rli_enabled) {
++                            /* The legacy slow-start helper suppresses growth
++                             * unless the sender was cwnd-blocked. RLI instead
++                             * permits ACK-driven growth and bounds it below. */
++                            path_x->cwin = cubic_rli_saturating_add(path_x->cwin,
++                                ack_state->nb_bytes_acknowledged);
++                            cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
++                            cwin_was_updated = 1;
++                        }
++                        else if (path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
++                            path_x->cwin += picoquic_cc_slow_start_increase_ex(path_x,
++                                ack_state->nb_bytes_acknowledged, 0);
++                            cwin_was_updated = 1;
++                        }
++
++                        /* if cnx->cwin exceeds SSTHRESH, exit and go to CA */
++                        if (cwin_was_updated && path_x->cwin >= cubic_state->ssthresh) {
++                            cubic_state->W_reno = ((double)path_x->cwin) / 2.0;
++                            path_x->is_ssthresh_initialized = 1;
++                            cubic_enter_avoidance(cubic_state, current_time);
+                         }
+                         break;
++                    }
+                     /* TODO discuss
+                      * picoquic_cubic_alg_recovery is not entered anyway
+                      */
+                     case picoquic_cubic_alg_recovery:
++                    {
++                        uint64_t previous_cwin = path_x->cwin;
+                         /* exit recovery, move to CA or SS, depending on CWIN */
+                         cubic_state->alg_state = picoquic_cubic_alg_slow_start;
+-                        path_x->cwin += ack_state->nb_bytes_acknowledged;
++                        path_x->cwin = cubic_rli_saturating_add(path_x->cwin,
++                            ack_state->nb_bytes_acknowledged);
++                        cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
+                         /* if cnx->cwin exceeds SSTHRESH, exit and go to CA */
+                         if (path_x->cwin >= cubic_state->ssthresh) {
+                             cubic_state->alg_state = picoquic_cubic_alg_congestion_avoidance;
+                         }
+                         break;
++                    }
+                     case picoquic_cubic_alg_congestion_avoidance:
+-                        if (path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
++                        if (path_x->is_rli_enabled ||
++                            path_x->last_time_acked_data_frame_sent > path_x->last_sender_limited_time) {
++                            uint64_t previous_cwin = path_x->cwin;
+                             double W_cubic;
+                             uint64_t win_cubic;
+                             /* Protection against limited senders. */
+@@ -305,6 +419,8 @@ static void cubic_notify(
+                             else {
+                                 path_x->cwin = (uint64_t)cubic_state->W_reno;
+                             }
++
++                            cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
+                         }
+                         break;
+                 }
+@@ -393,9 +509,11 @@ static void cubic_notify(
+             case picoquic_congestion_notification_seed_cwin:
+                 if (cubic_state->alg_state == picoquic_cubic_alg_slow_start) {
+                     if (cubic_state->ssthresh == UINT64_MAX) {
++                        uint64_t previous_cwin = path_x->cwin;
+                         if (path_x->cwin < ack_state->nb_bytes_acknowledged) {
+                             path_x->cwin = ack_state->nb_bytes_acknowledged;
+                         }
++                        cubic_rli_apply_limit(cubic_state, path_x, previous_cwin);
+                         cubic_state->ssthresh = ack_state->nb_bytes_acknowledged;
+                         cubic_state->W_max = (double)path_x->cwin / (double)path_x->send_mtu;
+                         cubic_state->W_last_max = cubic_state->W_max;
+@@ -555,6 +673,10 @@ static void cubic_delete(picoquic_path_t* path_x)
+         free(path_x->congestion_alg_state);
+         path_x->congestion_alg_state = NULL;
+     }
++    path_x->is_rli_enabled = 0;
++    path_x->was_cwin_limited_by_rli = 0;
++    path_x->rli_max_flight_size = 0;
++    path_x->rli_cwin_limit = 0;
+ }
+ 
+ /* Observe the state of congestion control */
+@@ -582,7 +704,7 @@ picoquic_congestion_algorithm_t picoquic_cubic_algorithm_struct = {
+ 
+ picoquic_congestion_algorithm_t picoquic_dcubic_algorithm_struct = {
+     picoquic_dcubic_ID, PICOQUIC_CC_ALGO_NUMBER_DCUBIC, PICOQUIC_ECN_ECT_0,
+-    cubic_init,
++    dcubic_init,
+     dcubic_notify,
+     cubic_delete,
+     cubic_observe
+diff --git a/picoquic/logwriter.c b/picoquic/logwriter.c
+index b1660b59..5a2a8133 100644
+--- a/picoquic/logwriter.c
++++ b/picoquic/logwriter.c
+@@ -1216,6 +1216,11 @@ void binlog_cc_dump(picoquic_cnx_t* cnx, void* log_ctx, picoquic_path_t* path_x,
+     bytewrite_vint(ps_msg, path_x->peak_bandwidth_estimate);
+     bytewrite_vint(ps_msg, path_x->bytes_in_transit);
+     bytewrite_vint(ps_msg, path_x->last_bw_estimate_path_limited);
++    /* Optional Rate-Limited Increase metrics. Appending these fields keeps
++     * older log readers compatible with the existing prefix. */
++    bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->rli_max_flight_size : 0);
++    bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->rli_cwin_limit : 0);
++    bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->was_cwin_limited_by_rli : 0);
+ 
+     bytestream_buf stream_head;
+     bytestream* ps_head = bytestream_buf_init(&stream_head, BYTESTREAM_MAX_BUFFER_SIZE);
+diff --git a/picoquic/picoquic_internal.h b/picoquic/picoquic_internal.h
+index 64d9f990..6b5b7e59 100644
+--- a/picoquic/picoquic_internal.h
++++ b/picoquic/picoquic_internal.h
+@@ -1154,11 +1154,18 @@ typedef struct st_picoquic_path_t {
+     /* Congestion control state */
+     uint64_t cwin;
+     uint64_t bytes_in_transit;
++    /* Rate-Limited Increase state. `rli_max_flight_size` tracks the largest
++     * bytes-in-flight value since congestion control started or the most
++     * recent congestion-window reduction. */
++    uint64_t rli_max_flight_size;
++    uint64_t rli_cwin_limit;
+     uint64_t last_sender_limited_time;
+     uint64_t last_cwin_blocked_time;
+     uint64_t last_time_acked_data_frame_sent;
+     void* congestion_alg_state;
+     picoquic_pacing_t pacing;
++    unsigned int is_rli_enabled : 1;
++    unsigned int was_cwin_limited_by_rli : 1;
+ 
+     /* MTU safety tracking */
+     uint64_t nb_mtu_losses;
+@@ -1657,6 +1664,7 @@ uint64_t picoquic_remove_not_before_cid(picoquic_cnx_t* cnx, uint64_t unique_pat
+ int picoquic_renew_path_connection_id(picoquic_cnx_t* cnx, picoquic_path_t* path_x);
+ 
+ /* handling of retransmission queue */
++void picoquic_update_max_flight_size(picoquic_path_t* path_x);
+ void picoquic_queue_for_retransmit(picoquic_cnx_t* cnx, picoquic_path_t* path_x, picoquic_packet_t* packet,
+     size_t length, uint64_t current_time);
+ picoquic_packet_t* picoquic_dequeue_retransmit_packet(picoquic_cnx_t* cnx, picoquic_packet_context_t* pkt_ctx,
+diff --git a/picoquic/sender.c b/picoquic/sender.c
+index f5ea2ccd..5ca86786 100644
+--- a/picoquic/sender.c
++++ b/picoquic/sender.c
+@@ -670,6 +670,15 @@ size_t picoquic_protect_packet(picoquic_cnx_t* cnx,
+  * Final steps in packet transmission: queue for retransmission, etc
+  */
+ 
++void picoquic_update_max_flight_size(picoquic_path_t* path_x)
++{
++    if (path_x->is_rli_enabled &&
++        path_x->bytes_in_transit > path_x->rli_max_flight_size) {
++        path_x->rli_max_flight_size = path_x->bytes_in_transit;
++        path_x->is_cc_data_updated = 1;
++    }
++}
++
+ void picoquic_queue_for_retransmit(picoquic_cnx_t* cnx, picoquic_path_t * path_x, picoquic_packet_t* packet,
+     size_t length, uint64_t current_time)
+ {
+@@ -697,6 +706,10 @@ void picoquic_queue_for_retransmit(picoquic_cnx_t* cnx, picoquic_path_t * path_x
+     if (!packet->is_ack_trap) {
+         /* Account for bytes in transit, for congestion control */
+         path_x->bytes_in_transit += length;
++        /* The draft requires maxFS to observe every FlightSize update. Doing
++         * this at send time preserves peaks that would already be gone by
++         * the time an acknowledgement is processed. */
++        picoquic_update_max_flight_size(path_x);
+         path_x->is_cc_data_updated = 1;
+         /* Update the pacing data */
+         picoquic_update_pacing_after_send(path_x, length, current_time);
+@@ -736,6 +749,11 @@ picoquic_packet_t* picoquic_dequeue_retransmit_packet(picoquic_cnx_t* cnx,
+         else {
+             p->send_path->bytes_in_transit = 0;
+         }
++        /* This normally cannot raise maxFS, but it matters immediately after
++         * a congestion response reset maxFS while older packets remain in
++         * flight. The first subsequent FlightSize measurement must
++         * reinitialize maxFS, even when that measurement is a decrease. */
++        picoquic_update_max_flight_size(p->send_path);
+         p->send_path->is_cc_data_updated = 1;
+     }
+ 
+diff --git a/picoquic_t/picoquic_t.c b/picoquic_t/picoquic_t.c
+index 84f6ab90..53eeb42d 100644
+--- a/picoquic_t/picoquic_t.c
++++ b/picoquic_t/picoquic_t.c
+@@ -459,6 +459,7 @@ static const picoquic_test_def_t test_table[] = {
+     { "crypto_hs_offset", crypto_hs_offset_test },
+     { "cubic", cubic_test },
+     { "cubic_jitter", cubic_jitter_test },
++    { "cubic_rli", cubic_rli_test },
+     { "c4", c4_test },
+     { "c4_jitter", c4_jitter_test },
+     { "fastcc", fastcc_test },
+diff --git a/picoquictest/congestion_test.c b/picoquictest/congestion_test.c
+index f61c37d3..afca9fa7 100644
+--- a/picoquictest/congestion_test.c
++++ b/picoquictest/congestion_test.c
+@@ -115,6 +115,374 @@ int cubic_jitter_test(void)
+     return congestion_control_test(picoquic_cubic_algorithm, 3550000, 5000, 5);
+ }
+ 
++int cubic_rli_test(void)
++{
++    picoquic_cnx_t cnx;
++    picoquic_path_t path;
++    picoquic_per_ack_state_t ack_state;
++    picoquic_packet_t packet;
++    uint64_t initial_cwin = PICOQUIC_CWIN_INITIAL;
++    uint64_t ca_start_cwin;
++    uint64_t cwin_before_cap;
++    uint64_t post_reduction_maxfs;
++    int ret = 0;
++
++    memset(&cnx, 0, sizeof(cnx));
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++
++    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
++    if (path.congestion_alg_state == NULL || !path.is_rli_enabled ||
++        path.rli_max_flight_size != initial_cwin) {
++        DBG_PRINTF("RLI initialization failed, enabled=%u, maxFS=%llu",
++            path.is_rli_enabled, (unsigned long long)path.rli_max_flight_size);
++        ret = -1;
++        goto exit;
++    }
++
++    /* Verify that send-time accounting captures a peak FlightSize. */
++    path.bytes_in_transit = initial_cwin + path.send_mtu;
++    picoquic_update_max_flight_size(&path);
++    if (path.rli_max_flight_size != path.bytes_in_transit) {
++        DBG_PRINTF("RLI maxFS update failed, maxFS=%llu, flight=%llu",
++            (unsigned long long)path.rli_max_flight_size,
++            (unsigned long long)path.bytes_in_transit);
++        ret = -1;
++        goto exit;
++    }
++
++    /* Return to the initial state and verify the Slow Start ceiling. */
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_reset, &ack_state, 0);
++    ack_state.nb_bytes_acknowledged = 2 * initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
++    if (path.cwin != 2 * initial_cwin || !path.was_cwin_limited_by_rli) {
++        DBG_PRINTF("RLI Slow Start cap failed, cwin=%llu, limit=%llu, capped=%u",
++            (unsigned long long)path.cwin,
++            (unsigned long long)path.rli_cwin_limit,
++            path.was_cwin_limited_by_rli);
++        ret = -1;
++        goto exit;
++    }
++
++    /* A second application-limited burst cannot grow beyond the same
++     * ceiling if the sender has not demonstrated a larger FlightSize. */
++    ack_state.nb_bytes_acknowledged = path.send_mtu;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 2000);
++    if (path.cwin != 2 * initial_cwin || !path.was_cwin_limited_by_rli) {
++        DBG_PRINTF("RLI repeated-burst cap failed, cwin=%llu, limit=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)path.rli_cwin_limit);
++        ret = -1;
++        goto exit;
++    }
++
++    /* Once a larger flight is observed, the ceiling advances and growth is
++     * allowed again. */
++    path.bytes_in_transit = 2 * initial_cwin;
++    picoquic_update_max_flight_size(&path);
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 3000);
++    if (path.cwin <= 2 * initial_cwin || path.cwin > 4 * initial_cwin) {
++        DBG_PRINTF("RLI maxFS ceiling advance failed, cwin=%llu, maxFS=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)path.rli_max_flight_size);
++        ret = -1;
++        goto exit;
++    }
++
++    /* ECN enters recovery, reduces cwnd, and must reset maxFS to zero. */
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_ecn_ec, &ack_state,
++        path.smoothed_rtt + 2000);
++    if (path.rli_max_flight_size != 0) {
++        DBG_PRINTF("RLI recovery reset failed, maxFS=%llu",
++            (unsigned long long)path.rli_max_flight_size);
++        ret = -1;
++        goto exit;
++    }
++
++    /* Exercise the live send queue rather than only calling the maxFS helper:
++     * the first packet flight after a reduction must reinitialize maxFS. */
++    path.bytes_in_transit = 0;
++    memset(&packet, 0, sizeof(packet));
++    packet.length = path.send_mtu;
++    packet.send_path = &path;
++    packet.pc = picoquic_packet_context_application;
++    packet.ptype = picoquic_packet_1rtt_protected;
++    picoquic_queue_for_retransmit(&cnx, &path, &packet, packet.length, 4000);
++    if (path.bytes_in_transit != packet.length ||
++        path.rli_max_flight_size != packet.length) {
++        DBG_PRINTF("RLI live send accounting failed, maxFS=%llu, flight=%llu",
++            (unsigned long long)path.rli_max_flight_size,
++            (unsigned long long)path.bytes_in_transit);
++        ret = -1;
++        goto exit;
++    }
++
++    /* A spurious-loss correction restores CUBIC's window but not historical
++     * pre-reduction FlightSize observations. */
++    post_reduction_maxfs = path.rli_max_flight_size;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_spurious_repeat, &ack_state, 5000);
++    if (path.rli_max_flight_size != post_reduction_maxfs) {
++        DBG_PRINTF("RLI spurious recovery restored stale maxFS=%llu, expected=%llu",
++            (unsigned long long)path.rli_max_flight_size,
++            (unsigned long long)post_reduction_maxfs);
++        ret = -1;
++        goto exit;
++    }
++
++    /* RLI limits an attempted increase but must not reduce an already larger
++     * cwnd when the post-reduction maxFS implies a lower ceiling. */
++    cwin_before_cap = path.cwin;
++    ack_state.nb_bytes_acknowledged = path.send_mtu;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 6000);
++    if (path.cwin != cwin_before_cap || !path.was_cwin_limited_by_rli) {
++        DBG_PRINTF("RLI cap reduced or grew an already-larger cwnd=%llu, previous=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)cwin_before_cap);
++        ret = -1;
++        goto exit;
++    }
++
++    (void)picoquic_dequeue_retransmit_packet(&cnx,
++        &cnx.pkt_ctx[picoquic_packet_context_application], &packet, 0, 0);
++    if (path.bytes_in_transit != 0 ||
++        path.rli_max_flight_size != post_reduction_maxfs) {
++        DBG_PRINTF("RLI live dequeue accounting failed, maxFS=%llu, flight=%llu",
++            (unsigned long long)path.rli_max_flight_size,
++            (unsigned long long)path.bytes_in_transit);
++        ret = -1;
++        goto exit;
++    }
++
++    picoquic_cubic_algorithm->alg_delete(&path);
++
++    /* A timeout is an immediate congestion response and resets maxFS. */
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
++    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
++    path.rli_max_flight_size = path.cwin;
++    ack_state.lost_packet_number = 1;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_timeout, &ack_state,
++        path.smoothed_rtt + 1);
++    if (path.rli_max_flight_size != 0 || path.cwin != PICOQUIC_CWIN_MINIMUM) {
++        DBG_PRINTF("RLI timeout reset failed, cwin=%llu, maxFS=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)path.rli_max_flight_size);
++        ret = -1;
++        goto exit;
++    }
++    picoquic_cubic_algorithm->alg_delete(&path);
++
++    /* CUBIC's loss filter ignores the first isolated repeat and reacts once
++     * the smoothed loss threshold is crossed. The accepted reduction resets
++     * maxFS exactly like ECN and timeout. */
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
++    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
++    path.rli_max_flight_size = path.cwin;
++    ack_state.lost_packet_number = 1;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_repeat, &ack_state,
++        path.smoothed_rtt + 1);
++    if (path.rli_max_flight_size == 0) {
++        DBG_PRINTF("%s", "RLI isolated loss reduced cwnd unexpectedly");
++        ret = -1;
++        goto exit;
++    }
++    ack_state.lost_packet_number = 2;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_repeat, &ack_state,
++        path.smoothed_rtt + 2);
++    if (path.rli_max_flight_size == 0) {
++        DBG_PRINTF("%s", "RLI loss filter reacted before its configured threshold");
++        ret = -1;
++        goto exit;
++    }
++    ack_state.lost_packet_number = 3;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_repeat, &ack_state,
++        path.smoothed_rtt + 3);
++    if (path.rli_max_flight_size != 0) {
++        DBG_PRINTF("RLI accepted loss did not reset maxFS=%llu",
++            (unsigned long long)path.rli_max_flight_size);
++        ret = -1;
++        goto exit;
++    }
++    picoquic_cubic_algorithm->alg_delete(&path);
++
++    /* Seed a new instance into Congestion Avoidance, then use a long epoch
++     * to make the normal CUBIC candidate exceed maxFS + SMSS. */
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
++    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
++    ca_start_cwin = path.cwin;
++    path.rli_max_flight_size = ca_start_cwin;
++    ack_state.nb_bytes_acknowledged = path.send_mtu;
++    /* Near the start of the epoch, the Reno-friendly estimate should grow
++     * below the CA ceiling without being capped. */
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
++    if (path.cwin <= ca_start_cwin ||
++        path.cwin > ca_start_cwin + path.send_mtu ||
++        path.was_cwin_limited_by_rli) {
++        DBG_PRINTF("RLI Reno-friendly CA growth failed, cwin=%llu, limit=%llu, capped=%u",
++            (unsigned long long)path.cwin,
++            (unsigned long long)path.rli_cwin_limit,
++            path.was_cwin_limited_by_rli);
++        ret = -1;
++        goto exit;
++    }
++
++    /* Far into the epoch, the cubic candidate exceeds the same Section 3
++     * ceiling and must be capped. */
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 10000000);
++    if (path.cwin != ca_start_cwin + path.send_mtu ||
++        path.rli_cwin_limit != ca_start_cwin + path.send_mtu ||
++        !path.was_cwin_limited_by_rli) {
++        DBG_PRINTF("RLI Congestion Avoidance cap failed, cwin=%llu, expected=%llu, limit=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)(ca_start_cwin + path.send_mtu),
++            (unsigned long long)path.rli_cwin_limit);
++        ret = -1;
++        goto exit;
++    }
++
++    picoquic_cubic_algorithm->alg_delete(&path);
++
++    /* RFC 9438 requires application-limited time to be excluded from t. A
++     * recent sender-limited timestamp prevents a long-idle cubic jump. */
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
++    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
++    ca_start_cwin = path.cwin;
++    path.rli_max_flight_size = ca_start_cwin;
++    path.last_sender_limited_time = 9999000;
++    ack_state.nb_bytes_acknowledged = path.send_mtu;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 10000000);
++    if (path.cwin <= ca_start_cwin ||
++        path.cwin >= ca_start_cwin + path.send_mtu ||
++        path.was_cwin_limited_by_rli) {
++        DBG_PRINTF("RLI application-limited epoch exclusion failed, cwin=%llu, limit=%llu, capped=%u",
++            (unsigned long long)path.cwin,
++            (unsigned long long)path.rli_cwin_limit,
++            path.was_cwin_limited_by_rli);
++        ret = -1;
++        goto exit;
++    }
++
++    picoquic_cubic_algorithm->alg_delete(&path);
++
++    /* The feature is opt-in, so a CUBIC instance without -H rli=on keeps
++     * the existing application-limited behavior. */
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++    picoquic_cubic_algorithm->alg_init(&path, NULL, 0);
++    ack_state.nb_bytes_acknowledged = initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
++    if (path.is_rli_enabled || path.cwin != initial_cwin) {
++        DBG_PRINTF("CUBIC legacy mode changed, enabled=%u, cwin=%llu",
++            path.is_rli_enabled, (unsigned long long)path.cwin);
++        ret = -1;
++        goto exit;
++    }
++
++    /* The opt-out path must also retain ordinary growth for a sender that is
++     * both data-ACKed after the last limited time and cwnd-blocked. */
++    cnx.cwin_blocked = 1;
++    path.last_sender_limited_time = 1;
++    path.last_time_acked_data_frame_sent = 2;
++    ack_state.nb_bytes_acknowledged = path.send_mtu;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 2000);
++    if (path.cwin <= initial_cwin) {
++        DBG_PRINTF("CUBIC legacy cwnd-blocked growth was suppressed, cwin=%llu",
++            (unsigned long long)path.cwin);
++        ret = -1;
++        goto exit;
++    }
++
++    picoquic_cubic_algorithm->alg_delete(&path);
++
++    /* Legacy Congestion Avoidance must still suppress an application-limited
++     * ACK and grow once an ACK from post-limited data is observed. */
++    memset(&path, 0, sizeof(path));
++    memset(&ack_state, 0, sizeof(ack_state));
++    path.cnx = &cnx;
++    path.send_mtu = 1200;
++    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
++    picoquic_cubic_algorithm->alg_init(&path, NULL, 0);
++    ack_state.nb_bytes_acknowledged = 4 * initial_cwin;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_seed_cwin, &ack_state, 0);
++    ca_start_cwin = path.cwin;
++    ack_state.nb_bytes_acknowledged = path.send_mtu;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 1000);
++    if (path.cwin != ca_start_cwin) {
++        DBG_PRINTF("Legacy application-limited CA grew unexpectedly, cwin=%llu, previous=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)ca_start_cwin);
++        ret = -1;
++        goto exit;
++    }
++    path.last_sender_limited_time = 1;
++    path.last_time_acked_data_frame_sent = 2;
++    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
++        picoquic_congestion_notification_acknowledgement, &ack_state, 10000000);
++    if (path.cwin <= ca_start_cwin) {
++        DBG_PRINTF("Legacy non-limited CA growth was suppressed, cwin=%llu, previous=%llu",
++            (unsigned long long)path.cwin,
++            (unsigned long long)ca_start_cwin);
++        ret = -1;
++    }
++
++exit:
++    if (path.congestion_alg_state != NULL) {
++        picoquic_cubic_algorithm->alg_delete(&path);
++    }
++    return ret;
++}
++
+ int c4_test(void)
+ {
+     return congestion_control_test(c4_algorithm, 3600000, 0, 0);
+diff --git a/picoquictest/picoquictest.h b/picoquictest/picoquictest.h
+index 2df3547c..75cca6aa 100644
+--- a/picoquictest/picoquictest.h
++++ b/picoquictest/picoquictest.h
+@@ -325,6 +325,7 @@ int ready_to_zfin_test(void);
+ int crypto_hs_offset_test(void);
+ int cubic_test(void);
+ int cubic_jitter_test(void);
++int cubic_rli_test(void);
+ int c4_test(void);
+ int c4_jitter_test(void);
+ int cc_compete_cubic2_test(void);
+diff --git a/plot_cwnd.py b/plot_cwnd.py
+index afafc1eb..57b5886c 100755
+--- a/plot_cwnd.py
++++ b/plot_cwnd.py
+@@ -1,109 +1,221 @@
+ #!/usr/bin/env python3
+-"""
+-Plot picoquic CUBIC cwnd evolution from a qlog file.
++"""Plot picoquic congestion metrics from a qlog file.
+ 
+-qlog format used by picoquic:
+-    Preamble declares "configuration": {"time_units": "us"} or "ms".
+-    Each event is a JSON array: [time, category, event_name, data_dict].
+-    cwnd is inside data_dict of "metrics_updated" events in the "recovery"
+-    category.
++The script works with the Step 4 baseline logs and also understands the RLI
++fields produced by the Step 6 implementation. qlog metrics are deltas, so the
++parser carries the last value of every metric forward.
+ 
+ Usage:
+-    python3 plot_cwnd.py <server.qlog> [output.png]
++    python3 plot_cwnd.py <sender.qlog> [output.png]
+ """
+-import sys
++
++import argparse
+ import json
+ import os
+-import matplotlib.pyplot as plt
++import sys
++
++
++METRICS = (
++    "cwnd",
++    "bytes_in_flight",
++    "app_limited",
++    "rli_max_flight_size",
++    "rli_cwnd_limit",
++    "rli_capped",
++)
+ 
+ 
+ def detect_time_divisor(path):
+-    """Return (seconds_divisor) based on 'time_units' in the qlog preamble."""
+-    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+-        head = f.read(2000)
+-    if '"time_units": "ms"' in head:
++    """Return the number of qlog time units per second."""
++    with open(path, "r", encoding="utf-8", errors="ignore") as qlog_file:
++        preamble = qlog_file.read(2000)
++    if '"time_units": "ms"' in preamble:
+         return 1_000.0
+-    if '"time_units": "us"' in head:
++    if '"time_units": "us"' in preamble:
+         return 1_000_000.0
+-    # picoquic default is microseconds
+     return 1_000_000.0
+ 
+ 
+-def parse_qlog(path):
+-    """Extract (time_sec, cwnd_bytes) samples from a picoquic qlog file."""
+-    divisor = detect_time_divisor(path)
+-    print(f"Detected time unit divisor: {divisor:g}")
++def parse_qlog(path, selected_path=None):
++    """Return per-path snapshots for recovery:metrics_updated events.
+ 
+-    times = []
+-    cwnds = []
++    Picoquic can emit either the usual four-element qlog event or a
++    five-element event containing a numeric path/flow ID after the timestamp.
++    State is maintained independently for every path so delta events from
++    multipath traces cannot contaminate each other.
++    """
++    divisor = detect_time_divisor(path)
++    states = {}
++    samples = []
+ 
+-    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+-        for line in f:
+-            line = line.strip()
++    with open(path, "r", encoding="utf-8", errors="ignore") as qlog_file:
++        for raw_line in qlog_file:
++            line = raw_line.strip().rstrip(",")
+             if not line.startswith("["):
+                 continue
+-            line = line.rstrip(",")
+             try:
+-                ev = json.loads(line)
++                event = json.loads(line)
+             except json.JSONDecodeError:
+                 continue
+-            if not (isinstance(ev, list) and len(ev) >= 4):
++            if not (isinstance(event, list) and len(event) >= 4):
+                 continue
+-            t_raw = ev[0]
+-            category = ev[1]
+-            name = ev[2]
+-            data = ev[3]
++
++            if len(event) >= 5 and isinstance(event[1], (int, float)):
++                raw_time, path_id, category, name, data = event[:5]
++            else:
++                raw_time, category, name, data = event[:4]
++                path_id = 0
+ 
+             if category != "recovery" or name != "metrics_updated":
+                 continue
+-            if not isinstance(data, dict) or "cwnd" not in data:
++            if not isinstance(data, dict):
++                continue
++            if selected_path is not None and path_id != selected_path:
+                 continue
+ 
+-            times.append(t_raw / divisor)
+-            cwnds.append(float(data["cwnd"]))
+-
+-    return times, cwnds
++            state = states.setdefault(
++                path_id, {metric: None for metric in METRICS}
++            )
++
++            for metric in METRICS:
++                if metric in data:
++                    state[metric] = float(data[metric])
++
++            if state["cwnd"] is not None:
++                sample = dict(state)
++                sample["time"] = float(raw_time) / divisor
++                sample["path_id"] = path_id
++                samples.append(sample)
++
++    return sorted(samples, key=lambda sample: (sample["time"], sample["path_id"]))
++
++
++def kib(value):
++    return value / 1024.0
++
++
++def plot_metrics(samples, output_path):
++    try:
++        import matplotlib.pyplot as plt
++    except ModuleNotFoundError as error:
++        raise RuntimeError(
++            "matplotlib is required; run: python3 -m pip install -r "
++            "experiments/requirements.txt"
++        ) from error
++
++    path_ids = sorted({sample["path_id"] for sample in samples})
++    if len(path_ids) != 1:
++        raise RuntimeError(
++            "qlog contains multiple paths; select one with --path-id "
++            + ",".join(str(path_id) for path_id in path_ids)
++        )
++
++    times = [sample["time"] for sample in samples]
++    cwnd = [kib(sample["cwnd"]) for sample in samples]
++    has_rli = any(sample["rli_cwnd_limit"] is not None for sample in samples)
++
++    figure, axis = plt.subplots(figsize=(11, 5.5))
++    axis.plot(times, cwnd, label="cwnd", color="#1f77b4", linewidth=1.3)
++
++    if any(sample["bytes_in_flight"] is not None for sample in samples):
++        flight = [
++            kib(sample["bytes_in_flight"] or 0.0) for sample in samples
++        ]
++        axis.plot(
++            times,
++            flight,
++            label="bytes in flight",
++            color="#7f7f7f",
++            linewidth=0.9,
++            alpha=0.75,
++        )
++
++    if has_rli:
++        max_flight = [
++            kib(sample["rli_max_flight_size"] or 0.0) for sample in samples
++        ]
++        limit = [kib(sample["rli_cwnd_limit"] or 0.0) for sample in samples]
++        axis.plot(times, max_flight, label="RLI maxFS", color="#2ca02c")
++        axis.plot(
++            times,
++            limit,
++            label="RLI cwnd limit",
++            color="#d62728",
++            linestyle="--",
++        )
++
++        capped_times = [
++            sample["time"] for sample in samples if sample["rli_capped"] == 1
++        ]
++        capped_cwnd = [
++            kib(sample["cwnd"])
++            for sample in samples
++            if sample["rli_capped"] == 1
++        ]
++        if capped_times:
++            axis.scatter(
++                capped_times,
++                capped_cwnd,
++                label="RLI cap active",
++                color="#d62728",
++                marker="x",
++                s=18,
++                zorder=3,
++            )
++
++    axis.set_title(
++        "Picoquic CUBIC congestion metrics"
++        + (" with Rate-Limited Increase" if has_rli else " (baseline)")
++    )
++    axis.set_xlabel("Time (seconds)")
++    axis.set_ylabel("Window / flight size (KiB)")
++    axis.grid(True, linestyle="--", alpha=0.5)
++    axis.legend()
++    figure.tight_layout()
++    figure.savefig(output_path, dpi=300)
++    plt.close(figure)
++
++    print(f"Saved plot to: {output_path}")
++    print(
++        f"cwnd range: min={min(cwnd):.1f} KiB, max={max(cwnd):.1f} KiB, "
++        f"avg={sum(cwnd) / len(cwnd):.1f} KiB, duration={times[-1]:.2f} s"
++    )
++    if has_rli:
++        capped_count = sum(sample["rli_capped"] == 1 for sample in samples)
++        print(f"RLI cap-active samples: {capped_count}")
+ 
+ 
+ def main():
+-    if len(sys.argv) < 2:
+-        print("Usage: python3 plot_cwnd.py <server.qlog> [output.png]")
+-        sys.exit(1)
++    parser = argparse.ArgumentParser(
++        description="Plot picoquic congestion metrics from a sender qlog."
++    )
++    parser.add_argument("qlog", help="sender qlog")
++    parser.add_argument("output", nargs="?", default="cubic_cwnd.png")
++    parser.add_argument(
++        "--path-id", type=int, default=None,
++        help="path ID to plot when the qlog contains multiple paths",
++    )
++    args = parser.parse_args()
++
++    qlog_path = args.qlog
++    output_path = args.output
++    if not os.path.isfile(qlog_path):
++        print(f"Error: {qlog_path} not found")
++        return 1
+ 
+-    qlog_path = sys.argv[1]
+-    out_path = sys.argv[2] if len(sys.argv) > 2 else "cubic_cwnd.png"
++    samples = parse_qlog(qlog_path, args.path_id)
++    print(f"Extracted {len(samples)} congestion metric samples")
++    if not samples:
++        print("Error: no recovery:metrics_updated samples containing cwnd found")
++        return 1
+ 
+-    if not os.path.exists(qlog_path):
+-        print(f"Error: {qlog_path} not found")
+-        sys.exit(1)
+-
+-    print(f"Parsing {qlog_path} ...")
+-    times, cwnds = parse_qlog(qlog_path)
+-    print(f"Extracted {len(cwnds)} cwnd samples")
+-
+-    if not cwnds:
+-        print("ERROR: no cwnd samples found. Check the qlog format.")
+-        sys.exit(1)
+-
+-    # Sort by time
+-    pairs = sorted(zip(times, cwnds))
+-    times = [p[0] for p in pairs]
+-    cwnds_kb = [p[1] / 1024.0 for p in pairs]
+-
+-    plt.figure(figsize=(10, 5))
+-    plt.plot(times, cwnds_kb, label="CUBIC cwnd", color="#1f77b4", linewidth=1.2)
+-    plt.title("Picoquic CUBIC Congestion Window — Baseline (20 Mbps, 50 ms RTT)")
+-    plt.xlabel("Time (seconds)")
+-    plt.ylabel("Congestion Window (KB)")
+-    plt.grid(True, linestyle="--", alpha=0.6)
+-    plt.legend()
+-    plt.tight_layout()
+-    plt.savefig(out_path, dpi=300)
+-    print(f"Saved plot to: {out_path}")
+-    print(f"cwnd range: min={min(cwnds_kb):.1f} KB, max={max(cwnds_kb):.1f} KB, "
+-          f"avg={sum(cwnds_kb)/len(cwnds_kb):.1f} KB, "
+-          f"duration={times[-1]:.2f} s")
++    try:
++        plot_metrics(samples, output_path)
++    except RuntimeError as error:
++        print(f"Error: {error}")
++        return 1
++    return 0
+ 
+ 
+ if __name__ == "__main__":
+-    main()
++    sys.exit(main())

@@ -6,7 +6,7 @@ if [[ ${EUID} -ne 0 ]]; then
     exit 1
 fi
 
-for namespace in rls-client rls-r1 rls-r2 rls-server; do
+for namespace in rls-client rls-client2 rls-r1 rls-r2 rls-server rls-server2; do
     if ip netns list | awk '{print $1}' | grep -Fxq "$namespace"; then
         ip netns delete "$namespace"
         echo "Deleted $namespace"

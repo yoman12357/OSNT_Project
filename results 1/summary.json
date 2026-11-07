@@ -1,0 +1,571 @@
+{
+  "records": [
+    {
+      "workload": "rate-limited",
+      "mode": "baseline",
+      "repetition": 1,
+      "throughput_mbps": 0.190202,
+      "application_bytes_sent": 480000,
+      "retransmissions": 0,
+      "final_cc_state": 0,
+      "smoothed_rtt_us": 51038,
+      "min_rtt_us": 50213,
+      "spurious_retransmissions": 0,
+      "samples": 846,
+      "qlog": "runs/rate-limited/baseline/run-1/1f4869ffb861ddca.4acc.server.qlog",
+      "duration_seconds": 20.053669,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 15360.0,
+      "cwnd_final_bytes": 15360.0,
+      "cwnd_time_average_bytes": 15359.999999999987,
+      "flight_max_bytes": 3426.0,
+      "flight_time_average_bytes": 1619.1035306307324,
+      "app_limited_time_fraction": 1.0,
+      "rli_capped_time_fraction": null,
+      "connection_duration_seconds": 20.189041,
+      "validation": "baseline / not applicable",
+      "counters": {}
+    },
+    {
+      "workload": "rate-limited",
+      "mode": "rli",
+      "repetition": 1,
+      "throughput_mbps": 0.190171,
+      "application_bytes_sent": 480000,
+      "retransmissions": 0,
+      "final_cc_state": 0,
+      "smoothed_rtt_us": 50971,
+      "min_rtt_us": 50215,
+      "spurious_retransmissions": 0,
+      "samples": 848,
+      "qlog": "runs/rate-limited/rli/run-1/46c14b243cabb047.c48a.server.qlog",
+      "duration_seconds": 20.054144,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 30720.0,
+      "cwnd_final_bytes": 30720.0,
+      "cwnd_time_average_bytes": 30522.91192443815,
+      "flight_max_bytes": 3426.0,
+      "flight_time_average_bytes": 1635.7532981711868,
+      "app_limited_time_fraction": 1.0,
+      "rli_capped_time_fraction": 0.9723451172984496,
+      "connection_duration_seconds": 20.192343,
+      "validation": "PASS",
+      "counters": {
+        "samples": 848,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819
+      }
+    },
+    {
+      "workload": "rate-limited",
+      "mode": "baseline",
+      "repetition": 2,
+      "throughput_mbps": 0.190196,
+      "application_bytes_sent": 480000,
+      "retransmissions": 0,
+      "final_cc_state": 0,
+      "smoothed_rtt_us": 51190,
+      "min_rtt_us": 50105,
+      "spurious_retransmissions": 0,
+      "samples": 846,
+      "qlog": "runs/rate-limited/baseline/run-2/3b957aec2cb03e2a.a83a.server.qlog",
+      "duration_seconds": 20.053529,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 15360.0,
+      "cwnd_final_bytes": 15360.0,
+      "cwnd_time_average_bytes": 15360.000000000013,
+      "flight_max_bytes": 3426.0,
+      "flight_time_average_bytes": 1619.3123422316332,
+      "app_limited_time_fraction": 1.0000000000000002,
+      "rli_capped_time_fraction": null,
+      "connection_duration_seconds": 20.189743,
+      "validation": "baseline / not applicable",
+      "counters": {}
+    },
+    {
+      "workload": "rate-limited",
+      "mode": "rli",
+      "repetition": 2,
+      "throughput_mbps": 0.190194,
+      "application_bytes_sent": 480000,
+      "retransmissions": 0,
+      "final_cc_state": 0,
+      "smoothed_rtt_us": 50888,
+      "min_rtt_us": 50258,
+      "spurious_retransmissions": 0,
+      "samples": 849,
+      "qlog": "runs/rate-limited/rli/run-2/ad46a67a0c001513.971c.server.qlog",
+      "duration_seconds": 20.054057,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 30720.0,
+      "cwnd_final_bytes": 30720.0,
+      "cwnd_time_average_bytes": 30521.336683943853,
+      "flight_max_bytes": 3426.0,
+      "flight_time_average_bytes": 1635.789591702069,
+      "app_limited_time_fraction": 1.0,
+      "rli_capped_time_fraction": 0.9723541226595694,
+      "connection_duration_seconds": 20.189867,
+      "validation": "PASS",
+      "counters": {
+        "samples": 849,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819
+      }
+    },
+    {
+      "workload": "rate-limited",
+      "mode": "baseline",
+      "repetition": 3,
+      "throughput_mbps": 0.19014,
+      "application_bytes_sent": 480000,
+      "retransmissions": 0,
+      "final_cc_state": 0,
+      "smoothed_rtt_us": 51116,
+      "min_rtt_us": 50249,
+      "spurious_retransmissions": 0,
+      "samples": 846,
+      "qlog": "runs/rate-limited/baseline/run-3/c21cf8df38336582.81ed.server.qlog",
+      "duration_seconds": 20.056007,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 15360.0,
+      "cwnd_final_bytes": 15360.0,
+      "cwnd_time_average_bytes": 15360.000000000016,
+      "flight_max_bytes": 3426.0,
+      "flight_time_average_bytes": 1621.469159888111,
+      "app_limited_time_fraction": 1.0,
+      "rli_capped_time_fraction": null,
+      "connection_duration_seconds": 20.195616,
+      "validation": "baseline / not applicable",
+      "counters": {}
+    },
+    {
+      "workload": "rate-limited",
+      "mode": "rli",
+      "repetition": 3,
+      "throughput_mbps": 0.190192,
+      "application_bytes_sent": 480000,
+      "retransmissions": 0,
+      "final_cc_state": 0,
+      "smoothed_rtt_us": 50972,
+      "min_rtt_us": 50214,
+      "spurious_retransmissions": 0,
+      "samples": 848,
+      "qlog": "runs/rate-limited/rli/run-3/acc3747759f5cf5e.80be.server.qlog",
+      "duration_seconds": 20.055264,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 30720.0,
+      "cwnd_final_bytes": 30720.0,
+      "cwnd_time_average_bytes": 30520.516304248096,
+      "flight_max_bytes": 3426.0,
+      "flight_time_average_bytes": 1638.3826306150847,
+      "app_limited_time_fraction": 0.9999999999999998,
+      "rli_capped_time_fraction": 0.9722675802223295,
+      "connection_duration_seconds": 20.19008,
+      "validation": "PASS",
+      "counters": {
+        "samples": 848,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819
+      }
+    },
+    {
+      "workload": "bulk",
+      "mode": "baseline",
+      "repetition": 1,
+      "throughput_mbps": 17.731435,
+      "application_bytes_sent": 20971587,
+      "retransmissions": 0,
+      "final_cc_state": 2,
+      "smoothed_rtt_us": 106292,
+      "min_rtt_us": 50712,
+      "spurious_retransmissions": 0,
+      "samples": 15635,
+      "qlog": "runs/bulk/baseline/run-1/afaf3fe656f02b92.dfd8.server.qlog",
+      "duration_seconds": 9.135866,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 382882.0,
+      "cwnd_final_bytes": 290216.0,
+      "cwnd_time_average_bytes": 206473.27892845523,
+      "flight_max_bytes": 383040.0,
+      "flight_time_average_bytes": 201998.71239880315,
+      "app_limited_time_fraction": 0.017141720243144393,
+      "rli_capped_time_fraction": null,
+      "connection_duration_seconds": 9.461879,
+      "validation": "baseline / not applicable",
+      "counters": {}
+    },
+    {
+      "workload": "bulk",
+      "mode": "rli",
+      "repetition": 1,
+      "throughput_mbps": 17.939509,
+      "application_bytes_sent": 20971587,
+      "retransmissions": 0,
+      "final_cc_state": 2,
+      "smoothed_rtt_us": 124540,
+      "min_rtt_us": 50704,
+      "spurious_retransmissions": 0,
+      "samples": 15662,
+      "qlog": "runs/bulk/rli/run-1/304bb838cf0e6c77.1470.server.qlog",
+      "duration_seconds": 9.055685,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 498162.0,
+      "cwnd_final_bytes": 274478.0,
+      "cwnd_time_average_bytes": 254163.4930142789,
+      "flight_max_bytes": 498240.0,
+      "flight_time_average_bytes": 249715.81851798043,
+      "app_limited_time_fraction": 0.019240047507168,
+      "rli_capped_time_fraction": 0.0011630263199305171,
+      "connection_duration_seconds": 9.352134,
+      "validation": "PASS",
+      "counters": {
+        "samples": 15662,
+        "cwnd_increases": 714,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 337,
+        "cap_active_samples": 1
+      }
+    },
+    {
+      "workload": "bulk",
+      "mode": "baseline",
+      "repetition": 2,
+      "throughput_mbps": 17.823301,
+      "application_bytes_sent": 20971587,
+      "retransmissions": 0,
+      "final_cc_state": 2,
+      "smoothed_rtt_us": 116528,
+      "min_rtt_us": 50716,
+      "spurious_retransmissions": 0,
+      "samples": 15572,
+      "qlog": "runs/bulk/baseline/run-2/a140bbc61099fbe3.1e73.server.qlog",
+      "duration_seconds": 9.117650999999999,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 446753.0,
+      "cwnd_final_bytes": 311993.0,
+      "cwnd_time_average_bytes": 230297.88233306995,
+      "flight_max_bytes": 447840.0,
+      "flight_time_average_bytes": 225318.65774408358,
+      "app_limited_time_fraction": 0.016218321650929086,
+      "rli_capped_time_fraction": null,
+      "connection_duration_seconds": 9.41311,
+      "validation": "baseline / not applicable",
+      "counters": {}
+    },
+    {
+      "workload": "bulk",
+      "mode": "rli",
+      "repetition": 2,
+      "throughput_mbps": 17.957932,
+      "application_bytes_sent": 20971587,
+      "retransmissions": 0,
+      "final_cc_state": 2,
+      "smoothed_rtt_us": 114820,
+      "min_rtt_us": 50729,
+      "spurious_retransmissions": 0,
+      "samples": 15638,
+      "qlog": "runs/bulk/rli/run-2/91e13183e18bcaf2.7e6.server.qlog",
+      "duration_seconds": 9.064701,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 437494.0,
+      "cwnd_final_bytes": 268263.0,
+      "cwnd_time_average_bytes": 226607.2139622694,
+      "flight_max_bytes": 437760.0,
+      "flight_time_average_bytes": 221866.47527976963,
+      "app_limited_time_fraction": 0.0185207444924625,
+      "rli_capped_time_fraction": 0.0011648481290226767,
+      "connection_duration_seconds": 9.34254,
+      "validation": "PASS",
+      "counters": {
+        "samples": 15638,
+        "cwnd_increases": 693,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 295,
+        "cap_active_samples": 1
+      }
+    },
+    {
+      "workload": "bulk",
+      "mode": "baseline",
+      "repetition": 3,
+      "throughput_mbps": 17.640233,
+      "application_bytes_sent": 20971587,
+      "retransmissions": 0,
+      "final_cc_state": 2,
+      "smoothed_rtt_us": 105407,
+      "min_rtt_us": 50720,
+      "spurious_retransmissions": 0,
+      "samples": 15670,
+      "qlog": "runs/bulk/baseline/run-3/71534ca6e4d18982.f360.server.qlog",
+      "duration_seconds": 9.126965,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 419776.0,
+      "cwnd_final_bytes": 302766.0,
+      "cwnd_time_average_bytes": 218868.5881100672,
+      "flight_max_bytes": 420480.0,
+      "flight_time_average_bytes": 215375.9038845883,
+      "app_limited_time_fraction": 0.01672765347747185,
+      "rli_capped_time_fraction": null,
+      "connection_duration_seconds": 9.510798,
+      "validation": "baseline / not applicable",
+      "counters": {}
+    },
+    {
+      "workload": "bulk",
+      "mode": "rli",
+      "repetition": 3,
+      "throughput_mbps": 17.951898,
+      "application_bytes_sent": 20971587,
+      "retransmissions": 0,
+      "final_cc_state": 2,
+      "smoothed_rtt_us": 118606,
+      "min_rtt_us": 50729,
+      "spurious_retransmissions": 0,
+      "samples": 15625,
+      "qlog": "runs/bulk/rli/run-3/855fd99005a952ab.ad19.server.qlog",
+      "duration_seconds": 9.060069,
+      "cwnd_min_bytes": 15360.0,
+      "cwnd_max_bytes": 465974.0,
+      "cwnd_final_bytes": 271102.0,
+      "cwnd_time_average_bytes": 239545.65151347074,
+      "flight_max_bytes": 466560.0,
+      "flight_time_average_bytes": 235713.40919213818,
+      "app_limited_time_fraction": 0.017494830603361173,
+      "rli_capped_time_fraction": 0.0011658851604772534,
+      "connection_duration_seconds": 9.34568,
+      "validation": "PASS",
+      "counters": {
+        "samples": 15625,
+        "cwnd_increases": 681,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 315,
+        "cap_active_samples": 1
+      }
+    }
+  ],
+  "groups": {
+    "rate-limited": {
+      "baseline": {
+        "throughput_mbps": {
+          "mean": 0.19017933333333334,
+          "sample_stddev": 3.419551627528803e-05,
+          "minimum": 0.19014,
+          "maximum": 0.190202
+        },
+        "connection_duration_seconds": {
+          "mean": 20.191466666666667,
+          "sample_stddev": 0.003610529924171664,
+          "minimum": 20.189041,
+          "maximum": 20.195616
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 15360.000000000005,
+          "sample_stddev": 1.585758197885543e-11,
+          "minimum": 15359.999999999987,
+          "maximum": 15360.000000000016
+        },
+        "cwnd_final_bytes": {
+          "mean": 15360.0,
+          "sample_stddev": 0.0,
+          "minimum": 15360.0,
+          "maximum": 15360.0
+        },
+        "cwnd_max_bytes": {
+          "mean": 15360.0,
+          "sample_stddev": 0.0,
+          "minimum": 15360.0,
+          "maximum": 15360.0
+        },
+        "flight_max_bytes": {
+          "mean": 3426.0,
+          "sample_stddev": 0.0,
+          "minimum": 3426.0,
+          "maximum": 3426.0
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "rli": {
+        "throughput_mbps": {
+          "mean": 0.19018566666666667,
+          "sample_stddev": 1.2741009902407696e-05,
+          "minimum": 0.190171,
+          "maximum": 0.190194
+        },
+        "connection_duration_seconds": {
+          "mean": 20.190763333333333,
+          "sample_stddev": 0.0013721706647995956,
+          "minimum": 20.189867,
+          "maximum": 20.192343
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 30521.588304210032,
+          "sample_stddev": 1.2174701608309797,
+          "minimum": 30520.516304248096,
+          "maximum": 30522.91192443815
+        },
+        "cwnd_final_bytes": {
+          "mean": 30720.0,
+          "sample_stddev": 0.0,
+          "minimum": 30720.0,
+          "maximum": 30720.0
+        },
+        "cwnd_max_bytes": {
+          "mean": 30720.0,
+          "sample_stddev": 0.0,
+          "minimum": 30720.0,
+          "maximum": 30720.0
+        },
+        "flight_max_bytes": {
+          "mean": 3426.0,
+          "sample_stddev": 0.0,
+          "minimum": 3426.0,
+          "maximum": 3426.0
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "throughput_mbps_change_percent": 0.00333019010128055,
+      "cwnd_time_average_bytes_change_percent": 98.70825718886734,
+      "cwnd_final_bytes_change_percent": 100.0
+    },
+    "bulk": {
+      "baseline": {
+        "throughput_mbps": {
+          "mean": 17.731656333333333,
+          "sample_stddev": 0.09153420069751818,
+          "minimum": 17.640233,
+          "maximum": 17.823301
+        },
+        "connection_duration_seconds": {
+          "mean": 9.461929,
+          "sample_stddev": 0.04884401919375584,
+          "minimum": 9.41311,
+          "maximum": 9.510798
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 218546.58312386414,
+          "sample_stddev": 11915.565335104735,
+          "minimum": 206473.27892845523,
+          "maximum": 230297.88233306995
+        },
+        "cwnd_final_bytes": {
+          "mean": 301658.3333333333,
+          "sample_stddev": 10930.673644992487,
+          "minimum": 290216.0,
+          "maximum": 311993.0
+        },
+        "cwnd_max_bytes": {
+          "mean": 416470.3333333333,
+          "sample_stddev": 32063.557730441164,
+          "minimum": 382882.0,
+          "maximum": 446753.0
+        },
+        "flight_max_bytes": {
+          "mean": 417120.0,
+          "sample_stddev": 32530.404239726256,
+          "minimum": 383040.0,
+          "maximum": 447840.0
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "rli": {
+        "throughput_mbps": {
+          "mean": 17.949779666666668,
+          "sample_stddev": 0.009392403011653562,
+          "minimum": 17.939509,
+          "maximum": 17.957932
+        },
+        "connection_duration_seconds": {
+          "mean": 9.346784666666666,
+          "sample_stddev": 0.004891464538697233,
+          "minimum": 9.34254,
+          "maximum": 9.352134
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 240105.45283000634,
+          "sample_stddev": 13786.666092045272,
+          "minimum": 226607.2139622694,
+          "maximum": 254163.4930142789
+        },
+        "cwnd_final_bytes": {
+          "mean": 271281.0,
+          "sample_stddev": 3111.364170263584,
+          "minimum": 268263.0,
+          "maximum": 274478.0
+        },
+        "cwnd_max_bytes": {
+          "mean": 467210.0,
+          "sample_stddev": 30352.880061041982,
+          "minimum": 437494.0,
+          "maximum": 498162.0
+        },
+        "flight_max_bytes": {
+          "mean": 467520.0,
+          "sample_stddev": 30251.426412650362,
+          "minimum": 437760.0,
+          "maximum": 498240.0
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "throughput_mbps_change_percent": 1.2301351280043171,
+      "cwnd_time_average_bytes_change_percent": 9.864656494731584,
+      "cwnd_final_bytes_change_percent": -10.07011243404513
+    }
+  },
+  "suite_counts": {
+    "baseline": [
+      [
+        "562",
+        "0"
+      ],
+      [
+        "105",
+        "0"
+      ]
+    ],
+    "rli": [
+      [
+        "563",
+        "0"
+      ],
+      [
+        "105",
+        "0"
+      ]
+    ]
+  },
+  "experiment_count": 12,
+  "verdict": "PASS for the tested conditions",
+  "scope": "Two workloads, three repetitions each, two separately built source revisions; 20 Mbit/s bottleneck and ~50 ms base RTT. No universal throughput gain is claimed."
+}

@@ -1,0 +1,1486 @@
+Start testing: Nov 07 15:30 IST
+----------------------------------------------------------
+1/2 Testing: picoquic_ct
+1/2 Test: picoquic_ct
+Command: "/home/aryy_02/Desktop/OSNT_Project/build/picoquic_ct" "-S" "/home/aryy_02/Desktop/OSNT_Project" "-n" "-r"
+Directory: /home/aryy_02/Desktop/OSNT_Project/build
+"picoquic_ct" start time: Nov 07 15:30 IST
+Output:
+----------------------------------------------------------
+Starting test number 0, connection_id_print
+    Success.
+Starting test number 1, connection_id_parse
+    Success.
+Starting test number 2, error_name
+All error_name_test cases passed.
+    Success.
+Starting test number 3, util_sprintf
+    Success.
+Starting test number 4, util_debug_print
+    Success.
+Starting test number 5, util_uint8_to_str
+    Success.
+Starting test number 6, util_memcmp
+    Success.
+Starting test number 7, threading
+    Success.
+Starting test number 8, picohash
+    Success.
+Starting test number 9, picohash_embedded
+    Success.
+Starting test number 10, picohash_bytes
+    Success.
+Starting test number 11, siphash
+    Success.
+Starting test number 12, picolog_basic
+    Success.
+Starting test number 13, bytestream
+    Success.
+Starting test number 14, sockloop_basic
+    Success.
+Starting test number 15, sockloop_eio
+    Success.
+Starting test number 16, sockloop_errsock
+    Success.
+Starting test number 17, sockloop_ipv4
+    Success.
+Starting test number 18, sockloop_migration
+    Success.
+Starting test number 19, sockloop_nat
+    Success.
+Starting test number 20, sockloop_thread
+    Success.
+Starting test number 21, sockloop_thread_name
+    Success.
+Starting test number 22, sockloop_qmux
+Waiting for packets.
+    Success.
+Starting test number 23, sockloop_qmux_badp
+Waiting for packets.
+    Success.
+Starting test number 24, splay
+    Success.
+Starting test number 25, create_cnx
+    Success.
+Starting test number 26, create_quic
+    Success.
+Starting test number 27, parseheader
+    Success.
+Starting test number 28, incoming_initial
+    Success.
+Starting test number 29, header_length
+    Success.
+Starting test number 30, pn2pn64
+    Success.
+Starting test number 31, intformat
+    Success.
+Starting test number 32, varint
+    Success.
+Starting test number 33, sqrt_for_test
+    Success.
+Starting test number 34, ack_sack
+    Success.
+Starting test number 35, ack_stress
+Sack stress: 20000 packets, first half 0.038 us/op, second half 0.038 us/op.
+    Success.
+Starting test number 36, frames_skip
+    Success.
+Starting test number 37, frames_parse
+    Success.
+Starting test number 38, frames_repeat
+    Success.
+Starting test number 39, frames_ackack_error
+    Success.
+Starting test number 40, frames_format
+    Success.
+Starting test number 41, logger
+    Success.
+Starting test number 42, binlog
+    Success.
+Starting test number 43, qlog_frames
+    Success.
+Starting test number 44, app_message_overflow
+    Success.
+Starting test number 45, TlsStreamFrame
+    Success.
+Starting test number 46, StreamZeroFrame
+    Success.
+Starting test number 47, stream_splay
+    Success.
+Starting test number 48, stream_output
+    Success.
+Starting test number 49, stream_retransmit_copy
+    Success.
+Starting test number 50, dataqueue_copy
+    Success.
+Starting test number 51, dataqueue_packet
+    Success.
+Starting test number 52, stateless_blowback
+    Success.
+Starting test number 53, ack_send
+    Success.
+Starting test number 54, ack_loop
+    Success.
+Starting test number 55, ack_range
+    Success.
+Starting test number 56, ack_disorder
+    Success.
+Starting test number 57, ack_horizon
+    Success.
+Starting test number 58, ack_of_ack
+    Success.
+Starting test number 59, ackfrq_basic
+    Success.
+Starting test number 60, ackfrq_short
+    Success.
+Starting test number 61, sim_link
+    Success.
+Starting test number 62, clear_text_aead
+    Success.
+Starting test number 63, pn_ctr
+    Success.
+Starting test number 64, cleartext_pn_enc
+    Success.
+Starting test number 65, cid_for_lb
+    Success.
+Starting test number 66, cid_for_lb_cli
+    Success.
+Starting test number 67, retry_protection_vector
+    Success.
+Starting test number 68, retry_protection_v2
+    Success.
+Starting test number 69, draft17_vector
+    Success.
+Starting test number 70, dtn_basic
+    Success.
+Starting test number 71, dtn_data
+    Success.
+Starting test number 72, dtn_silence
+    Success.
+Starting test number 73, dtn_twenty
+    Success.
+Starting test number 74, pn_enc_1rtt
+    Success.
+Starting test number 75, new_cnxid_stash
+    Success.
+Starting test number 76, new_cnxid
+    Success.
+Starting test number 77, pacing
+    Success.
+Starting test number 78, pacing_repeat
+    Success.
+Starting test number 79, tls_api
+    Success.
+Starting test number 80, tls_handshake_pool_exhausted
+    Success.
+Starting test number 81, tls_api_inject_hs_ack
+    Success.
+Starting test number 82, tls_exporter
+    Success.
+Starting test number 83, null_sni
+    Success.
+Starting test number 84, silence_test
+    Success.
+Starting test number 85, code_version
+    Success.
+Starting test number 86, version_negotiation
+    Success.
+Starting test number 87, version_invariant
+    Success.
+Starting test number 88, version_negotiation_spoof
+    Success.
+Starting test number 89, first_loss
+    Success.
+Starting test number 90, second_loss
+    Success.
+Starting test number 91, SH_loss
+    Success.
+Starting test number 92, client_losses
+    Success.
+Starting test number 93, server_losses
+    Success.
+Starting test number 94, many_losses
+    Success.
+Starting test number 95, initial_ping
+    Success.
+Starting test number 96, initial_ping_ack
+    Success.
+Starting test number 97, datagram
+    Success.
+Starting test number 98, datagram_rt
+    Success.
+Starting test number 99, datagram_rt_skip
+    Success.
+Starting test number 100, datagram_rtnew_skip
+    Success.
+Starting test number 101, datagram_loss
+    Success.
+Starting test number 102, datagram_size
+    Success.
+Starting test number 103, datagram_small
+    Success.
+Starting test number 104, datagram_small_new
+    Success.
+Starting test number 105, datagram_small_packet
+    Success.
+Starting test number 106, datagram_too_long_test
+    Success.
+Starting test number 107, datagram_wifi
+    Success.
+Starting test number 108, datagram_app_limited_bbr
+    Success.
+Starting test number 109, ddos_amplification
+    Success.
+Starting test number 110, ddos_amplification_0rtt
+    Success.
+Starting test number 111, ddos_amplification_8k
+    Success.
+Starting test number 112, blackhole
+    Success.
+Starting test number 113, no_ack_frequency
+    Success.
+Starting test number 114, immediate_ack
+    Success.
+Starting test number 115, connection_drop
+    Success.
+Starting test number 116, vn_tp
+    Success.
+Starting test number 117, vn_compat
+    Success.
+Starting test number 118, transport_param_default
+    Success.
+Starting test number 119, stream_rank
+    Success.
+Starting test number 120, stream_id_limit
+    Success.
+Starting test number 121, provide_stream_buffer
+    Success.
+Starting test number 122, transport_param
+    Success.
+Starting test number 123, tls_api_sni
+    Success.
+Starting test number 124, tls_api_alpn
+    Success.
+Starting test number 125, tls_api_wrong_alpn
+    Success.
+Starting test number 126, tls_api_oneway_stream
+    Success.
+Starting test number 127, tls_api_q_and_r_stream
+    Success.
+Starting test number 128, tls_api_q2_and_r2_stream
+    Success.
+Starting test number 129, implicit_ack
+    Success.
+Starting test number 130, stateless_reset
+    Success.
+Starting test number 131, stateless_reset_bad
+    Success.
+Starting test number 132, stateless_reset_client
+    Success.
+Starting test number 133, stateless_reset_handshake
+    Success.
+Starting test number 134, immediate_close
+    Success.
+Starting test number 135, tls_api_very_long_stream
+    Success.
+Starting test number 136, tls_api_very_long_max
+    Success.
+Starting test number 137, tls_api_very_long_with_err
+    Success.
+Starting test number 138, tls_api_very_long_congestion
+    Success.
+Starting test number 139, many_short_loss
+    Success.
+Starting test number 140, retry
+    Success.
+Starting test number 141, retry_large
+    Success.
+Starting test number 142, retry_token
+    Success.
+Starting test number 143, retry_token_valid
+    Success.
+Starting test number 144, two_connections
+    Success.
+Starting test number 145, multiple_versions
+    Success.
+Starting test number 146, keep_alive
+    Success.
+Starting test number 147, integrity_limit
+    Success.
+Starting test number 148, excess_repeat
+    Success.
+Starting test number 149, netperf_basic
+    Success.
+Starting test number 150, netperf_bbr
+    Success.
+Starting test number 151, nat_attack
+    Success.
+Starting test number 152, sockets
+    Success.
+Starting test number 153, socket_ecn
+    Success.
+Starting test number 154, ticket_store
+    Success.
+Starting test number 155, ticket_seed
+    Success.
+Starting test number 156, ticket_seed_from_bdp_frame
+    Success.
+Starting test number 157, token_store
+    Success.
+Starting test number 158, token_reuse_api
+    Success.
+Starting test number 159, session_resume
+    Success.
+Starting test number 160, ticket_key_rotation
+    Success.
+Starting test number 161, zero_rtt
+    Success.
+Starting test number 162, zero_rtt_loss
+    Success.
+Starting test number 163, stop_sending
+    Success.
+Starting test number 164, stop_sending_loss
+    Success.
+Starting test number 165, discard_stream
+    Success.
+Starting test number 166, unidir
+    Success.
+Starting test number 167, mtu_discovery
+    Success.
+Starting test number 168, mtu_blocked
+    Success.
+Starting test number 169, mtu_delayed
+    Success.
+Starting test number 170, mtu_required
+    Success.
+Starting test number 171, mtu_max
+    Success.
+Starting test number 172, mtu_drop_bbr
+    Success.
+Starting test number 173, mtu_drop_cubic
+    Success.
+Starting test number 174, mtu_drop_dcubic
+    Success.
+Starting test number 175, mtu_drop_fast
+    Success.
+Starting test number 176, mtu_drop_newreno
+    Success.
+Starting test number 177, red_bbr
+    Success.
+Starting test number 178, red_cubic
+    Success.
+Starting test number 179, red_dcubic
+    Success.
+Starting test number 180, red_fast
+    Success.
+Starting test number 181, red_newreno
+    Success.
+Starting test number 182, multi_segment
+    Success.
+Starting test number 183, pacing_bbr
+    Success.
+Starting test number 184, pacing_cubic
+    Success.
+Starting test number 185, pacing_dcubic
+    Success.
+Starting test number 186, pacing_fast
+    Success.
+Starting test number 187, pacing_newreno
+    Success.
+Starting test number 188, heavy_loss
+    Success.
+Starting test number 189, heavy_loss_inter
+    Success.
+Starting test number 190, heavy_loss_total
+    Success.
+Starting test number 191, spurious_retransmit
+    Success.
+Starting test number 192, tls_zero_share
+    Success.
+Starting test number 193, transport_param_log
+    Success.
+Starting test number 194, set_verify_certificate_callback_test
+    Success.
+Starting test number 195, cert_rollover_inflight
+    Success.
+Starting test number 196, cert_rollover_active_connection
+    Success.
+Starting test number 197, virtual_time
+    Success.
+Starting test number 198, different_params
+    Success.
+Starting test number 199, quant_params
+    Success.
+Starting test number 200, set_certificate_and_key
+    Success.
+Starting test number 201, request_client_authentication
+    Success.
+Starting test number 202, bad_client_certificate
+    Success.
+Starting test number 203, nat_rebinding
+    Success.
+Starting test number 204, nat_rebinding_loss
+    Success.
+Starting test number 205, nat_rebinding_zero
+    Success.
+Starting test number 206, nat_rebinding_latency
+    Success.
+Starting test number 207, nat_rebinding_fast
+    Success.
+Starting test number 208, spinbit
+    Success.
+Starting test number 209, spinbit_bad
+    Success.
+Starting test number 210, spinbit_null
+    Success.
+Starting test number 211, spinbit_randclient
+    Success.
+Starting test number 212, spinbit_random
+    Success.
+Starting test number 213, loss_bit
+    Success.
+Starting test number 214, client_error
+    Success.
+Starting test number 215, client_only
+    Success.
+Starting test number 216, packet_enc_dec
+    Success.
+Starting test number 217, pn_vector
+    Success.
+Starting test number 218, zero_rtt_spurious
+    Success.
+Starting test number 219, zero_rtt_bad_param
+    Success.
+Starting test number 220, zero_rtt_retry
+    Success.
+Starting test number 221, zero_rtt_no_coal
+    Success.
+Starting test number 222, zero_rtt_many_losses
+    Success.
+Starting test number 223, zero_rtt_long
+    Success.
+Starting test number 224, zero_rtt_delay
+    Success.
+Starting test number 225, random_tester
+    Success.
+Starting test number 226, random_gauss
+    Success.
+Starting test number 227, random_public_tester
+    Success.
+Starting test number 228, cnxid_transmit
+    Success.
+Starting test number 229, cnxid_transmit_disable
+    Success.
+Starting test number 230, cnxid_transmit_r_before
+    Success.
+Starting test number 231, cnxid_transmit_r_disable
+    Success.
+Starting test number 232, cnxid_transmit_r_early
+    Success.
+Starting test number 233, probe_api
+    Success.
+Starting test number 234, memlog
+    Success.
+Starting test number 235, migration
+    Success.
+Starting test number 236, migration_long
+    Success.
+Starting test number 237, migration_with_loss
+    Success.
+Starting test number 238, migration_zero
+    Success.
+Starting test number 239, migration_fail
+    Success.
+Starting test number 240, preferred_address
+    Success.
+Starting test number 241, preferred_address_dis_mig
+    Success.
+Starting test number 242, preferred_address_zero
+    Success.
+Starting test number 243, cnxid_renewal
+    Success.
+Starting test number 244, retire_cnxid
+    Success.
+Starting test number 245, not_before_cnxid
+    Success.
+Starting test number 246, server_busy
+    Success.
+Starting test number 247, initial_close
+    Success.
+Starting test number 248, initial_server_close
+    Success.
+Starting test number 249, new_rotated_key
+    Success.
+Starting test number 250, key_rotation
+    Success.
+Starting test number 251, key_rotation_server
+    Success.
+Starting test number 252, key_rotation_client
+    Success.
+Starting test number 253, false_migration
+    Success.
+Starting test number 254, nat_handshake
+    Success.
+Starting test number 255, key_rotation_vector
+    Success.
+Starting test number 256, key_rotation_stress
+    Success.
+Starting test number 257, keylog_test
+    Success.
+Starting test number 258, short_initial_cid
+    Success.
+Starting test number 259, stream_id_max
+    Success.
+Starting test number 260, padding_test
+    Success.
+Starting test number 261, padding_null
+    Success.
+Starting test number 262, padding_zero_min
+    Success.
+Starting test number 263, packet_trace
+    Success.
+Starting test number 264, qlog_auto
+    Success.
+Starting test number 265, qlog_error
+    Success.
+Starting test number 266, qlog_trace
+    Success.
+Starting test number 267, qlog_trace_ecn
+    Success.
+Starting test number 268, qlog_trace_parallel
+    Success.
+Starting test number 269, qlog_fns
+    Success.
+Starting test number 270, qlog_fns_ecn
+    Success.
+Starting test number 271, qmux_send
+    Success.
+Starting test number 272, qmux_receive
+    Success.
+Starting test number 273, qmux_send_tp
+    Success.
+Starting test number 274, qmux_receive_tp
+    Success.
+Starting test number 275, qmux_receive_app_close
+    Success.
+Starting test number 276, qmux_receive_cnx_close
+    Success.
+Starting test number 277, qmux_receive_errors
+    Success.
+Starting test number 278, qmux_receive_prohibited_frames
+    Success.
+Starting test number 279, qmux_receive_allowed_frames
+    Success.
+Starting test number 280, qmux_receive_extension_tp_ignore
+    Success.
+Starting test number 281, qmux_receive_record_errors
+    Success.
+Starting test number 282, qmux_datagram
+    Success.
+Starting test number 283, qmux_receive_stream_order
+    Success.
+Starting test number 284, qmux_receive_stream_order_edges
+    Success.
+Starting test number 285, qmux_receive_empty_record
+    Success.
+Starting test number 286, qmux_receive_split_record
+    Success.
+Starting test number 287, qmux_receive_qx_ping
+    Success.
+Starting test number 288, qmux_receive_qx_ping_order
+    Success.
+Starting test number 289, qmux_send_qx_ping_r
+    Success.
+Starting test number 290, qmux_send_qx_ping_r_append
+    Success.
+Starting test number 291, qmux_send_cnx_close
+    Success.
+Starting test number 292, qmux_loop
+    Success.
+Starting test number 293, qmux_loop_delay
+    Success.
+Starting test number 294, qmux_loop_idle
+    Success.
+Starting test number 295, qmux_socket_accept
+    Success.
+Starting test number 296, qmux_socket_close_on_receive
+    Success.
+Starting test number 297, qmux_loop_tls
+    Success.
+Starting test number 298, qmux_tls_client_alpn_required
+    Success.
+Starting test number 299, qmux_loop_tls_close
+    Success.
+Starting test number 300, perflog
+    Success.
+Starting test number 301, nat_rebinding_stress
+    Success.
+Starting test number 302, random_padding
+    Success.
+Starting test number 303, ec00_zero
+    Success.
+Starting test number 304, ec2f_second_flight
+    Success.
+Starting test number 305, eccf_corrupted_fuzz
+    Success.
+Starting test number 306, eca1_amplification_loss
+    Success.
+Starting test number 307, ecf1_final_loss
+    Success.
+Starting test number 308, ecdc_double_close
+    Success.
+Starting test number 309, ec5c_silly_cid
+    Success.
+Starting test number 310, ec9a_preemptive_amok
+    Success.
+Starting test number 311, ec2b_packet_too_big
+    Success.
+Starting test number 312, error_reason
+    Success.
+Starting test number 313, idle_server
+    Success.
+Starting test number 314, idle_timeout
+    Success.
+Starting test number 315, reset_ack_max
+    Success.
+Starting test number 316, reset_ack_reset
+    Success.
+Starting test number 317, reset_extra_max
+    Success.
+Starting test number 318, reset_extra_reset
+    Success.
+Starting test number 319, reset_extra_stop
+    Success.
+Starting test number 320, reset_need_max
+    Success.
+Starting test number 321, reset_need_reset
+    Success.
+Starting test number 322, reset_need_stop
+    Success.
+Starting test number 323, reset_at_end
+    Success.
+Starting test number 324, reset_loop_test
+    Success.
+Starting test number 325, reset_stream_at_basic
+    Success.
+Starting test number 326, reset_stream_at_limit_test
+    Success.
+Starting test number 327, reset_stream_at_loss
+    Success.
+Starting test number 328, stream_state_local_reuse
+    Success.
+Starting test number 329, add_to_stream_fin_only_wakes_cnx
+    Success.
+Starting test number 330, initial_pto
+    Success.
+Starting test number 331, initial_pto_srv
+    Success.
+Starting test number 332, ready_to_send
+    Success.
+Starting test number 333, ready_to_skip
+    Success.
+Starting test number 334, ready_to_zfin
+    Success.
+Starting test number 335, ready_to_zero
+    Success.
+Starting test number 336, crypto_hs_offset
+    Success.
+Starting test number 337, cubic
+    Success.
+Starting test number 338, cubic_jitter
+    Success.
+Starting test number 339, cubic_rli
+    Success.
+Starting test number 340, c4
+    Success.
+Starting test number 341, c4_jitter
+    Success.
+Starting test number 342, fastcc
+    Success.
+Starting test number 343, fastcc_jitter
+    Success.
+Starting test number 344, flow_control
+    Success.
+Starting test number 345, flow_control_open_max
+    Success.
+Starting test number 346, stream_uni_blocked
+    Success.
+Starting test number 347, stream_uni_reactivate
+    Success.
+Starting test number 348, bbr
+    Success.
+Starting test number 349, bbr_jitter
+    Success.
+Starting test number 350, bbr_long
+    Success.
+Starting test number 351, c4_long
+    Success.
+Starting test number 352, bbr_performance
+    Success.
+Starting test number 353, bbr_slow_long
+    Success.
+Starting test number 354, bbr_one_second
+    Success.
+Starting test number 355, bbr_gbps
+    Success.
+Starting test number 356, bbr_asym100
+    Success.
+Starting test number 357, bbr_asym100_nodelay
+    Success.
+Starting test number 358, bbr_asym400
+    Success.
+Starting test number 359, bbr1
+    Success.
+Starting test number 360, bbr1_long
+    Success.
+Starting test number 361, l4s_reno
+    Success.
+Starting test number 362, l4s_prague
+    Success.
+Starting test number 363, l4s_prague_updown
+    Success.
+Starting test number 364, l4s_bbr
+    Success.
+Starting test number 365, l4s_c4
+    Success.
+Starting test number 366, l4s_bbr_updown
+    Success.
+Starting test number 367, long_rtt
+    Success.
+Starting test number 368, high_latency_basic
+    Success.
+Starting test number 369, high_latency_bbr
+    Success.
+Starting test number 370, high_latency_cubic
+    Success.
+Starting test number 371, high_latency_probeRTT
+    Success.
+Starting test number 372, satellite_basic
+    Success.
+Starting test number 373, satellite_seeded
+    Success.
+Starting test number 374, satellite_seeded_bbr1
+    Success.
+Starting test number 375, satellite_loss
+    Success.
+Starting test number 376, satellite_loss_fc
+    Success.
+Starting test number 377, satellite_jitter
+    Success.
+Starting test number 378, satellite_medium
+    Success.
+Starting test number 379, satellite_preemptive
+    Success.
+Starting test number 380, satellite_preemptive_fc
+    Success.
+Starting test number 381, satellite_small
+    Success.
+Starting test number 382, satellite_small_up
+    Success.
+Starting test number 383, satellite_bbr1
+    Success.
+Starting test number 384, satellite_cubic
+    Success.
+Starting test number 385, satellite_cubic_seeded
+    Success.
+Starting test number 386, satellite_cubic_loss
+    Success.
+Starting test number 387, satellite_dcubic_seeded
+    Success.
+Starting test number 388, satellite_prague_seeded
+    Success.
+Starting test number 389, bdp_basic
+    Success.
+Starting test number 390, bdp_delay
+    Success.
+Starting test number 391, bdp_ip
+    Success.
+Starting test number 392, bdp_rtt
+    Success.
+Starting test number 393, bdp_reno
+    Success.
+Starting test number 394, bdp_bbr1
+    Success.
+Starting test number 395, bdp_short
+    Success.
+Starting test number 396, bdp_short_hi
+    Success.
+Starting test number 397, bdp_short_lo
+    Success.
+Starting test number 398, cid_length
+    Success.
+Starting test number 399, optimistic_ack
+    Success.
+Starting test number 400, optimistic_hole
+    Success.
+Starting test number 401, bad_coalesce
+    Success.
+Starting test number 402, bad_cnxid
+    Success.
+Starting test number 403, document_addresses
+    Success.
+Starting test number 404, migration_disabled
+    Success.
+Starting test number 405, large_client_hello
+    Success.
+Starting test number 406, limited_reno
+    Success.
+Starting test number 407, limited_cubic
+    Success.
+Starting test number 408, limited_bbr
+    Success.
+Starting test number 409, limited_batch
+    Success.
+Starting test number 410, limited_safe
+    Success.
+Starting test number 411, send_stream_blocked
+    Success.
+Starting test number 412, scone_basic
+    Success.
+Starting test number 413, scone_loss
+    Success.
+Starting test number 414, scone_loss_client
+    Success.
+Starting test number 415, scone_loss_server
+    Success.
+Starting test number 416, scone_none
+    Success.
+Starting test number 417, scone_server
+    Success.
+Starting test number 418, stream_ack
+    Success.
+Starting test number 419, queue_network_input
+    Success.
+Starting test number 420, pacing_update
+    Success.
+Starting test number 421, quality_update
+    Success.
+Starting test number 422, direct_receive
+    Success.
+Starting test number 423, address_discovery
+    Success.
+Starting test number 424, af_undef
+    Success.
+Starting test number 425, app_limit_cc
+    Success.
+Starting test number 426, app_limited_bbr
+    Success.
+Starting test number 427, app_limited_bbr_post_idle
+    Success.
+Starting test number 428, app_limited_cubic
+    Success.
+Starting test number 429, app_limited_reno
+    Success.
+Starting test number 430, app_limited_rpr
+    Success.
+Starting test number 431, cwin_max
+    Success.
+Starting test number 432, initial_race
+    Success.
+Starting test number 433, aegis_cipher_suite
+    Success.
+Starting test number 434, aegis_hp_vector
+    Success.
+Starting test number 435, aegis128l
+    Success.
+Starting test number 436, aegis256
+    Success.
+Starting test number 437, aegis_fallback
+    Success.
+Starting test number 438, aegis_0rtt
+    Success.
+Starting test number 439, aegis_retry
+    Success.
+Starting test number 440, aegis_initial_aes
+    Success.
+Starting test number 441, chacha20
+    Success.
+Starting test number 442, cnx_limit
+    Success.
+Starting test number 443, cert_verify_bad_cert
+    Success.
+Starting test number 444, cert_verify_bad_sni
+    Success.
+Starting test number 445, cert_verify_null
+    Success.
+Starting test number 446, cert_verify_null_sni
+    Success.
+Starting test number 447, cert_verify_rsa
+    Success.
+Starting test number 448, cert_verify_invalid
+    Success.
+Starting test number 449, cid_quiescence
+    Success.
+Starting test number 450, client_auth
+    Success.
+Starting test number 451, client_auth_25519
+    Success.
+Starting test number 452, client_cert_callback
+    Success.
+Starting test number 453, mediatest_video
+    Success.
+Starting test number 454, mediatest_video_audio
+    Success.
+Starting test number 455, mediatest_video_data_audio
+    Success.
+Starting test number 456, mediatest_video2_down
+    Success.
+Starting test number 457, mediatest_video2_back
+    Success.
+Starting test number 458, mediatest_video2_probe
+    Success.
+Starting test number 459, mediatest_wifi
+    Success.
+Starting test number 460, mediatest_worst
+    Success.
+Starting test number 461, mediatest_no_coal
+    Success.
+Starting test number 462, mediatest_suspension
+    Success.
+Starting test number 463, mediatest_suspension2
+    Success.
+Starting test number 464, warptest_video
+    Success.
+Starting test number 465, warptest_video_audio
+    Success.
+Starting test number 466, warptest_video_data_audio
+    Success.
+Starting test number 467, warptest_worst
+    Success.
+Starting test number 468, warptest_param
+    Success.
+Starting test number 469, wifi_bbr
+    Success.
+Starting test number 470, wifi_bbr_hard
+    Success.
+Starting test number 471, wifi_bbr_long
+    Success.
+Starting test number 472, wifi_bbr_many
+    Success.
+Starting test number 473, wifi_bbr_shadow
+    Success.
+Starting test number 474, wifi_bbr1
+    Success.
+Starting test number 475, wifi_bbr1_hard
+    Success.
+Starting test number 476, wifi_bbr1_long
+    Success.
+Starting test number 477, wifi_cubic
+    Success.
+Starting test number 478, wifi_cubic_hard
+    Success.
+Starting test number 479, wifi_cubic_long
+    Success.
+Starting test number 480, wifi_reno
+    Success.
+Starting test number 481, wifi_reno_hard
+    Success.
+Starting test number 482, wifi_reno_long
+    Success.
+Starting test number 483, migration_controlled
+    Success.
+Starting test number 484, migration_mtu_drop
+    Success.
+Starting test number 485, minicrypto
+    Success.
+Starting test number 486, minicrypto_is_last
+    Success.
+Starting test number 487, openssl_cert
+    Success.
+Starting test number 488, monopath_basic
+    Success.
+Starting test number 489, monopath_hole
+    Success.
+Starting test number 490, monopath_keep_alive
+    Success.
+Starting test number 491, monopath_rotation
+    Success.
+Starting test number 492, monopath_0rtt
+    Success.
+Starting test number 493, monopath_0rtt_loss
+    Success.
+Starting test number 494, multipath_aead
+    Success.
+Starting test number 495, multipath_basic
+    Success.
+Starting test number 496, multipath_drop_first
+    Success.
+Starting test number 497, multipath_drop_second
+    Success.
+Starting test number 498, multipath_fail
+    Success.
+Starting test number 499, multipath_ab1
+    Success.
+Starting test number 500, multipath_sat_plus
+    Success.
+Starting test number 501, multipath_renew
+    Success.
+Starting test number 502, multipath_rotation
+    Success.
+Starting test number 503, multipath_break1
+    Success.
+Starting test number 504, multipath_socket_error
+    Success.
+Starting test number 505, multipath_socket0_error
+    Success.
+Starting test number 506, multipath_abandon
+    Success.
+Starting test number 507, multipath_abandon_last
+    Success.
+Starting test number 508, multipath_abandon_last_by_peer
+    Success.
+Starting test number 509, multipath_last_path_validation_fails
+    Success.
+Starting test number 510, multipath_back0
+    Success.
+Starting test number 511, multipath_back1
+    Success.
+Starting test number 512, multipath_nat
+    Success.
+Starting test number 513, multipath_nat_challenge
+    Success.
+Starting test number 514, multipath_perf
+    Success.
+Starting test number 515, multipath_callback
+    Success.
+Starting test number 516, multipath_quality
+    Success.
+Starting test number 517, multipath_stream_af
+    Success.
+Starting test number 518, multipath_datagram
+    Success.
+Starting test number 519, multipath_dg_af
+    Success.
+Starting test number 520, multipath_backup
+    Success.
+Starting test number 521, multipath_stream_af_backup
+    Success.
+Starting test number 522, multipath_standup
+    Success.
+Starting test number 523, multipath_discovery
+    Success.
+Starting test number 524, multipath_keep_alive
+    Success.
+Starting test number 525, multipath_just_one
+    Success.
+Starting test number 526, multipath_break_both
+    Success.
+Starting test number 527, multipath_qlog
+    Success.
+Starting test number 528, multipath_tunnel
+    Success.
+Starting test number 529, multipath_cid_retire
+    Success.
+Starting test number 530, monopath_0rtt
+    Success.
+Starting test number 531, monopath_0rtt_loss
+    Success.
+Starting test number 532, get_hash
+    Success.
+Starting test number 533, get_tls_errors
+    Success.
+Starting test number 534, dualq_aqm
+    Success.
+Starting test number 535, ech_config
+    Success.
+Starting test number 536, ech_config_p
+    Success.
+Starting test number 537, ech_e2e
+    Success.
+Starting test number 538, ech_e2e_0rtt
+    Success.
+Starting test number 539, ech_grease
+    Success.
+Starting test number 540, ech_no_ech
+    Success.
+Starting test number 541, ech_bad_config_empty
+    Success.
+Starting test number 542, ech_bad_config_whitespace
+    Success.
+Starting test number 543, ech_bad_config_too_short
+    Success.
+Starting test number 544, getter
+    Success.
+Starting test number 545, grease_quic_bit
+    Success.
+Starting test number 546, grease_quic_bit_one_way
+    Success.
+Starting test number 547, bad_chello
+    Success.
+Starting test number 548, pn_random
+    Success.
+Starting test number 549, port_blocked
+    Success.
+Starting test number 550, cplusplus
+    Success.
+Starting test number 551, stress
+    Success.
+Starting test number 552, fuzz
+    Success.
+Starting test number 553, fuzz_initial
+    Success.
+Starting test number 554, cnx_stress
+    Success.
+Starting test number 555, cnx_ddos
+    Success.
+Starting test number 556, config_option
+Unknown option: -A
+option -S requires 1 arguments
+option -c requires 1 arguments
+option -k requires 1 arguments
+option -x requires 1 arguments
+Invalid max connections: nb_cnx
+option -l requires 1 arguments
+option -b requires 1 arguments
+option -q requires 1 arguments
+Invalid port: port
+Invalid port: port
+option -p requires 1 arguments
+option -e requires 1 arguments
+option -m requires 1 arguments
+option -m requires 1 arguments
+Invalid max mtu: 15360
+Invalid spinbit policy: 33
+Invalid lossbit policy: 22
+Invalid initial random value: 17
+option -w requires 1 arguments
+Invalid reset seed: 0123456789abcdexyedcba9876543210
+Invalid reset seed: 0123456789abcdeffedcba987654321
+Invalid reset seed: 0123456789abcdeffedcba98765432
+Invalid socket_buffer_size: buffer
+option -F requires 1 arguments
+Invalid bdp option: 3
+option -i requires 1 arguments
+option -I requires 1 arguments
+Invalid connection id length: 255
+Invalid version: XY000002
+Invalid cwin max option: cwin
+Invalid idle timer: idle
+option -Z requires 1 arguments
+Invalid flow control max option: 0123456789abcdexyedcba9876543210
+    Success.
+Starting test number 557, config_option_letters
+    Success.
+Starting test number 558, config_quic
+Cannot create a configuration if key and config file are not specified.
+No token file present. Will create one as </data/tokens.bin>.
+    Success.
+Starting test number 559, config_qmux
+    Success.
+Starting test number 560, config_usage
+    Success.
+Starting test number 561, config_preferred
+    Success.
+Starting test number 562, config_set_port
+Invalid port: 65536
+Invalid port: -1
+Invalid port: abc
+Invalid port: 4433:abc
+Invalid port: abc:4433
+Invalid port: S4433:abc
+Invalid port: Sabc:4433
+    Success.
+Tried 563 tests, 0 fails.
+<end of output>
+Test time =  25.64 sec
+----------------------------------------------------------
+Test Passed.
+"picoquic_ct" end time: Nov 07 15:30 IST
+"picoquic_ct" time elapsed: 00:00:25
+----------------------------------------------------------
+
+2/2 Testing: picohttp_ct
+2/2 Test: picohttp_ct
+Command: "/home/aryy_02/Desktop/OSNT_Project/build/picohttp_ct" "-S" "/home/aryy_02/Desktop/OSNT_Project" "-n" "-r"
+Directory: /home/aryy_02/Desktop/OSNT_Project/build
+"picohttp_ct" start time: Nov 07 15:30 IST
+Output:
+----------------------------------------------------------
+Starting test number 0, h3zero_integer
+    Success.
+Starting test number 1, h3zero_varint_stream
+    Success.
+Starting test number 2, h3zero_incoming_unidir
+    Success.
+Starting test number 3, h3zero_unidir_error
+    Success.
+Starting test number 4, h3zero_setting_error
+    Success.
+Starting test number 5, h3zero_remote_control_stream_singleton
+    Success.
+Starting test number 6, h3zero_capsule
+    Success.
+Starting test number 7, h3zero_client_data
+Stream 4 ended after 128 bytes
+Stream 4 ended after 128 bytes
+Stream 4 ended after 128 bytes
+Stream 4 ended after 128 bytes
+Stream 4 ended after 128 bytes
+    Success.
+Starting test number 8, qpack_huffman
+    Success.
+Starting test number 9, qpack_huffman_base
+    Success.
+Starting test number 10, h3zero_parse_qpack
+    Success.
+Starting test number 11, h3zero_prepare_qpack
+    Success.
+Starting test number 12, h3zero_user_agent
+    Success.
+Starting test number 13, h3zero_wt_protocol_response
+    Success.
+Starting test number 14, h3zero_uri
+    Success.
+Starting test number 15, h3zero_url_template
+    Success.
+Starting test number 16, h3zero_null_sni
+    Success.
+Starting test number 17, h3zero_qpack_fuzz
+    Success.
+Starting test number 18, h3zero_stream_test
+    Success.
+Starting test number 19, h3zero_stream_fuzz
+    Success.
+Starting test number 20, parse_demo_scenario
+    Success.
+Starting test number 21, h3zero_server
+    Success.
+Starting test number 22, h3zero_migration_disabled
+    Success.
+Starting test number 23, h09_server
+    Success.
+Starting test number 24, h09_header
+    Success.
+Starting test number 25, generic_server
+    Success.
+Starting test number 26, h3zero_post
+    Success.
+Starting test number 27, h09_post
+    Success.
+Starting test number 28, demo_alpn
+    Success.
+Starting test number 29, demo_ticket
+    Success.
+Starting test number 30, demo_error
+Cannot send GET command for stream(0): ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????...
+Opening stream 0 to GET /a/../b/c/d/e\f/xxx
+Repeated stream opening 2 times.
+Opening stream 0 to GET /
+Opening stream 0 to GET /
+Stream 0 reset after 0 bytes
+Opening stream 0 to GET /
+Stream 0 reset after 0 bytes
+Opening stream 0 to GET /
+Received a stateless reset.
+Opening stream 0 to GET /
+Received a request to close the connection.
+Opening stream 0 to GET /
+Received a request to close the application.
+Opening stream 0 to GET /
+Received a version negotiation request: 00000001, 00000002
+Opening stream 0 to GET /
+Received a gap indication.
+Stream 0 reset after 0 bytes
+Opening stream 0 to GET /
+Opening stream 0 to GET /
+Path 0, Local: ?:?, observed : ?:?
+Opening stream 0 to GET /
+Opening stream 0 to GET /
+Opening stream 4 to GET /index.html
+    Success.
+Starting test number 31, demo_file_sanitize
+    Success.
+Starting test number 32, demo_file_access
+    Success.
+Starting test number 33, demo_server_file
+    Success.
+Starting test number 34, h3zero_satellite
+    Success.
+Starting test number 35, h09_satellite
+    Success.
+Starting test number 36, h09_lone_fin
+    Success.
+Starting test number 37, h3_grease_client
+    Success.
+Starting test number 38, h3_grease_server
+    Success.
+Starting test number 39, h3_long_file_name
+    Success.
+Starting test number 40, h3_multi_file
+    Success.
+Starting test number 41, h3_multi_file_loss
+    Success.
+Starting test number 42, h3_multi_file_preemptive
+    Success.
+Starting test number 43, h09_multi_file
+    Success.
+Starting test number 44, h09_multi_file_loss
+    Success.
+Starting test number 45, h09_multi_file_preemptive
+    Success.
+Starting test number 46, h3zero_settings
+    Success.
+Starting test number 47, h3zero_get_content_type_by_path
+    Success.
+Starting test number 48, http_stress
+    Success.
+Starting test number 49, http_corrupt
+    Success.
+Starting test number 50, http_corrupt_rdpn
+    Success.
+Starting test number 51, http_drop
+    Success.
+Starting test number 52, picomask_udp
+Received a connection close request
+    Success.
+Starting test number 53, picomask_udp_path
+    Success.
+Starting test number 54, picowt_baton_basic
+Received a connection close request
+    Success.
+Starting test number 55, picowt_baton_error
+Received a connection close request
+    Success.
+Starting test number 56, picowt_baton_long
+Received a connection close request
+    Success.
+Starting test number 57, picowt_baton_multi
+Received a connection close request
+    Success.
+Starting test number 58, picowt_baton_random
+Received a connection close request
+    Success.
+Starting test number 59, picowt_baton_krome
+Received a connection close request
+    Success.
+Starting test number 60, picowt_baton_uri
+Received a connection close request
+    Success.
+Starting test number 61, picowt_baton_wrong
+Received a connection close request
+    Success.
+Starting test number 62, picowt_baton_reset
+Stream 0 ended after 40 bytes
+Received a connection close request
+    Success.
+Starting test number 63, picowt_baton_stop_reset
+Received a connection close request
+    Success.
+Starting test number 64, picowt_baton_bad_params
+    Success.
+Starting test number 65, picowt_baton_wildcard
+Received a connection close request
+    Success.
+Starting test number 66, picowt_baton_overflow
+Received a connection close request
+    Success.
+Starting test number 67, picowt_drain
+    Success.
+Starting test number 68, picowt_tp
+    Success.
+Starting test number 69, quicperf_parse
+    Success.
+Starting test number 70, quicperf_batch
+    Success.
+Starting test number 71, quicperf_datagram
+    Success.
+Starting test number 72, quicperf_datagram_multiflow
+    Success.
+Starting test number 73, quicperf_media
+    Success.
+Starting test number 74, quicperf_ungrouped
+    Success.
+Starting test number 75, quicperf_group_remainder
+    Success.
+Starting test number 76, quicperf_datagram_vs_group
+    Success.
+Starting test number 77, quicperf_server_timer_wakeup
+    Success.
+Starting test number 78, quicperf_receive_media_overrun
+    Success.
+Starting test number 79, quicperf_server_timer_leak
+    Success.
+Starting test number 80, quicperf_chain
+    Success.
+Starting test number 81, quicperf_print_report
+    Success.
+Starting test number 82, quicperf_multi
+    Success.
+Starting test number 83, quicperf_overflow
+    Success.
+Starting test number 84, quicperf_multipath_race
+    Success.
+Starting test number 85, quicperf_multipath_race_delayed
+    Success.
+Starting test number 86, quicperf_multipath_settled
+    Success.
+Starting test number 87, perf_loopback
+Perf loopback: 1000000 app bytes, 1032309 wire bytes, 751 packets (31 client, 720 server, 0 lost), 78 batches, 47 stall jumps, in 2151 us.
+Perf loopback: 0.002 seconds, 457.7 MB/s, 349140 packets/s, 2.864 us/packet, 9.63 packets/batch.
+    Success.
+Starting test number 88, perf_loopback_loss
+Perf loopback: 1000000 app bytes, 1047917 wire bytes, 761 packets (31 client, 730 server, 12 lost), 79 batches, 48 stall jumps, in 2072 us.
+Perf loopback: 0.002 seconds, 482.3 MB/s, 367278 packets/s, 2.723 us/packet, 9.63 packets/batch.
+    Success.
+Starting test number 89, cc_compete_cubic2
+Success, 0, 6378530, 0, 0, 
+    Success.
+Starting test number 90, cc_compete_prague2
+Success, 0, 1695508, 0, 0, 
+    Success.
+Starting test number 91, cc_compete_c4c4
+Success, 0, 6548752, 0, 0, 
+    Success.
+Starting test number 92, cc_compete_d_cubic
+Success, 0, 8392414, 0, 0, 
+    Success.
+Starting test number 93, cc_ns_asym
+Success, 0, 7000101, 0, 0, 
+    Success.
+Starting test number 94, cc_ns_blackhole
+Success, 0, 5752336, 0, 0, 
+    Success.
+Starting test number 95, cc_ns_drop_and_back
+Success, 0, 4868844, 0, 0, 
+    Success.
+Starting test number 96, cc_ns_low_and_up
+Success, 0, 5070504, 0, 0, 
+    Success.
+Starting test number 97, cc_ns_wifi_fade
+Success, 0, 4538103, 0, 0, 
+    Success.
+Starting test number 98, cc_ns_wifi_suspension
+Success, 0, 3571324, 0, 0, 
+    Success.
+Starting test number 99, cc_ns_wifi_bad_cubic
+Success, 0, 4156398, 0, 0, 
+    Success.
+Starting test number 100, cc_ns_wifi_bad_bbr
+Success, 0, 4048786, 0, 0, 
+    Success.
+Starting test number 101, cc_ns_varylink
+Success, 0, 5339553, 0, 0, 
+    Success.
+Starting test number 102, cc_ns_satellite
+Success, 0, 6194478, 0, 0, 
+    Success.
+Starting test number 103, cc_ns_media
+Success, 0, 5090278, 30444, 41044, 
+    Success.
+Starting test number 104, cc_ns_media_repeat
+Success, 0, 5090278, 30444, 41044, media_test
+Success, 1, 5090278, 30444, 41044, media_test
+Success, 2, 5090278, 30444, 41044, media_test
+Success, 3, 5090278, 30441, 41044, media_test
+Success, 4, 5090278, 30444, 41044, media_test
+    Success.
+Tried 105 tests, 0 fails.
+<end of output>
+Test time =  10.54 sec
+----------------------------------------------------------
+Test Passed.
+"picohttp_ct" end time: Nov 07 15:31 IST
+"picohttp_ct" time elapsed: 00:00:10
+----------------------------------------------------------
+
+End testing: Nov 07 15:31 IST

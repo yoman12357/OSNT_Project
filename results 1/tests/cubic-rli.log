@@ -1,0 +1,4 @@
+cwd=/home/aryy_02/Desktop/OSNT_Project/build
+command=['/home/aryy_02/Desktop/OSNT_Project/build/picoquic_ct', 'cubic_rli']
+Starting test number 339, cubic_rli
+    Success.

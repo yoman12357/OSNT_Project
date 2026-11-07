@@ -1,6 +1,21 @@
 # Rate-limited sender project progress
 
-All eight project steps are complete.
+All eight project steps have implementation and experimental evidence for the
+documented scope. The final submission is indexed in `SUBMISSION.md`.
+The selected CUBIC congestion-avoidance ceiling is explained in the report;
+the project does not claim independent IETF conformance certification.
+
+## Final verification — 7 November 2026
+
+- Baseline: 562 picoquic and 105 picohttp subtests, zero failures.
+- Implementation: 563 picoquic and 105 picohttp subtests, zero failures;
+  separate `cubic_rli` execution passed.
+- Main matrix: 12 single-flow experiments, three repeats per mode/workload.
+- Full dumbbell: six two-flow experiments, 12 additional complete transfers.
+- Main rate-limited average cwnd: +98.71%; throughput essentially unchanged.
+- Main bulk throughput: +1.23% observed; competing-flow combined rate: -0.22%
+  observed. Neither establishes a general performance gain or regression.
+- Final report, LaTeX, plots, raw evidence archive, and checks: `results 1/`.
 
 ## Completed
 
@@ -37,8 +52,8 @@ All eight project steps are complete.
    - all six experiment traces passed mechanical validation;
    - bulk throughput and retransmission behavior showed no material
      regression;
-   - the final conclusion matches the target IETF draft for the tested
-     conditions.
+   - the final conclusion is supported by the observed traces for the
+     documented growth-limit interpretation and tested conditions.
 
    See `project_docs/step-8-validation.md`.
 

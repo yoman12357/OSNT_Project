@@ -1,0 +1,9 @@
+PASS: observed qlog invariants
+{
+  "samples": 15662,
+  "cwnd_increases": 714,
+  "cwnd_reductions": 2,
+  "maxfs_resets": 1,
+  "maxfs_increases": 337,
+  "cap_active_samples": 1
+}

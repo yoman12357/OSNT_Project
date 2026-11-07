@@ -1,5 +1,9 @@
 # picoquic
 
+This fork includes Project #16, Rate-Limited Sender functionality for CUBIC.
+See [SUBMISSION.md](SUBMISSION.md) for the final report, experiment evidence,
+team details, and project demo commands. The upstream documentation follows.
+
 Minimalist implementation of the QUIC protocol, as defined by the IETF.
 The IETF spec started with the version of QUIC defined by Google and
 implemented in Chrome, but the IETF spec is independent of Chrome, and
