@@ -5,8 +5,8 @@ and Aryan Sanjay palimkar.
 
 ## Submission
 
-- [Final PDF report](results%201/report.pdf)
-- [Editable LaTeX](results%201/report.tex)
+- [Final PDF report](results%201/Final%20report.pdf)
+- [Earlier LaTeX source](results%201/report.tex)
 - [Verification and reproduction guide](results%201/README.md)
 - [Main measured results](results%201/SUMMARY.md)
 - [Two-flow dumbbell results](results%201/dumbbell/measurements.csv)

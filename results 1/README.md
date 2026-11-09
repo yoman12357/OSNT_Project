@@ -5,9 +5,9 @@ Project #16 · Linux verification: 7 November 2026
 Team members: Aryan Bokolia, Affan Arshad, Soumyadeep Raj, Kevin Shiju George,
 and Aryan Sanjay palimkar.
 
-Open [report.pdf](report.pdf) for the final report; [report.tex](report.tex)
-is its editable LaTeX source. Keep all generated .tex inputs and plots/ beside
-the source when compiling elsewhere.
+Open [Final report.pdf](Final%20report.pdf) for the final report. The
+[earlier LaTeX source](report.tex) and its generated inputs are kept for
+reproducing the earlier edition.
 
 ## Is the output correct?
 
@@ -90,7 +90,8 @@ the adjustment and retain the raw tool output.
 
 ## Submission files
 
-- report.pdf, report.tex, team.json, and generated-*.tex: report and inputs.
+- Final report.pdf: final submission.
+- report.tex, team.json, and generated-*.tex: inputs for the earlier edition.
 - plots/: 12 main graphs, one overview, and six competing-flow graphs.
 - raw-evidence.tar.gz: lossless archive of all raw experiment runs.
 - tests/: build, CTest, focused-test logs, and detailed records.
