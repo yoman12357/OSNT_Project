@@ -1,0 +1,108 @@
+{
+  "verdict": "INCOMPLETE: no active cap in some CA-limited intervals",
+  "checks_pass": true,
+  "ca_cap_exercised_in_all_rli_runs": false,
+  "completed_connections": 1,
+  "complete_streams": 3,
+  "groups": {
+    "rli": {
+      "limited_cwnd_growth_bytes": {
+        "mean": 0,
+        "sample_stddev": null
+      },
+      "limited_cwnd_mean_bytes": {
+        "mean": 569631.9999999997,
+        "sample_stddev": null
+      },
+      "limited_srtt_mean_ms": {
+        "mean": 72.09788091015443,
+        "sample_stddev": null
+      },
+      "burst_request_to_completion_seconds": {
+        "mean": 2.2816009999999984,
+        "sample_stddev": null
+      },
+      "burst_payload_rate_mbps": {
+        "mean": 18.383161648333793,
+        "sample_stddev": null
+      },
+      "limited_cap_active_samples": {
+        "mean": 0,
+        "sample_stddev": null
+      },
+      "server_retransmissions_whole_connection": {
+        "mean": 0,
+        "sample_stddev": null
+      }
+    }
+  },
+  "records": [
+    {
+      "mode": "rli",
+      "repetition": 1,
+      "connection_id": "1a4718351cef37db",
+      "limited_seconds": 19.950499,
+      "limited_interior_seconds": 18.950499,
+      "ca_state_at_limited_start": 2,
+      "limited_cwnd_start_bytes": 569632,
+      "limited_cwnd_end_bytes": 569632,
+      "limited_cwnd_growth_bytes": 0,
+      "limited_cwnd_mean_bytes": 569631.9999999997,
+      "limited_flight_mean_bytes": 2181.969731245598,
+      "limited_app_limited_fraction": 1.0,
+      "limited_srtt_mean_ms": 72.09788091015443,
+      "limited_cap_active_samples": 0,
+      "limited_cap_time_fraction": 0.0,
+      "burst_request_to_completion_seconds": 2.2816009999999984,
+      "burst_payload_rate_mbps": 18.383161648333793,
+      "server_retransmissions_whole_connection": 0,
+      "all_three_streams_complete": true,
+      "validation_errors": [],
+      "ca_cap_exercised": false,
+      "phases": {
+        "warmup": {
+          "request_received": 0.076864,
+          "first_payload_sent": 0.077075,
+          "last_payload_sent": 8.908946,
+          "stream_id": 0,
+          "bytes": 20971520
+        },
+        "limited": {
+          "request_received": 9.133072,
+          "first_payload_sent": 9.13315,
+          "last_payload_sent": 29.083649,
+          "stream_id": 4,
+          "bytes": 480000
+        },
+        "burst": {
+          "request_received": 29.154761,
+          "first_payload_sent": 29.154828,
+          "last_payload_sent": 31.211902,
+          "stream_id": 8,
+          "bytes": 5242880
+        }
+      },
+      "cc_state_changes": [
+        [
+          0.0,
+          0
+        ],
+        [
+          0.546583,
+          2
+        ]
+      ],
+      "whole_trace_counters": {
+        "samples": 20447,
+        "cwnd_increases": 682,
+        "cwnd_reductions": 1,
+        "maxfs_resets": 1,
+        "maxfs_increases": 741,
+        "cap_active_samples": 412,
+        "unobserved_peak_intervals": 1
+      }
+    }
+  ],
+  "analyzer_sha256": "04f218c5ff470cf9e2d1fd8c6da1fcd45c288f25ac3edaa0d79af2eb7c5b5754",
+  "scope": "Same-connection bulk, application-limited CA, then burst. This checks the implemented conservative CA ceiling, not independent standards conformance."
+}

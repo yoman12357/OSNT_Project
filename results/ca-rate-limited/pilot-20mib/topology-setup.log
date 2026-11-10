@@ -1,0 +1,5 @@
+Dumbbell topology created.
+client: 10.10.1.2   server: 10.10.2.2
+access links: 1000 Mbit/s and 5 ms each direction
+bottleneck: 20 Mbit/s and 25 ms each direction; about 70 ms base RTT
+Verify with: topology/check.sh

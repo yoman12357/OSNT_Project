@@ -12,7 +12,7 @@ import time
 
 OUT = Path(__file__).resolve().parent
 ROOT = OUT.parent
-sys.path.insert(0, str(OUT / "evaluated-tools"))
+sys.path.insert(0, str(ROOT))
 from plot_cwnd import parse_qlog
 from experiments.validate_rli import validate
 

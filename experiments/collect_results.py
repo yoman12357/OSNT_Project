@@ -27,7 +27,7 @@ sys.path.insert(0, str(REPO_ROOT))
 from plot_cwnd import METRICS, parse_qlog, plot_metrics
 from experiments.validate_rli import summarize, validate
 
-TOPOLOGY = "dumbbell_20mbps_50ms"
+TOPOLOGY = "dumbbell_access1000mbps_5ms_core20mbps_25ms"
 NAMESPACES = ("rls-client", "rls-r1", "rls-r2", "rls-server")
 SCENARIOS = {"rate-limited": "=rli:s20:n400:1200:G20:I1200;",
              "bulk": "/file_20M.bin"}
@@ -197,6 +197,8 @@ def collect_one(args, mode, source, workload, repetition, environment):
                 **environment, "started_utc": started, "mode": mode,
                 "workload": workload, "repetition": repetition,
                 "topology": TOPOLOGY, "rate_mbit": 20, "one_way_delay_ms": 25,
+                "access_rate_mbit": 1000, "access_one_way_delay_ms": 5,
+                "nominal_base_rtt_ms": 70,
                 "queue_packets": 1000, "payload_sha256": digest(payload),
                 "payload_bytes": payload.stat().st_size,
                 "scenario": SCENARIOS[workload], "commands": commands})

@@ -1,0 +1,14 @@
+test_ack_reduction_without_reset_is_rejected (test_results.ResultValidationTest.test_ack_reduction_without_reset_is_rejected) ... ok
+test_bounded_growth_exercises_cap (test_results.ResultValidationTest.test_bounded_growth_exercises_cap) ... ok
+test_cap_violation_is_rejected (test_results.ResultValidationTest.test_cap_violation_is_rejected) ... ok
+test_gzip_units_integer_precision_and_path_isolation (test_results.ResultValidationTest.test_gzip_units_integer_precision_and_path_isolation) ... ok
+test_no_growth_cannot_pass_validation (test_results.ResultValidationTest.test_no_growth_cannot_pass_validation) ... ok
+test_old_log_reduction_without_reset_is_rejected (test_results.ResultValidationTest.test_old_log_reduction_without_reset_is_rejected) ... ok
+test_peak_between_qlog_snapshots_is_retained (test_results.ResultValidationTest.test_peak_between_qlog_snapshots_is_retained) ... ok
+test_reset_counter_survives_rebuilt_flight (test_results.ResultValidationTest.test_reset_counter_survives_rebuilt_flight) ... ok
+test_time_weighted_average (test_results.ResultValidationTest.test_time_weighted_average) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.007s
+
+OK

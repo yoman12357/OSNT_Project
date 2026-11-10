@@ -5,7 +5,7 @@
 
 This project implements bounded growth for a rate-limited CUBIC sender in picoquic. The sender tracks the maximum flight size per path and clears that history when the congestion window falls. Both builds passed their registered regression suites.
 
-The Ubuntu experiments show that RLI raises the fixed-rate congestion window from 15 to 30 KiB, as expected from the slow-start rule. The two versions deliver the same amount of data at about 0.190 Mbit/s. Bulk and competing-flow measurements describe behavior when the application supplies more data. All twelve RLI connections pass the applicable trace checks.
+The Ubuntu experiments show that RLI raises the fixed-rate congestion window from 15 to 30 KiB, as expected from the slow-start rule. The two versions deliver the same amount of data at about 0.189 Mbit/s. Bulk and competing-flow measurements describe behavior when the application supplies more data. All twelve RLI connections pass the applicable trace checks.
 
 A later experiment should bring the sender into congestion avoidance, reduce the offered rate, and then release a burst. This would test the congestion-avoidance cap in a live limited transfer and measure burst completion time. Controlled loss and tests with different competing algorithms would extend the recovery and fairness evaluation.
 \label{sec:conclusions-end}

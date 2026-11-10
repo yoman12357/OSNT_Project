@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from experiments.collect_results import save_manifest
 
-TOPOLOGY = "dumbbell_20mbps_50ms"
+TOPOLOGY = "dumbbell_access1000mbps_5ms_core20mbps_25ms"
 
 
 def write_report(output):

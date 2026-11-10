@@ -1,15 +1,15 @@
-samples=848, cwnd_increases=13, cwnd_reductions=0, maxfs_resets=0, maxfs_increases=0, cap_active_samples=819
+samples=848, cwnd_increases=13, cwnd_reductions=0, maxfs_resets=0, maxfs_increases=0, cap_active_samples=819, unobserved_peak_intervals=0
 metric,baseline,rli,delta,rli_change_percent
-duration_seconds,20.056,20.0553,-0.000743,-0.00370463
+duration_seconds,20.096,20.096,3.2e-05,0.000159236
 cwnd_min_bytes,15360,15360,0,0
 cwnd_max_bytes,15360,30720,15360,100
 cwnd_final_bytes,15360,30720,15360,100
-cwnd_time_average_bytes,15360,30520.5,15160.5,98.7013
+cwnd_time_average_bytes,15360,30494.1,15134.1,98.5292
 flight_max_bytes,3426,3426,0,0
-flight_time_average_bytes,1621.47,1638.38,16.9135,1.0431
-app_limited_time_fraction,1,1,-2.22045e-16,-2.22045e-14
-rli_capped_time_fraction,,1,,
-Saved comparison to: /home/aryy_02/Desktop/OSNT_Project/results 1/comparisons/rate-limited-3.csv
+flight_time_average_bytes,2166.74,2188.77,22.0258,1.01654
+app_limited_time_fraction,0.996312,0.996279,-3.34336e-05,-0.00335573
+rli_capped_time_fraction,0,0.970308,0.970308,
+Saved comparison to: /home/aryy_02/Desktop/OSNT_Project/results/comparisons/rate-limited-3.csv
 PASS: comparison uses observed values; it does not assume that a larger or smaller cwnd is inherently better
 
 Report analysis includes the logger's initial zero cap interval when calculating rli_capped_time_fraction. The report CSV supersedes that field in the raw tool output.

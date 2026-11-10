@@ -48,9 +48,10 @@ those editions; `final-report-checks.json` describes the current final PDF.
 ## Reproduce the recorded campaign
 
 The baseline revision is `5a4eba475555a2b0d67fbd9000714be35b3db4b4`.
-The evaluated RLI revision is `60323926df8ef75c440f959789ac4d043071879d`.
-Use separate Linux checkouts/builds of those revisions to reproduce their
-behavior. Tests of a newer local revision are a new campaign.
+The current RLI source revision and both executable hashes are in
+`results/environment.json`. The 10 November campaign rebuilds the current
+implementation with shaped access links. The earlier campaign used revision
+`60323926df8ef75c440f959789ac4d043071879d` and unshaped access links.
 
 Configure the RLI checkout before invoking the retained test helper:
 
@@ -76,7 +77,9 @@ unshare --user --map-root-user --net --mount \
 
 The main helper uses `results/run_single_comparison.sh`, the interface retained
 for this campaign. It supplies a 20-second stream at 192 kbit/s or downloads
-20 MiB, using three repetitions per mode over the 20 Mbit/s, 50 ms path.
+20 MiB, using three repetitions per mode. Access links use 1000 Mbit/s and
+5 ms per direction; the core uses 20 Mbit/s and 25 ms per direction.
+The nominal base RTT is 70 ms.
 Existing main runs are moved to `results/archive/` before another collection.
 
 For the six-namespace competing-flow topology:

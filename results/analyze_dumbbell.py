@@ -49,7 +49,7 @@ for run in runs:
         "jain_fairness": run["jain_fairness"],
         "retransmissions": sum(f["retransmissions"] for f in run["flows"])})
 with (OUT / "dumbbell/measurements.csv").open("w", newline="") as file:
-    writer = csv.DictWriter(file, csv_rows[0].keys())
+    writer = csv.DictWriter(file, csv_rows[0].keys(), lineterminator="\n")
     writer.writeheader()
     writer.writerows(csv_rows)
 (OUT / "dumbbell/validation.json").write_text(json.dumps(validation_rows, indent=2) + "\n")

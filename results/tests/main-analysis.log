@@ -1,0 +1,213 @@
+{
+  "verdict": "PASS for the tested conditions",
+  "groups": {
+    "rate-limited": {
+      "baseline": {
+        "throughput_mbps": {
+          "mean": 0.18939066666666665,
+          "sample_stddev": 9.86576572462642e-06,
+          "minimum": 0.189384,
+          "maximum": 0.189402
+        },
+        "connection_duration_seconds": {
+          "mean": 20.275541,
+          "sample_stddev": 0.0010480042938849274,
+          "minimum": 20.27434,
+          "maximum": 20.27627
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 15360.000000000002,
+          "sample_stddev": 1.4128915545650723e-11,
+          "minimum": 15359.99999999999,
+          "maximum": 15360.000000000018
+        },
+        "cwnd_final_bytes": {
+          "mean": 15360,
+          "sample_stddev": 0.0,
+          "minimum": 15360,
+          "maximum": 15360
+        },
+        "cwnd_max_bytes": {
+          "mean": 15360,
+          "sample_stddev": 0.0,
+          "minimum": 15360,
+          "maximum": 15360
+        },
+        "flight_max_bytes": {
+          "mean": 3426,
+          "sample_stddev": 0.0,
+          "minimum": 3426,
+          "maximum": 3426
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "rli": {
+        "throughput_mbps": {
+          "mean": 0.18936866666666666,
+          "sample_stddev": 2.80416357107285e-05,
+          "minimum": 0.189338,
+          "maximum": 0.189393
+        },
+        "connection_duration_seconds": {
+          "mean": 20.277925333333332,
+          "sample_stddev": 0.0029770361659429137,
+          "minimum": 20.275346,
+          "maximum": 20.281183
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 30550.47972670229,
+          "sample_stddev": 97.48810204565827,
+          "minimum": 30494.080834272765,
+          "maximum": 30663.04921345282
+        },
+        "cwnd_final_bytes": {
+          "mean": 30720,
+          "sample_stddev": 0.0,
+          "minimum": 30720,
+          "maximum": 30720
+        },
+        "cwnd_max_bytes": {
+          "mean": 30720,
+          "sample_stddev": 0.0,
+          "minimum": 30720,
+          "maximum": 30720
+        },
+        "flight_max_bytes": {
+          "mean": 3426,
+          "sample_stddev": 0.0,
+          "minimum": 3426,
+          "maximum": 3426
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "throughput_mbps_change_percent": -0.011616200727948556,
+      "cwnd_time_average_bytes_change_percent": 98.89635238738468,
+      "cwnd_final_bytes_change_percent": 100.0
+    },
+    "bulk": {
+      "baseline": {
+        "throughput_mbps": {
+          "mean": 17.096856666666667,
+          "sample_stddev": 0.3186534469566163,
+          "minimum": 16.753388,
+          "maximum": 17.38288
+        },
+        "connection_duration_seconds": {
+          "mean": 9.815357,
+          "sample_stddev": 0.1838618682924768,
+          "minimum": 9.651605,
+          "maximum": 10.014255
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 516496.61741272936,
+          "sample_stddev": 142583.83095806182,
+          "minimum": 406189.05032620573,
+          "maximum": 677500.905599409
+        },
+        "cwnd_final_bytes": {
+          "mean": 568258.3333333334,
+          "sample_stddev": 130809.51902034246,
+          "minimum": 466756,
+          "maximum": 715881
+        },
+        "cwnd_max_bytes": {
+          "mean": 1055073,
+          "sample_stddev": 291399.57063111814,
+          "minimum": 827835,
+          "maximum": 1383601
+        },
+        "flight_max_bytes": {
+          "mean": 1055520,
+          "sample_stddev": 291307.40876263345,
+          "minimum": 828000,
+          "maximum": 1383840
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "rli": {
+        "throughput_mbps": {
+          "mean": 17.602599333333334,
+          "sample_stddev": 0.01251094554113797,
+          "minimum": 17.589561,
+          "maximum": 17.614506
+        },
+        "connection_duration_seconds": {
+          "mean": 9.531135,
+          "sample_stddev": 0.006775035645662629,
+          "minimum": 9.524689,
+          "maximum": 9.538197
+        },
+        "cwnd_time_average_bytes": {
+          "mean": 293660.2768907309,
+          "sample_stddev": 9362.848923220135,
+          "minimum": 285497.12248111295,
+          "maximum": 303880.6750346613
+        },
+        "cwnd_final_bytes": {
+          "mean": 366795,
+          "sample_stddev": 7335.117790465263,
+          "minimum": 360651,
+          "maximum": 374916
+        },
+        "cwnd_max_bytes": {
+          "mean": 583887.6666666666,
+          "sample_stddev": 21211.734354675795,
+          "minimum": 566345,
+          "maximum": 607462
+        },
+        "flight_max_bytes": {
+          "mean": 584640,
+          "sample_stddev": 20767.975346672578,
+          "minimum": 567360,
+          "maximum": 607680
+        },
+        "retransmissions": {
+          "mean": 0,
+          "sample_stddev": 0.0,
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "throughput_mbps_change_percent": 2.958103214684482,
+      "cwnd_time_average_bytes_change_percent": -43.1438141140683,
+      "cwnd_final_bytes_change_percent": -35.45277235998886
+    }
+  },
+  "suite_counts": {
+    "baseline": [
+      [
+        "562",
+        "0"
+      ],
+      [
+        "105",
+        "0"
+      ]
+    ],
+    "rli": [
+      [
+        "563",
+        "0"
+      ],
+      [
+        "105",
+        "0"
+      ]
+    ]
+  }
+}

@@ -1,29 +1,35 @@
 Namespaces: OK
 PING 10.10.2.2 (10.10.2.2) 56(84) bytes of data.
-64 bytes from 10.10.2.2: icmp_seq=1 ttl=62 time=101 ms
-64 bytes from 10.10.2.2: icmp_seq=2 ttl=62 time=50.5 ms
-64 bytes from 10.10.2.2: icmp_seq=3 ttl=62 time=50.5 ms
+64 bytes from 10.10.2.2: icmp_seq=1 ttl=62 time=142 ms
+64 bytes from 10.10.2.2: icmp_seq=2 ttl=62 time=70.8 ms
+64 bytes from 10.10.2.2: icmp_seq=3 ttl=62 time=70.7 ms
 
 --- 10.10.2.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-rtt min/avg/max/mdev = 50.477/67.187/100.604/23.628 ms
-Forward bottleneck qdisc:
-qdisc netem 8007: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 11254400633760093066
-Reverse bottleneck qdisc:
-qdisc netem 8008: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 6446978331605041978
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 70.730/94.381/141.616/33.399 ms
+rls-client/eth0: qdisc netem 8011: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 15997454755104668589
+rls-r1/veth-r1-client: qdisc netem 8012: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 5910283404023204936
+rls-r2/veth-r2-server: qdisc netem 8013: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 10661285073630705501
+rls-server/eth0: qdisc netem 8014: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 11689113757142150327
+rls-r1/veth-r1-core: qdisc netem 8015: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 2508419077704962635
+rls-r2/veth-r2-core: qdisc netem 8016: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 9812216877211408628
 Topology connectivity and qdiscs: OK
 PING 10.10.4.2 (10.10.4.2) 56(84) bytes of data.
-64 bytes from 10.10.4.2: icmp_seq=1 ttl=62 time=50.3 ms
-64 bytes from 10.10.4.2: icmp_seq=2 ttl=62 time=50.3 ms
-64 bytes from 10.10.4.2: icmp_seq=3 ttl=62 time=50.4 ms
+64 bytes from 10.10.4.2: icmp_seq=1 ttl=62 time=90.9 ms
+64 bytes from 10.10.4.2: icmp_seq=2 ttl=62 time=70.6 ms
+64 bytes from 10.10.4.2: icmp_seq=3 ttl=62 time=70.2 ms
 
 --- 10.10.4.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2002ms
-rtt min/avg/max/mdev = 50.277/50.321/50.366/0.036 ms
+3 packets transmitted, 3 received, 0% packet loss, time 2000ms
+rtt min/avg/max/mdev = 70.206/77.220/90.852/9.640 ms
 PING 10.10.4.2 (10.10.4.2) 56(84) bytes of data.
-64 bytes from 10.10.4.2: icmp_seq=1 ttl=62 time=50.4 ms
+64 bytes from 10.10.4.2: icmp_seq=1 ttl=62 time=70.4 ms
 
 --- 10.10.4.2 ping statistics ---
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
-rtt min/avg/max/mdev = 50.355/50.355/50.355/0.000 ms
+rtt min/avg/max/mdev = 70.370/70.370/70.370/0.000 ms
+rls-client2/eth0: qdisc netem 8017: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 10644449070306302812
+rls-r1/veth-r1-c2: qdisc netem 8018: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 855500453210845346
+rls-r2/veth-r2-s2: qdisc netem 8019: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 13179406249943506988
+rls-server2/eth0: qdisc netem 801a: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 5207493894931756566
 PASS: both endpoint pairs and cross-pair routing work.

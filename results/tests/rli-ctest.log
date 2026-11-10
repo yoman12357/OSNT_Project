@@ -2,10 +2,10 @@ cwd=/home/aryy_02/Desktop/OSNT_Project
 command=['ctest', '--test-dir', 'build', '--output-on-failure']
 Test project /home/aryy_02/Desktop/OSNT_Project/build
     Start 1: picoquic_ct
-1/2 Test #1: picoquic_ct ......................   Passed   25.64 sec
+1/2 Test #1: picoquic_ct ......................   Passed   30.12 sec
     Start 2: picohttp_ct
-2/2 Test #2: picohttp_ct ......................   Passed   10.54 sec
+2/2 Test #2: picohttp_ct ......................   Passed    4.96 sec
 
 100% tests passed, 0 tests failed out of 2
 
-Total Test time (real) =  36.18 sec
+Total Test time (real) =  35.10 sec

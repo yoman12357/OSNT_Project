@@ -3,12 +3,12 @@
 \begin{tabular}{llrrrrr}\toprule
 Run & Mode & Flow 1 & Flow 2 & Combined & Jain index & Retrans.\\
  & & (Mbit/s) & (Mbit/s) & (Mbit/s) & & \\\midrule
-1 & baseline & 8.737 & 8.734 & 18.669 & 1.000 & 615 \\
-1 & rli & 8.743 & 8.781 & 18.680 & 1.000 & 445 \\
-2 & baseline & 9.430 & 8.776 & 18.662 & 0.999 & 443 \\
-2 & rli & 8.045 & 7.707 & 18.574 & 1.000 & 477 \\
-3 & baseline & 8.754 & 8.955 & 18.665 & 1.000 & 292 \\
-3 & rli & 8.753 & 8.773 & 18.621 & 1.000 & 376 \\
+1 & baseline & 10.215 & 8.307 & 18.645 & 0.989 & 0 \\
+1 & rli & 10.130 & 8.404 & 18.587 & 0.991 & 0 \\
+2 & baseline & 11.617 & 8.227 & 18.547 & 0.972 & 0 \\
+2 & rli & 9.972 & 8.453 & 18.595 & 0.993 & 0 \\
+3 & baseline & 8.737 & 8.545 & 18.595 & 1.000 & 571 \\
+3 & rli & 8.507 & 11.114 & 18.559 & 0.983 & 0 \\
 \bottomrule\end{tabular}
 \caption{Two-flow dumbbell results. Flow rates use each server's connection CSV. Combined rate uses both byte counts divided by the common client wall time, including connection completion.}\end{table}
-The mean combined wall-time rates were 18.665 Mbit/s for baseline and 18.625 Mbit/s for RLI (-0.22\%). The combined wall interval starts at client launch and ends when both clients exit; it excludes the later wait for server shutdown. The per-flow CSV rates use each server's own connection interval, so their sum is not the combined wall-time rate. The Jain index uses the two per-connection rates; values closer to one indicate a more even split. It describes this pair of flows over their connection lifetimes, not instantaneous fairness or fairness against other congestion algorithms.
+The mean combined wall-time rates were 18.596 Mbit/s for baseline and 18.580 Mbit/s for RLI (-0.08\%). The combined wall interval starts at client launch and ends when both clients exit; it excludes the later wait for server shutdown. The per-flow CSV rates use each server's own connection interval, so their sum is not the combined wall-time rate. The Jain index uses the two per-connection rates; values closer to one indicate a more even split. It describes this pair of flows over their connection lifetimes, not instantaneous fairness or fairness against other congestion algorithms.

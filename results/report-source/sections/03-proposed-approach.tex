@@ -44,6 +44,12 @@ Each run records the command, binary identity, configuration, performance data, 
 \end{minipage}
 
 
-The main topology has two endpoint namespaces and two forwarding namespaces. The core link carries 20 Mbit/s in each direction with 25 ms of one-way delay and a 1000-packet queue limit. The base round-trip time is approximately 50 ms. The supplementary dumbbell connects two client/server pairs across the same shaped link. Each supplementary run starts both transfers together \cite{ref12,ref13}.
+The main topology has two endpoint namespaces and two forwarding namespaces.
+Each access link uses 1000 Mbit/s and 5 ms delay in each direction.
+The core link uses 20 Mbit/s and 25 ms delay in each direction.
+All shaped interfaces have a 1000-packet queue limit.
+The nominal base RTT is 2 times (5 + 25 + 5), or 70 ms.
+The supplementary dumbbell adds a second client/server pair with identical access-link settings.
+Each supplementary run starts both transfers together \cite{ref12,ref13}.
 
 \label{sec:approach-end}

@@ -7,20 +7,8 @@
   "undefined_references_or_citations": false,
   "obsolete_local_paths": false,
   "overfull_boxes": 0,
-  "sha256": "a670d625e46e300a471c9987fb6ea7457116f599da1d1cdc820fdd8aed2f991a",
-  "scope": "Report source synchronization, local compilation, and downloaded Overleaf PDF checks; no new network experiments or C regression run.",
+  "sha256": "57c4b75b6e522b8dc5db77313f8de56216090f4fd3d883182bd25b365ee3af53",
+  "scope": "Report compilation and PDF checks. Fresh network and C regression results are recorded separately in campaign-checks.json.",
   "pass": true,
-  "origin": "Downloaded from the recompiled Overleaf project after applying PDF annotations",
-  "overleaf_project": "https://www.overleaf.com/project/6aed7a8cc22c8421025a9958",
-  "overleaf_sources_match_local": true,
-  "overleaf_tex_files_verified": 10,
-  "local_and_overleaf_pdf_text_layout_match": true,
-  "review_comments": {
-    "abstract_expanded": true,
-    "contents_units_note_removed": true,
-    "subsection_forced_page_breaks_removed": true,
-    "traceability_3_3_before_topology_3_4": true,
-    "test_coverage_5_6_removed": true,
-    "diagram_and_caption_kept_together": true
-  }
+  "visual_review_completed": true
 }

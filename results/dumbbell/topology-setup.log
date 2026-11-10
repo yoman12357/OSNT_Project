@@ -1,5 +1,6 @@
 Dumbbell topology created.
 client: 10.10.1.2   server: 10.10.2.2
-bottleneck: 20 Mbit/s each direction, about 50 ms base RTT
+access links: 1000 Mbit/s and 5 ms each direction
+bottleneck: 20 Mbit/s and 25 ms each direction; about 70 ms base RTT
 Verify with: /home/aryy_02/Desktop/OSNT_Project/topology/check.sh
-Six-namespace dumbbell ready: two client/server pairs share the 20 Mbit/s bottleneck.
+Six-namespace dumbbell ready: 1000 Mbit/s, 5 ms access links; shared 20 Mbit/s, 25 ms core; about 70 ms base RTT.

@@ -82,7 +82,13 @@ metadata = {
     "compiler": subprocess.check_output(["cc", "--version"], text=True).splitlines()[0],
     "cmake": subprocess.check_output(["cmake", "--version"], text=True).splitlines()[0],
     "working_tree": subprocess.check_output(["git", "status", "--short"], cwd=ROOT, text=True),
-    "notes": "New report artifacts are untracked; no implementation code was edited for this verification. Baseline source is extracted from the exact pre-RLI commit, not simulated by RLI-off only.",
+    "notes": "Fresh campaign after shaping access links. Baseline source is extracted from the exact pre-RLI commit. Both builds were rebuilt and tested. Runtime C/C++ source was not edited for this campaign.",
+    "topology": {"access_rate_mbps": 1000, "access_one_way_delay_ms": 5,
+                 "core_rate_mbps": 20, "core_one_way_delay_ms": 25,
+                 "queue_limit_packets": 1000, "nominal_base_rtt_ms": 70},
+    "topology_sha256": {name: sha(ROOT / name) for name in (
+        "topology/setup.sh", "topology/setup_dumbbell.sh",
+        "topology/check.sh", "topology/check_dumbbell.sh")},
 }
 (OUT / "environment.json").write_text(json.dumps(metadata, indent=2) + "\n")
 print("PASS: builds, both full CTest suites, and focused cubic_rli test", flush=True)

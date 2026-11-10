@@ -1,10 +1,10 @@
-Start testing: Nov 07 15:30 IST
+Start testing: Nov 10 16:55 IST
 ----------------------------------------------------------
 1/2 Testing: picoquic_ct
 1/2 Test: picoquic_ct
 Command: "/home/aryy_02/Desktop/OSNT_Project/build/picoquic_ct" "-S" "/home/aryy_02/Desktop/OSNT_Project" "-n" "-r"
 Directory: /home/aryy_02/Desktop/OSNT_Project/build
-"picoquic_ct" start time: Nov 07 15:30 IST
+"picoquic_ct" start time: Nov 10 16:55 IST
 Output:
 ----------------------------------------------------------
 Starting test number 0, connection_id_print
@@ -81,7 +81,7 @@ Starting test number 33, sqrt_for_test
 Starting test number 34, ack_sack
     Success.
 Starting test number 35, ack_stress
-Sack stress: 20000 packets, first half 0.038 us/op, second half 0.038 us/op.
+Sack stress: 20000 packets, first half 0.100 us/op, second half 0.101 us/op.
     Success.
 Starting test number 36, frames_skip
     Success.
@@ -1182,18 +1182,18 @@ Invalid port: Sabc:4433
     Success.
 Tried 563 tests, 0 fails.
 <end of output>
-Test time =  25.64 sec
+Test time =  30.12 sec
 ----------------------------------------------------------
 Test Passed.
-"picoquic_ct" end time: Nov 07 15:30 IST
-"picoquic_ct" time elapsed: 00:00:25
+"picoquic_ct" end time: Nov 10 16:55 IST
+"picoquic_ct" time elapsed: 00:00:30
 ----------------------------------------------------------
 
 2/2 Testing: picohttp_ct
 2/2 Test: picohttp_ct
 Command: "/home/aryy_02/Desktop/OSNT_Project/build/picohttp_ct" "-S" "/home/aryy_02/Desktop/OSNT_Project" "-n" "-r"
 Directory: /home/aryy_02/Desktop/OSNT_Project/build
-"picohttp_ct" start time: Nov 07 15:30 IST
+"picohttp_ct" start time: Nov 10 16:55 IST
 Output:
 ----------------------------------------------------------
 Starting test number 0, h3zero_integer
@@ -1415,42 +1415,42 @@ Starting test number 85, quicperf_multipath_race_delayed
 Starting test number 86, quicperf_multipath_settled
     Success.
 Starting test number 87, perf_loopback
-Perf loopback: 1000000 app bytes, 1032309 wire bytes, 751 packets (31 client, 720 server, 0 lost), 78 batches, 47 stall jumps, in 2151 us.
-Perf loopback: 0.002 seconds, 457.7 MB/s, 349140 packets/s, 2.864 us/packet, 9.63 packets/batch.
+Perf loopback: 1000000 app bytes, 1032309 wire bytes, 751 packets (31 client, 720 server, 0 lost), 78 batches, 47 stall jumps, in 3582 us.
+Perf loopback: 0.004 seconds, 274.8 MB/s, 209659 packets/s, 4.770 us/packet, 9.63 packets/batch.
     Success.
 Starting test number 88, perf_loopback_loss
-Perf loopback: 1000000 app bytes, 1047917 wire bytes, 761 packets (31 client, 730 server, 12 lost), 79 batches, 48 stall jumps, in 2072 us.
-Perf loopback: 0.002 seconds, 482.3 MB/s, 367278 packets/s, 2.723 us/packet, 9.63 packets/batch.
+Perf loopback: 1000000 app bytes, 1049459 wire bytes, 764 packets (33 client, 731 server, 12 lost), 81 batches, 49 stall jumps, in 3655 us.
+Perf loopback: 0.004 seconds, 273.8 MB/s, 209029 packets/s, 4.784 us/packet, 9.43 packets/batch.
     Success.
 Starting test number 89, cc_compete_cubic2
-Success, 0, 6378530, 0, 0, 
+Success, 0, 5899943, 0, 0, 
     Success.
 Starting test number 90, cc_compete_prague2
-Success, 0, 1695508, 0, 0, 
+Success, 0, 1725301, 0, 0, 
     Success.
 Starting test number 91, cc_compete_c4c4
-Success, 0, 6548752, 0, 0, 
+Success, 0, 6422090, 0, 0, 
     Success.
 Starting test number 92, cc_compete_d_cubic
-Success, 0, 8392414, 0, 0, 
+Success, 0, 8523215, 0, 0, 
     Success.
 Starting test number 93, cc_ns_asym
-Success, 0, 7000101, 0, 0, 
+Success, 0, 7000102, 0, 0, 
     Success.
 Starting test number 94, cc_ns_blackhole
-Success, 0, 5752336, 0, 0, 
+Success, 0, 5750606, 0, 0, 
     Success.
 Starting test number 95, cc_ns_drop_and_back
-Success, 0, 4868844, 0, 0, 
+Success, 0, 4887129, 0, 0, 
     Success.
 Starting test number 96, cc_ns_low_and_up
-Success, 0, 5070504, 0, 0, 
+Success, 0, 5083211, 0, 0, 
     Success.
 Starting test number 97, cc_ns_wifi_fade
-Success, 0, 4538103, 0, 0, 
+Success, 0, 4523015, 0, 0, 
     Success.
 Starting test number 98, cc_ns_wifi_suspension
-Success, 0, 3571324, 0, 0, 
+Success, 0, 3571318, 0, 0, 
     Success.
 Starting test number 99, cc_ns_wifi_bad_cubic
 Success, 0, 4156398, 0, 0, 
@@ -1459,28 +1459,28 @@ Starting test number 100, cc_ns_wifi_bad_bbr
 Success, 0, 4048786, 0, 0, 
     Success.
 Starting test number 101, cc_ns_varylink
-Success, 0, 5339553, 0, 0, 
+Success, 0, 5334143, 0, 0, 
     Success.
 Starting test number 102, cc_ns_satellite
-Success, 0, 6194478, 0, 0, 
+Success, 0, 6194475, 0, 0, 
     Success.
 Starting test number 103, cc_ns_media
 Success, 0, 5090278, 30444, 41044, 
     Success.
 Starting test number 104, cc_ns_media_repeat
-Success, 0, 5090278, 30444, 41044, media_test
+Success, 0, 5090278, 30441, 41044, media_test
 Success, 1, 5090278, 30444, 41044, media_test
-Success, 2, 5090278, 30444, 41044, media_test
-Success, 3, 5090278, 30441, 41044, media_test
+Success, 2, 5090278, 30441, 41044, media_test
+Success, 3, 5090278, 30444, 41044, media_test
 Success, 4, 5090278, 30444, 41044, media_test
     Success.
 Tried 105 tests, 0 fails.
 <end of output>
-Test time =  10.54 sec
+Test time =   4.96 sec
 ----------------------------------------------------------
 Test Passed.
-"picohttp_ct" end time: Nov 07 15:31 IST
-"picohttp_ct" time elapsed: 00:00:10
+"picohttp_ct" end time: Nov 10 16:55 IST
+"picohttp_ct" time elapsed: 00:00:04
 ----------------------------------------------------------
 
-End testing: Nov 07 15:31 IST
+End testing: Nov 10 16:55 IST

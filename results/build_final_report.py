@@ -11,12 +11,14 @@ import subprocess
 
 OUT = Path(__file__).resolve().parent
 SOURCE = OUT / "report-source"
+ROOT = OUT.parent
 
 
 def main():
     compiler = os.environ.get("PDFLATEX") or shutil.which("pdflatex")
-    if not compiler:
-        raise SystemExit("Install TeX Live with pdfLaTeX, or set PDFLATEX to its executable.")
+    tectonic = shutil.which("tectonic") or str(ROOT / ".local-deps/report-tools/tectonic")
+    if not compiler and not Path(tectonic).is_file():
+        raise SystemExit("Install pdfLaTeX or Tectonic to compile the report.")
     try:
         from pypdf import PdfReader
     except ImportError:
@@ -24,13 +26,14 @@ def main():
 
     build = SOURCE / "build"
     build.mkdir(exist_ok=True)
-    command = [compiler, "-interaction=nonstopmode", "-halt-on-error",
-               "-file-line-error", "-output-directory=build", "main.tex"]
+    command = ([compiler, "-interaction=nonstopmode", "-halt-on-error",
+                "-file-line-error", "-output-directory=build", "main.tex"] if compiler else
+               [tectonic, "--keep-logs", "--outdir", "build", "main.tex"])
     for repetition in (1, 2):
         result = subprocess.run(command, cwd=SOURCE, capture_output=True)
         (build / f"compile-{repetition}.log").write_bytes(result.stdout + result.stderr)
         if result.returncode:
-            raise SystemExit(f"pdfLaTeX failed; inspect {build / f'compile-{repetition}.log'}")
+            raise SystemExit(f"LaTeX compilation failed; inspect {build / f'compile-{repetition}.log'}")
 
     pdf = build / "main.pdf"
     reader = PdfReader(pdf)
@@ -51,7 +54,7 @@ def main():
         "obsolete_local_paths": old_paths,
         "overfull_boxes": len(re.findall(r"Overfull \\[hv]box", log)),
         "sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(),
-        "scope": "Report compilation and PDF checks; no new network experiments or C regression run.",
+        "scope": "Report compilation and PDF checks. Fresh network and C regression results are recorded separately in campaign-checks.json.",
     }
     checks["pass"] = (checks["text_extracts"] and checks["all_five_names_on_cover"]
                       and not missing_references and not old_paths

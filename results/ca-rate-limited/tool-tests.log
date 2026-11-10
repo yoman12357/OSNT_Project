@@ -1,0 +1,22 @@
+test_ca_formula_uses_additive_not_slow_start_cap (experiments.test_ca_rate_limited.CAExperimentTest.test_ca_formula_uses_additive_not_slow_start_cap) ... ok
+test_completion_waits_for_missing_bytes_not_early_fin (experiments.test_ca_rate_limited.CAExperimentTest.test_completion_waits_for_missing_bytes_not_early_fin) ... ok
+test_duplicate_bytes_do_not_inflate_completion (experiments.test_ca_rate_limited.CAExperimentTest.test_duplicate_bytes_do_not_inflate_completion) ... ok
+test_existing_window_above_new_cap_is_not_forced_down (experiments.test_ca_rate_limited.CAExperimentTest.test_existing_window_above_new_cap_is_not_forced_down) ... ok
+test_merge_unique_bytes_and_gap (experiments.test_ca_rate_limited.CAExperimentTest.test_merge_unique_bytes_and_gap) ... ok
+test_scenario_dependencies_and_one_limited_stream (experiments.test_ca_rate_limited.CAExperimentTest.test_scenario_dependencies_and_one_limited_stream) ... ok
+test_state_at_boundary_includes_transition (experiments.test_ca_rate_limited.CAExperimentTest.test_state_at_boundary_includes_transition) ... ok
+test_window_clipping_carries_previous_sample (experiments.test_ca_rate_limited.CAExperimentTest.test_window_clipping_carries_previous_sample) ... ok
+test_ack_reduction_without_reset_is_rejected (experiments.test_results.ResultValidationTest.test_ack_reduction_without_reset_is_rejected) ... ok
+test_bounded_growth_exercises_cap (experiments.test_results.ResultValidationTest.test_bounded_growth_exercises_cap) ... ok
+test_cap_violation_is_rejected (experiments.test_results.ResultValidationTest.test_cap_violation_is_rejected) ... ok
+test_gzip_units_integer_precision_and_path_isolation (experiments.test_results.ResultValidationTest.test_gzip_units_integer_precision_and_path_isolation) ... ok
+test_no_growth_cannot_pass_validation (experiments.test_results.ResultValidationTest.test_no_growth_cannot_pass_validation) ... ok
+test_old_log_reduction_without_reset_is_rejected (experiments.test_results.ResultValidationTest.test_old_log_reduction_without_reset_is_rejected) ... ok
+test_peak_between_qlog_snapshots_is_retained (experiments.test_results.ResultValidationTest.test_peak_between_qlog_snapshots_is_retained) ... ok
+test_reset_counter_survives_rebuilt_flight (experiments.test_results.ResultValidationTest.test_reset_counter_survives_rebuilt_flight) ... ok
+test_time_weighted_average (experiments.test_results.ResultValidationTest.test_time_weighted_average) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.002s
+
+OK

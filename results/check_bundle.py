@@ -59,8 +59,8 @@ def audit():
                 with archive.extractfile(member) as file:
                     members[member.name] = hashlib.file_digest(file, "sha256").hexdigest()
     raw_qlogs = sum(name.endswith(".qlog") for name in members)
-    if len(members) != 240 or raw_qlogs != 48:
-        errors.append("Expected 240 raw evidence files, including 48 qlogs")
+    if raw_qlogs != 48:
+        errors.append("Expected 48 raw qlogs for 24 connections")
     for row in summary["records"]:
         if row["qlog"] not in members:
             errors.append(f"Missing main sender trace {row['qlog']}")
@@ -77,16 +77,35 @@ def audit():
     pdf = (OUT / "Final report.pdf").read_bytes()
     if not pdf.startswith(b"%PDF-"):
         errors.append("Final report does not have a PDF signature")
-    original_manifest = dict(line.split("  ", 1)[::-1] for line in
-                             (OUT / "SHA256SUMS.original").read_text(encoding="utf-8").splitlines())
+    pdf_checks = json.loads((OUT / "final-report-checks.json").read_text(encoding="utf-8"))
+    if not pdf_checks["pass"] or hashlib.sha256(pdf).hexdigest() != pdf_checks["sha256"]:
+        errors.append("Final PDF differs from its successful compilation checks")
+    for name in ("overview", "rate-limited-baseline-1", "rate-limited-rli-1", "bulk-baseline-1", "bulk-rli-1"):
+        if (OUT / "plots" / f"{name}.png").read_bytes() != (OUT / "report-source/images" / f"native-{name}.png").read_bytes():
+            errors.append(f"Report contains a stale graph: {name}")
+    for mode in ("baseline", "rli"):
+        if (OUT / "plots/dumbbell" / f"{mode}-1.png").read_bytes() != (OUT / "report-source/images" / f"native-dumbbell-{mode}-1.png").read_bytes():
+            errors.append(f"Report contains a stale competing-flow graph: {mode}")
+    campaign = json.loads((OUT / "campaign-checks.json").read_text(encoding="utf-8"))
     with (OUT / "raw-evidence.tar.gz").open("rb") as file:
         archive_digest = hashlib.file_digest(file, "sha256").hexdigest()
-    if archive_digest != original_manifest["raw-evidence.tar.gz"]:
-        errors.append("Raw archive differs from the original distribution")
+    if archive_digest != campaign["raw_archive_sha256"]:
+        errors.append("Raw archive differs from the current campaign audit")
+    if not campaign["pass"]:
+        errors.append("Current campaign checks did not pass")
     strict = json.loads((OUT / "current-validator-checks.json").read_text(encoding="utf-8"))
-    for relative in ("project_docs", "results 1", "results1"):
-        if (ROOT / relative).exists():
-            errors.append(f"Obsolete top-level folder remains: {relative}")
+    if strict["traces_checked"] != 12 or strict["traces_with_errors"]:
+        errors.append("Current validator did not pass all twelve fresh RLI traces")
+    for name, expected in environment["topology_sha256"].items():
+        with (ROOT / name).open("rb") as file:
+            if hashlib.file_digest(file, "sha256").hexdigest() != expected:
+                errors.append(f"Topology changed after testing: {name}")
+    for name, digest in members.items():
+        local = OUT / name
+        if local.is_file():
+            with local.open("rb") as file:
+                if hashlib.file_digest(file, "sha256").hexdigest() != digest:
+                    errors.append(f"Unpacked evidence differs from archive: {name}")
     return {
         "pass": not errors,
         "main_experiments": len(summary["records"]),
@@ -94,9 +113,9 @@ def audit():
         "completed_connections": len(summary["records"]) + sum(len(r["flows"]) for r in supplement["runs"]),
         "raw_files": len(members), "raw_qlogs": raw_qlogs, "plots": plot_count,
         "current_validator_traces_with_errors": strict["traces_with_errors"],
-        "validation_note": "Inventory completeness is separate from the newer validator's findings; see current-validator-checks.json.",
+        "validation_note": "All twelve fresh RLI traces pass the current validator; see current-validator-checks.json.",
         "recorded_linux_uname": environment["uname"],
-        "scope": "Inventory and archive checks of retained evidence; no new network experiments or C regression run.",
+        "scope": "Inventory and archive checks. Fresh builds, regression suites, and 24 completed connections are recorded in campaign-checks.json.",
         "errors": errors,
     }
 

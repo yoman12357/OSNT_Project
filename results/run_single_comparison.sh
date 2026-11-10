@@ -122,7 +122,7 @@ if [[ -z ${SERVER_QLOG} ]]; then
     exit 1
 fi
 
-"${PYTHON_BIN}" "${REPO_ROOT}/results/evaluated-tools/plot_cwnd.py" "${SERVER_QLOG}" \
+"${PYTHON_BIN}" "${REPO_ROOT}/plot_cwnd.py" "${SERVER_QLOG}" \
     "${RESULT_DIR}/cubic-${MODE}-${WORKLOAD}.png"
 
 if [[ ${MODE} == rli ]]; then
@@ -132,7 +132,7 @@ if [[ ${MODE} == rli ]]; then
         # was exercised strongly enough for at least one cap to be observed.
         VALIDATION_ARGS+=(--require-cap)
     fi
-    "${PYTHON_BIN}" "${REPO_ROOT}/results/evaluated-tools/validate_rli.py" \
+    "${PYTHON_BIN}" "${REPO_ROOT}/experiments/validate_rli.py" \
         "${VALIDATION_ARGS[@]}" | tee "${RESULT_DIR}/validation.txt"
 fi
 

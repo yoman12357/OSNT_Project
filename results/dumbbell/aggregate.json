@@ -1,13 +1,13 @@
 {
   "baseline": {
-    "wall_throughput_mbps": 18.66535300204891,
-    "jain_fairness": 0.9995281378631546,
-    "retransmissions": 450
+    "wall_throughput_mbps": 18.595625951525033,
+    "jain_fairness": 0.9870048513250016,
+    "retransmissions": 190.33333333333334
   },
   "rli": {
-    "wall_throughput_mbps": 18.624982704742237,
-    "jain_fairness": 0.9998442023222233,
-    "retransmissions": 432.6666666666667
+    "wall_throughput_mbps": 18.580061631030894,
+    "jain_fairness": 0.9890980406038956,
+    "retransmissions": 0
   },
-  "throughput_change_percent": -0.21628467086715064
+  "throughput_change_percent": -0.0836988253835158
 }

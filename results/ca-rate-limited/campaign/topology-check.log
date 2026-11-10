@@ -1,0 +1,16 @@
+Namespaces: OK
+PING 10.10.2.2 (10.10.2.2) 56(84) bytes of data.
+64 bytes from 10.10.2.2: icmp_seq=1 ttl=62 time=141 ms
+64 bytes from 10.10.2.2: icmp_seq=2 ttl=62 time=70.3 ms
+64 bytes from 10.10.2.2: icmp_seq=3 ttl=62 time=71.0 ms
+
+--- 10.10.2.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 70.344/93.978/140.616/32.978 ms
+rls-client/eth0: qdisc netem 8021: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 9174468967949679246
+rls-r1/veth-r1-client: qdisc netem 8022: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 10213134145575407726
+rls-r2/veth-r2-server: qdisc netem 8023: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 6563183453055470138
+rls-server/eth0: qdisc netem 8024: root refcnt 13 limit 1000 delay 5ms rate 1Gbit seed 14727040992198063499
+rls-r1/veth-r1-core: qdisc netem 8025: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 12348646976534520653
+rls-r2/veth-r2-core: qdisc netem 8026: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 11715773663158473281
+Topology connectivity and qdiscs: OK

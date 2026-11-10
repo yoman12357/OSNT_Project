@@ -32,5 +32,13 @@ ip -n rls-client2 route add default via 10.10.3.1
 ip -n rls-server2 route add default via 10.10.4.1
 ip -n rls-r1 route add 10.10.4.0/24 via 10.10.12.2
 ip -n rls-r2 route add 10.10.3.0/24 via 10.10.12.1
+ip netns exec rls-client2 tc qdisc replace dev eth0 root \
+    netem delay 5ms rate 1000mbit limit 1000
+ip netns exec rls-r1 tc qdisc replace dev veth-r1-c2 root \
+    netem delay 5ms rate 1000mbit limit 1000
+ip netns exec rls-r2 tc qdisc replace dev veth-r2-s2 root \
+    netem delay 5ms rate 1000mbit limit 1000
+ip netns exec rls-server2 tc qdisc replace dev eth0 root \
+    netem delay 5ms rate 1000mbit limit 1000
 trap - ERR
-echo 'Six-namespace dumbbell ready: two client/server pairs share the 20 Mbit/s bottleneck.'
+echo 'Six-namespace dumbbell ready: 1000 Mbit/s, 5 ms access links; shared 20 Mbit/s, 25 ms core; about 70 ms base RTT.'

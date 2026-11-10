@@ -1,0 +1,26 @@
+{
+  "audit_utc": "2026-11-10T11:34:32.582399+00:00",
+  "pass": true,
+  "main_experiments": 12,
+  "supplementary_experiments": 6,
+  "completed_connections": 24,
+  "current_validator_traces_passed": 12,
+  "both_registered_ctest_suites_pass": true,
+  "focused_cubic_rli_pass": true,
+  "python_result_tool_tests_passed": 9,
+  "runtime_source_matches_implementation_commit": true,
+  "implementation_commit": "80c9186fd466c105cd11c5b6d5ac95ee95911db0",
+  "topology": {
+    "access_rate_mbps": 1000,
+    "access_one_way_delay_ms": 5,
+    "core_rate_mbps": 20,
+    "core_one_way_delay_ms": 25,
+    "queue_limit_packets": 1000,
+    "nominal_base_rtt_ms": 70
+  },
+  "plots": 19,
+  "raw_archive_sha256": "3f9075d2f45406ab16fe9c317b821fab2893ff69d2c8a11d6ae2e1432bd3fdb2",
+  "previous_campaign_backup": "results/archive/pre-access-links-20261110-BcCN7i/previous-results-and-topology.tar.gz",
+  "previous_campaign_backup_sha256": "605984a1f7e45e43aa60f90cb258fd96d278e92506934fd4963adb899dadda3d",
+  "limitations": "Three repetitions and one topology. No universal performance gain or full standards certification is claimed."
+}

@@ -1,11 +1,13 @@
 # Fresh experiment summary
 
-All numbers below come from this folder's new runs, not the older Step 7 evidence.
+Access links: 1000 Mbit/s and 5 ms per direction. Core: 20 Mbit/s and 25 ms per direction. Nominal base RTT: 70 ms.
+
+All numbers below come from this folder's new runs. The previous campaign is backed up under archive/.
 
 | Workload | Mean baseline throughput | Mean RLI throughput | Change | Mean cwnd change |
 |---|---:|---:|---:|---:|
-| rate-limited | 0.190179 Mbit/s | 0.190186 Mbit/s | +0.003% | +98.708% |
-| bulk | 17.731656 Mbit/s | 17.949780 Mbit/s | +1.230% | +9.865% |
+| rate-limited | 0.189391 Mbit/s | 0.189369 Mbit/s | -0.012% | +98.896% |
+| bulk | 17.096857 Mbit/s | 17.602599 Mbit/s | +2.958% | -43.144% |
 
 RLI passed all six trace validations; the rate-limited runs require an observed active cap, and the bulk runs require a visible cwnd reduction with maxFS reset.
 

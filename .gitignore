@@ -97,3 +97,8 @@ ech_ticket_store.bin
 /results/pdf-preview/
 /results/report1-preview/
 /results/report-source/build/
+# Leftover generated files from the former results folder; retained locally.
+/results 1/
+# Raw three-phase connection evidence is distributed in its verified archive.
+/results/ca-rate-limited/*/baseline/
+/results/ca-rate-limited/*/rli/

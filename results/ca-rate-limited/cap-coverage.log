@@ -1,0 +1,7 @@
+baseline 1: CA=2, limited growth=0 B, cap samples=0, burst=2.281505 s, errors=0
+rli 1: CA=2, limited growth=0 B, cap samples=0, burst=2.281891 s, errors=0
+rli 2: CA=2, limited growth=0 B, cap samples=0, burst=2.281471 s, errors=0
+baseline 2: CA=2, limited growth=0 B, cap samples=0, burst=2.282106 s, errors=0
+baseline 3: CA=2, limited growth=0 B, cap samples=0, burst=2.281836 s, errors=0
+rli 3: CA=2, limited growth=0 B, cap samples=0, burst=2.282253 s, errors=0
+INCOMPLETE: no active cap in some CA-limited intervals

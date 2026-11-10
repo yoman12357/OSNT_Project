@@ -5,5 +5,6 @@ PASS: observed qlog invariants
   "cwnd_reductions": 0,
   "maxfs_resets": 0,
   "maxfs_increases": 0,
-  "cap_active_samples": 819
+  "cap_active_samples": 819,
+  "unobserved_peak_intervals": 0
 }

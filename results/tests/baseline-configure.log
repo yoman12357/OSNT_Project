@@ -1,5 +1,5 @@
 cwd=/home/aryy_02/Desktop/OSNT_Project
-command=['cmake', '-S', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline', '-B', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline/build', '-G', 'Ninja', '-DPICOQUIC_FETCH_PTLS=Y', '-DWITH_OPENSSL=ON', '-DCMAKE_BUILD_TYPE=RelWithDebInfo', '-DCMAKE_C_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu', '-DCMAKE_CXX_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu', '-DFETCHCONTENT_SOURCE_DIR_PICOTLS=/home/aryy_02/Desktop/OSNT_Project/build/_deps/picotls-src', '-DOPENSSL_INCLUDE_DIR=/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include', '-DOPENSSL_CRYPTO_LIBRARY=/usr/lib/x86_64-linux-gnu/libcrypto.so.3', '-DOPENSSL_SSL_LIBRARY=/usr/lib/x86_64-linux-gnu/libssl.so.3']
+command=['cmake', '-S', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline', '-B', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline/build', '-G', 'Ninja', '-DPICOQUIC_FETCH_PTLS=Y', '-DWITH_OPENSSL=ON', '-DCMAKE_BUILD_TYPE=RelWithDebInfo', '-DFETCHCONTENT_SOURCE_DIR_PICOTLS=/home/aryy_02/Desktop/OSNT_Project/build/_deps/picotls-src', '-DCMAKE_C_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu', '-DCMAKE_CXX_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu', '-DOPENSSL_INCLUDE_DIR=/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include']
 -- Initial CMAKE_C_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu
 -- Detecting USDT support
 -- Detecting USDT support - not found
@@ -22,7 +22,7 @@ command=['cmake', '-S', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-b
 -- CMAKE_CXX_FLAGS: -I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu
 -- Defining picoquic-core
 -- mbedtls/include: 
--- Project version: 0.0.0-60323926
--- Configuring done (0.1s)
+-- Project version: 0.0.0-80c9186f
+-- Configuring done (0.3s)
 -- Generating done (0.1s)
 -- Build files have been written to: /home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline/build

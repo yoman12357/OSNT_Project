@@ -3,12 +3,12 @@
   "main_experiments": 12,
   "supplementary_experiments": 6,
   "completed_connections": 24,
-  "raw_files": 240,
+  "raw_files": 264,
   "raw_qlogs": 48,
   "plots": 19,
-  "current_validator_traces_with_errors": 9,
-  "validation_note": "Inventory completeness is separate from the newer validator's findings; see current-validator-checks.json.",
-  "recorded_linux_uname": "Linux aryy-Victus-by-HP-Gaming-Laptop-15-fa1xxx 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026 x86_64 GNU/Linux",
-  "scope": "Inventory and archive checks of retained evidence; no new network experiments or C regression run.",
+  "current_validator_traces_with_errors": 0,
+  "validation_note": "All twelve fresh RLI traces pass the current validator; see current-validator-checks.json.",
+  "recorded_linux_uname": "Linux aryy-Victus-by-HP-Gaming-Laptop-15-fa1xxx 7.0.0-42-generic #42-Ubuntu SMP PREEMPT_DYNAMIC Thu Oct 15 08:06:44 UTC 2026 x86_64 GNU/Linux",
+  "scope": "Inventory and archive checks. Fresh builds, regression suites, and 24 completed connections are recorded in campaign-checks.json.",
   "errors": []
 }

@@ -12,7 +12,7 @@ import sys
 
 OUT = Path(__file__).resolve().parent
 ROOT = OUT.parent
-sys.path.insert(0, str(OUT / "evaluated-tools"))
+sys.path.insert(0, str(ROOT))
 from plot_cwnd import parse_qlog
 from experiments.validate_rli import summarize, validate
 
@@ -85,7 +85,7 @@ for workload in ("rate-limited", "bulk"):
             pair[mode] = record
         baseline_qlog = OUT / pair["baseline"]["qlog"]
         rli_qlog = OUT / pair["rli"]["qlog"]
-        command = [sys.executable, str(OUT / "evaluated-tools/validate_rli.py"), "compare",
+        command = [sys.executable, str(ROOT / "experiments/validate_rli.py"), "compare",
                    str(baseline_qlog), str(rli_qlog), "--workload", workload,
                    "--output", str(OUT / "comparisons" / f"{workload}-{repetition}.csv")]
         result = subprocess.run(command, check=True, capture_output=True, text=True)
@@ -93,7 +93,7 @@ for workload in ("rate-limited", "bulk"):
             "\nReport analysis includes the logger's initial zero cap interval when calculating rli_capped_time_fraction. The report CSV supersedes that field in the raw tool output.\n")
         metric_names = list(summarize(parse_qlog(baseline_qlog)))
         with (OUT / "comparisons" / f"{workload}-{repetition}.csv").open("w", newline="") as file:
-            writer = csv.writer(file)
+            writer = csv.writer(file, lineterminator="\n")
             writer.writerow(["metric", "baseline", "rli", "delta", "rli_change_percent"])
             for metric in metric_names:
                 b, r = pair["baseline"][metric], pair["rli"][metric]
@@ -103,7 +103,7 @@ for workload in ("rate-limited", "bulk"):
 
 fields = [k for k in records[0] if k != "counters"]
 with (OUT / "measurements.csv").open("w", newline="") as file:
-    writer = csv.DictWriter(file, fields, extrasaction="ignore")
+    writer = csv.DictWriter(file, fields, extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
     writer.writerows(records)
 
@@ -138,7 +138,7 @@ for mode in ("baseline", "rli"):
 
 summary = {"records": records, "groups": groups, "suite_counts": suite_counts,
            "experiment_count": len(records), "verdict": "PASS for the tested conditions",
-           "scope": "Two workloads, three repetitions each, two separately built source revisions; 20 Mbit/s bottleneck and ~50 ms base RTT. No universal throughput gain is claimed."}
+           "scope": "Two workloads, three repetitions each, two separately built source revisions; 1000 Mbit/s, 5 ms access links; 20 Mbit/s, 25 ms core; ~70 ms base RTT. No universal throughput gain is claimed."}
 (OUT / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
 
 # Plot a compact comparison independently of the twelve detailed traces.
@@ -214,7 +214,8 @@ for workload in ("rate-limited", "bulk"):
         figures.append(explanation)
 (OUT / "generated-figures.tex").write_text("\n".join(figures) + "\n")
 
-lines = ["# Fresh experiment summary", "", "All numbers below come from this folder's new runs, not the older Step 7 evidence.", "",
+lines = ["# Fresh experiment summary", "", "Access links: 1000 Mbit/s and 5 ms per direction. Core: 20 Mbit/s and 25 ms per direction. Nominal base RTT: 70 ms.",
+         "", "All numbers below come from this folder's new runs. The previous campaign is backed up under archive/.", "",
          "| Workload | Mean baseline throughput | Mean RLI throughput | Change | Mean cwnd change |",
          "|---|---:|---:|---:|---:|"]
 for workload in groups:

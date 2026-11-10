@@ -12,16 +12,14 @@
       "-DPICOQUIC_FETCH_PTLS=Y",
       "-DWITH_OPENSSL=ON",
       "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+      "-DFETCHCONTENT_SOURCE_DIR_PICOTLS=/home/aryy_02/Desktop/OSNT_Project/build/_deps/picotls-src",
       "-DCMAKE_C_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu",
       "-DCMAKE_CXX_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu",
-      "-DFETCHCONTENT_SOURCE_DIR_PICOTLS=/home/aryy_02/Desktop/OSNT_Project/build/_deps/picotls-src",
-      "-DOPENSSL_INCLUDE_DIR=/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include",
-      "-DOPENSSL_CRYPTO_LIBRARY=/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
-      "-DOPENSSL_SSL_LIBRARY=/usr/lib/x86_64-linux-gnu/libssl.so.3"
+      "-DOPENSSL_INCLUDE_DIR=/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include"
     ],
     "cwd": "/home/aryy_02/Desktop/OSNT_Project",
     "exit_code": 0,
-    "elapsed_seconds": 0.12268082399998548
+    "elapsed_seconds": 0.4095795250000265
   },
   {
     "name": "baseline-build",
@@ -34,7 +32,7 @@
     ],
     "cwd": "/home/aryy_02/Desktop/OSNT_Project",
     "exit_code": 0,
-    "elapsed_seconds": 11.689764867999997
+    "elapsed_seconds": 0.035648819000016374
   },
   {
     "name": "baseline-ctest",
@@ -46,7 +44,7 @@
     ],
     "cwd": "/home/aryy_02/Desktop/OSNT_Project",
     "exit_code": 0,
-    "elapsed_seconds": 21.36221484600003
+    "elapsed_seconds": 34.79909363900015
   },
   {
     "name": "rli-build",
@@ -59,7 +57,7 @@
     ],
     "cwd": "/home/aryy_02/Desktop/OSNT_Project",
     "exit_code": 0,
-    "elapsed_seconds": 0.021191631999954552
+    "elapsed_seconds": 0.03320920199985267
   },
   {
     "name": "rli-ctest",
@@ -71,7 +69,7 @@
     ],
     "cwd": "/home/aryy_02/Desktop/OSNT_Project",
     "exit_code": 0,
-    "elapsed_seconds": 36.18826259299999
+    "elapsed_seconds": 35.11451055999987
   },
   {
     "name": "cubic-rli",
@@ -81,6 +79,6 @@
     ],
     "cwd": "/home/aryy_02/Desktop/OSNT_Project/build",
     "exit_code": 0,
-    "elapsed_seconds": 0.0018981599999960963
+    "elapsed_seconds": 0.0022653190003438795
   }
 ]

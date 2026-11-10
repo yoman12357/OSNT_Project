@@ -10,7 +10,7 @@ ORIGINAL_ROOT=${ORIGINAL_ROOT:-"${WORK_ROOT}/osnt-original"}
 RESULTS_ROOT=${RESULTS_ROOT:-"${REPO_ROOT}/experiments/results/paired-campaign"}
 PYTHON_BIN=${PYTHON_BIN:-python3}
 REPETITIONS=${REPETITIONS:-3}
-TOPOLOGY=dumbbell_20mbps_50ms
+TOPOLOGY=dumbbell_access1000mbps_5ms_core20mbps_25ms
 
 if [[ ${EUID} -ne 0 ]]; then
     echo "Run inside Linux as root; see experiments/README.md." >&2

@@ -1,14 +1,8 @@
- UnitTest1/unittest1.cpp        |   7 +
- experiments/run_comparison.sh  | 161 ++++++++++++++++++
- experiments/validate_rli.py    | 300 +++++++++++++++++++++++++++++++++
- loglib/qlog.c                  |  36 +++-
- loglib/qlog_fns.c              |  28 +++-
- picoquic/cubic.c               | 152 +++++++++++++++--
- picoquic/logwriter.c           |   5 +
- picoquic/picoquic_internal.h   |   8 +
+ loglib/qlog.c                  |  48 ++++-
+ loglib/qlog_fns.c              |  38 +++-
+ picoquic/cubic.c               | 165 +++++++++++++--
+ picoquic/logwriter.c           |   6 +
+ picoquic/picoquic_internal.h   |   9 +
  picoquic/sender.c              |  18 ++
- picoquic_t/picoquic_t.c        |   1 +
- picoquictest/congestion_test.c | 368 +++++++++++++++++++++++++++++++++++++++++
- picoquictest/picoquictest.h    |   1 +
- plot_cwnd.py                   | 258 +++++++++++++++++++++--------
- 13 files changed, 1250 insertions(+), 93 deletions(-)
+ picoquictest/congestion_test.c | 470 +++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 734 insertions(+), 20 deletions(-)
