@@ -20,7 +20,6 @@ RFC 9002 describes QUIC loss detection and congestion control \cite{ref3}. Its u
 
 
 
-\clearpage
 \subsection*{2.3 CUBIC as the baseline controller}
 
 RFC 9438 specifies the CUBIC window function and its Reno-friendly alternative \cite{ref2}. The cubic curve is conventionally written W\_cubic(t) = C(t - K)\textasciicircum{}3 + W\_max. The controller selects a candidate using both the cubic and Reno-friendly calculations. The RFC also excludes application-limited intervals from elapsed growth time and conservatively suppresses window growth for application-limited flows. These features are directly relevant to the project because enabling bounded growth must not accidentally count idle time as capacity-probing time.
@@ -37,7 +36,6 @@ A further implementation consequence concerns the Reno-friendly shadow window. A
 RFC 9406 describes HyStart++, which uses delay information to leave slow start and includes protection against premature exit \cite{ref7}. The inspected picoquic implementation uses its own HyStart-related RTT filter and recovery path. The report does not assert full RFC 9406 equivalence. This literature supports a narrower interpretive point: a startup window reduction need not prove packet loss. In the single-flow runs, recorded retransmissions are zero, so the drop in the bulk cwnd graph is described as consistent with the implementation's delay response.
 
 
-\clearpage
 \subsection*{2.5 Rate-Limited Increase specification}
 
 The principal specification is \nolinkurl{draft-ietf-ccwg-ratelimited-increase-11}, published on 6 September 2026 \cite{ref1}. It introduces maxFS as flight-size history, initializes it using the initial window, updates it when FlightSize changes, and resets it after a window reduction. Growth is then limited according to what one successfully acknowledged maxFS-sized flight would permit. The document gives explicit slow-start and ordinary congestion-avoidance expressions and updates the conservative application-limited guidance for CUBIC and QUIC.

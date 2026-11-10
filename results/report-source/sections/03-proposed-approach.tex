@@ -30,19 +30,20 @@ The final maximum with the previous window is essential: the limiter constrains 
 
 
 
-\clearpage
-\subsection*{3.3 Controlled topology}
+\subsection*{3.3 Traceability and analysis}
+
+Each run records the command, binary identity, configuration, performance data, and qlog traces. The source revision for the actual baseline binary is recorded in its \path{provenance.txt}. The sender qlog provides the window and flight-size samples. The server connection CSV supplies byte counts and connection times. The analysis weights each window sample by the time until the next sample. The comparison reports the means and sample variability across the three repetitions.
+
+\begin{minipage}{\linewidth}
+\subsection*{3.4 Controlled topology}
 
 \begin{center}
 \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{images/topology.png}
 \captionof{figure}{Four-namespace Linux experimental topology. The server sends the measured payload to the client.}
 \end{center}
+\end{minipage}
 
 
 The main topology has two endpoint namespaces and two forwarding namespaces. The core link carries 20 Mbit/s in each direction with 25 ms of one-way delay and a 1000-packet queue limit. The base round-trip time is approximately 50 ms. The supplementary dumbbell connects two client/server pairs across the same shaped link. Each supplementary run starts both transfers together \cite{ref12,ref13}.
-
-\subsection*{3.4 Traceability and analysis}
-
-Each run records the command, binary identity, configuration, performance data, and qlog traces. The source revision for the actual baseline binary is recorded in its \path{provenance.txt}. The sender qlog provides the window and flight-size samples. The server connection CSV supplies byte counts and connection times. The analysis weights each window sample by the time until the next sample. The comparison reports the means and sample variability across the three repetitions.
 
 \label{sec:approach-end}

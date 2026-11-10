@@ -12,7 +12,6 @@ The analysis uses the server's application bytes and connection duration for sin
 \captionof{figure}{Three-run means with sample standard-deviation bars for fixed-rate cwnd and bulk throughput.}
 \end{center}
 
-\clearpage
 \subsection*{5.2 Fixed-rate workload}
 \begin{center}\small\begin{tabular}{lrrrr}
 Mode & Rate (Mbit/s) & Final cwnd (KiB) & Mean cwnd (KiB) & Final RTT (ms) \\ \hline
@@ -30,7 +29,6 @@ Each transfer delivers 480,000 bytes. The application supplies approximately 192
 \captionof{figure}{CUBIC with RLI, fixed-rate repetition one.}
 \end{center}
 
-\clearpage
 \subsection*{5.3 Single-flow bulk transfers}
 \begin{center}\small\begin{tabular}{lrrrr}
 Mode & Rate (Mbit/s) & Final cwnd (KiB) & Mean cwnd (KiB) & Final RTT (ms) \\ \hline
@@ -48,7 +46,6 @@ Mean throughput rises by 1.23\% in this campaign. The paired differences are 0.2
 \captionof{figure}{CUBIC with RLI, bulk repetition one.}
 \end{center}
 
-\clearpage
 \subsection*{5.4 Two flows sharing the dumbbell}
 \begin{center}\small\begin{tabular}{lrrr}
 Mode & Combined Mbit/s & Jain index & Mean retransmissions \\ \hline
@@ -66,7 +63,6 @@ Combined throughput uses the interval from the launch of the clients to the exit
 \captionof{figure}{Two competing flows with RLI, repetition one.}
 \end{center}
 
-\clearpage
 \subsection*{5.5 Validation and comparison}
 
 All six fixed-rate server qlogs stay in slow start. Each of the six bulk qlogs records a transition to congestion avoidance. The RLI trace checks pass for all six single-flow RLI runs and all six competing RLI connections. The fixed-rate cases show an active cap. The RLI bulk cases record a window reduction and a flight-history reset.
@@ -79,9 +75,5 @@ Growth bound & The RLI draft bounds increases using flight history \cite{ref1}. 
 Window retention & RFC 7661 considers the lifetime of a window that has not been exercised \cite{ref6}. & The implementation covers bounded growth. The experiments do not evaluate window aging.\\
 \end{tabularx}
 \end{center}
-
-\subsection*{5.6 Test coverage}
-
-A live test with a bulk phase followed by a fixed-rate phase on the same connection would exercise RLI under rate limitation in congestion avoidance. A final burst would measure the effect of the larger window on completion time. The competing-flow experiments compare two instances of the same algorithm. Controlled packet loss, competition against other algorithms, receiver flow-control limits, and multipath behavior remain separate test cases.
 
 \label{sec:results-end}

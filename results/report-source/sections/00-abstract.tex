@@ -1,9 +1,11 @@
 \clearpage
 \section*{Abstract}
 \label{sec:abstract}
-This project implements Rate-Limited Increase (RLI) as an option for CUBIC in picoquic. RLI uses the largest recorded flight size on each path to cap congestion-window growth. A window reduction starts a new flight-size history. We compared original CUBIC and CUBIC with RLI using Linux network namespaces on Ubuntu. The workloads included a fixed-rate stream, bulk transfers, and competing connections on a shared bottleneck.
+This project implements Rate-Limited Increase (RLI) as an option for CUBIC in picoquic. An application-limited sender may use only a small part of its congestion window, even when the network can carry more data. Existing conservative behavior suppresses growth during these periods. RLI instead permits growth while bounding the congestion window using the largest recorded flight size on each path.
 
-With a fixed application rate, RLI grew the window to its slow-start limit while throughput stayed essentially unchanged. The bulk and competing-flow tests measured behavior under higher demand. The live traces confirmed slow-start capping, and focused C tests exercised the selected congestion-avoidance cap. Both builds passed their registered regression suites, and the RLI traces passed the applicable checks.
+The implementation tracks flight-size peaks where packets enter and leave the outstanding-data accounting. It initializes this history from the initial congestion window and resets it after a window reduction. Slow-start growth is limited to twice the recorded maximum flight size. Congestion avoidance uses the selected conservative limit of that maximum plus one packet-size allowance. Logging exposes the flight history, calculated limit, and cap activity so the measured behavior can be related to the implementation.
+
+We compared original CUBIC and CUBIC with RLI using Linux network namespaces on Ubuntu. Fixed-rate streams, bulk transfers, and competing connections shared a controlled 20 Mbit/s path with approximately 50 ms base round-trip time. In the fixed-rate workload, RLI increased the window from 15 KiB to a bounded 30 KiB while throughput remained near 0.19 Mbit/s because application supply was unchanged. Bulk and competing-flow runs measured behavior under higher demand. Both evaluated builds passed their registered regression suites, and the recorded RLI traces passed the campaign's applicable checks. The results demonstrate bounded growth under the tested conditions; they do not establish a universal throughput gain or resolve every interpretation of the CUBIC limit.
 
 \clearpage
 \section*{Contents}
@@ -17,6 +19,3 @@ Conclusions and Future Work & \pageref{sec:conclusions}\\
 References & \pageref{sec:references}\\
 Appendix: Run Records & \pageref{sec:appendix}\\
 \end{tabularx}
-\par\vspace{0.8em}
-All sizes labelled KiB use 1024 bytes. Mbit/s uses 1,000,000 bits per second.
-Means and sample standard deviations summarize three repetitions.
