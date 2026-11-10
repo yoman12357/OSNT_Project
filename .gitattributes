@@ -1,0 +1,11 @@
+# Keep the evidence checksum manifest portable across checkouts.
+/results/** text=auto eol=lf
+/results/**/*.pdf binary
+/results/**/*.png binary
+/results/**/*.gz binary
+# Linux experiment entry points require LF line endings.
+/topology/*.sh text eol=lf
+/experiments/*.sh text eol=lf
+# Archived logs and patch context retain the original evidence whitespace.
+/results/**/*.log -whitespace
+/results/implementation.patch -whitespace

@@ -58,6 +58,7 @@ typedef struct qlog_context_st {
     uint64_t cc_param;
     uint64_t rli_max_flight_size;
     uint64_t rli_cwin_limit;
+    uint64_t rli_reset_count;
 
     unsigned int trace_flow_id : 1;
     unsigned int key_phase_sent_last : 1;
@@ -1420,6 +1421,8 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
     uint64_t rli_max_flight_size = 0;
     uint64_t rli_cwin_limit = 0;
     uint64_t rli_capped = 0;
+    uint64_t rli_reset_count = 0;
+    int has_rli_reset_count;
     qlog_context_t* ctx = (qlog_context_t*)ptr;
     FILE* f = ctx->f_txtlog;
 
@@ -1455,6 +1458,7 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
     (void) byteread_vint(s, &rli_max_flight_size);
     (void) byteread_vint(s, &rli_cwin_limit);
     (void) byteread_vint(s, &rli_capped);
+    has_rli_reset_count = (byteread_vint(s, &rli_reset_count) == 0);
 
     if (ret == 0 && cc_state != ctx->cc_state) {
         int64_t delta_time = time - ctx->start_time;
@@ -1483,7 +1487,8 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
             pacing_packet_time != ctx->pacing_packet_time ||
             rli_max_flight_size != ctx->rli_max_flight_size ||
             rli_cwin_limit != ctx->rli_cwin_limit ||
-            rli_capped != ctx->rli_capped)) {
+            rli_capped != ctx->rli_capped ||
+            rli_reset_count != ctx->rli_reset_count)) {
         /* Something changed. Report the event. */
         int64_t delta_time = time - ctx->start_time;
         char* comma = "";
@@ -1555,6 +1560,13 @@ int qlog_cc_update(uint64_t time, uint64_t path_id, bytestream* s, void* ptr)
         if (rli_capped != ctx->rli_capped) {
             fprintf(f, "%s\"rli_capped\": %" PRIu64, comma, rli_capped);
             ctx->rli_capped = (rli_capped != 0);
+            comma = ",";
+        }
+
+        if (has_rli_reset_count &&
+            (rli_max_flight_size != 0 || rli_cwin_limit != 0 || rli_reset_count != 0)) {
+            fprintf(f, "%s\"rli_reset_count\": %" PRIu64, comma, rli_reset_count);
+            ctx->rli_reset_count = rli_reset_count;
         }
 
         fprintf(f, "}]");

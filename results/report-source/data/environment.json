@@ -1,0 +1,13 @@
+{
+  "verification_utc": "2026-11-07T10:01:04.256094+00:00",
+  "baseline_commit": "5a4eba475555a2b0d67fbd9000714be35b3db4b4",
+  "implementation_commit": "60323926df8ef75c440f959789ac4d043071879d",
+  "baseline_binary_sha256": "2f2a8d4f3e1472e83694ecfafe3e30d0b2ad3bdfecd9fc7a05d4b63fa57c859a",
+  "rli_binary_sha256": "cd25e2c67aa61c81a38757bd3d581bb7bd6b55c15ef2a4a1de657ac7fd92d05c",
+  "uname": "Linux aryy-Victus-by-HP-Gaming-Laptop-15-fa1xxx 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026 x86_64 GNU/Linux",
+  "os_release": "PRETTY_NAME=\"Ubuntu 26.04 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"26.04\"\nVERSION=\"26.04 LTS (Resolute Raccoon)\"\nVERSION_CODENAME=resolute\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=resolute\nLOGO=ubuntu-logo\n",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cmake": "cmake version 4.2.3",
+  "working_tree": "?? \"results 1/\"\n",
+  "notes": "New report artifacts are untracked; no implementation code was edited for this verification. Baseline source is extracted from the exact pre-RLI commit, not simulated by RLI-off only."
+}

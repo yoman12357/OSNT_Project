@@ -1,0 +1,41 @@
+{
+  "audit_utc": "2026-11-07T13:18:27.937603+00:00",
+  "project_details_and_baseline_documented": true,
+  "implementation_diff_and_file_map_saved": true,
+  "team_members": [
+    "Aryan Bokolia",
+    "Affan Arshad",
+    "Soumyadeep Raj",
+    "Kevin Shiju George",
+    "Aryan Sanjay palimkar"
+  ],
+  "both_source_revisions_built_and_full_registered_suites_pass": true,
+  "focused_rli_test_pass": true,
+  "fresh_experiment_count": 12,
+  "supplementary_two_flow_experiment_count": 6,
+  "total_completed_connections": 24,
+  "rli_traces_validated": 6,
+  "supplementary_rli_traces_validated": 6,
+  "individual_plots": 12,
+  "overview_plots": 1,
+  "competing_flow_plots": 6,
+  "full_dumbbell_setup_and_traffic_verified": true,
+  "compressed_raw_evidence_verified_byte_for_byte": true,
+  "supplementary_source_sha256": {
+    "topology/setup_dumbbell.sh": "5886773e7c79cdd3a4ca0f98bbe601b1273ee34fc1b44b2fa0dac7a70d3d0cb2",
+    "topology/check_dumbbell.sh": "69c757298d2b45423084b8b28323aea621e3fd5e9d8d07696aef3724756f6f85",
+    "topology/cleanup.sh": "3c55ae09f965ccbe76751a7efd0e0b8b3c74ff8c7fedb8d8f475492b540c6cfe",
+    "results 1/run_dumbbell.py": "956fe6fe6a84ca228a0d89a151a7fb70c98f76e4c91b4a6f00e3278365023e56",
+    "results 1/analyze_dumbbell.py": "6c5f4f7b894152dbb1463a86e69576b1f0a75fdec1f429134d395369f07d55f6"
+  },
+  "raw_evidence_integrity_verified": true,
+  "core_implementation_unchanged": true,
+  "latex_compilation_and_linux_pdf_checks_pass": true,
+  "pdf_pages_rendered": 24,
+  "pdf_visual_review_completed": true,
+  "readme_correctness_assessment_present": true,
+  "rate_limited_mean_cwnd_change_percent": 98.70825718886734,
+  "bulk_mean_throughput_change_percent": 1.2301351280043171,
+  "verdict": "PASS for tested conditions; report output verified",
+  "limitations": "No statistical significance or universal speedup claimed; general CUBIC limit interpretation merits review before full IETF conformance claims."
+}

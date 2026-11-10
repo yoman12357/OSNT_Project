@@ -1,0 +1,24 @@
+\begin{table}[H]\centering\small
+\begin{tabular}{llrrrrr}\toprule
+Run & Mode & Final cwnd & Avg. cwnd & Rate & Time & Retrans.\\
+ & & (KiB) & (KiB) & (Mbit/s) & (s) & \\\midrule
+1 & baseline & 15.00 & 15.00 & 0.190 & 20.189 & 0 \\
+1 & rli & 30.00 & 29.81 & 0.190 & 20.192 & 0 \\
+2 & baseline & 15.00 & 15.00 & 0.190 & 20.190 & 0 \\
+2 & rli & 30.00 & 29.81 & 0.190 & 20.190 & 0 \\
+3 & baseline & 15.00 & 15.00 & 0.190 & 20.196 & 0 \\
+3 & rli & 30.00 & 29.81 & 0.190 & 20.190 & 0 \\
+\bottomrule\end{tabular}
+\caption{Rate-limited workload: fresh measured results. Time is connection duration from the performance CSV.}\end{table}
+\begin{table}[H]\centering\small
+\begin{tabular}{llrrrrr}\toprule
+Run & Mode & Final cwnd & Avg. cwnd & Rate & Time & Retrans.\\
+ & & (KiB) & (KiB) & (Mbit/s) & (s) & \\\midrule
+1 & baseline & 283.41 & 201.63 & 17.731 & 9.462 & 0 \\
+1 & rli & 268.04 & 248.21 & 17.940 & 9.352 & 0 \\
+2 & baseline & 304.68 & 224.90 & 17.823 & 9.413 & 0 \\
+2 & rli & 261.98 & 221.30 & 17.958 & 9.343 & 0 \\
+3 & baseline & 295.67 & 213.74 & 17.640 & 9.511 & 0 \\
+3 & rli & 264.75 & 233.93 & 17.952 & 9.346 & 0 \\
+\bottomrule\end{tabular}
+\caption{Bulk control workload: fresh measured results. Time is connection duration from the performance CSV.}\end{table}

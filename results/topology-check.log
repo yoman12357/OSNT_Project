@@ -1,0 +1,14 @@
+Namespaces: OK
+PING 10.10.2.2 (10.10.2.2) 56(84) bytes of data.
+64 bytes from 10.10.2.2: icmp_seq=1 ttl=62 time=100 ms
+64 bytes from 10.10.2.2: icmp_seq=2 ttl=62 time=50.2 ms
+64 bytes from 10.10.2.2: icmp_seq=3 ttl=62 time=50.2 ms
+
+--- 10.10.2.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 50.158/66.878/100.317/23.644 ms
+Forward bottleneck qdisc:
+qdisc netem 8005: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 2947509547980438345
+Reverse bottleneck qdisc:
+qdisc netem 8006: root refcnt 13 limit 1000 delay 25ms rate 20Mbit seed 12408279045238735092
+Topology connectivity and qdiscs: OK

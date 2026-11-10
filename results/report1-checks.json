@@ -1,0 +1,23 @@
+{
+  "main_averages_match_all_three_saved_runs": true,
+  "dumbbell_averages_match_all_three_saved_runs": true,
+  "references_unchanged": true,
+  "same_measured_value_macros": true,
+  "only_repetition_one_and_overview_shown": true,
+  "descriptive_sentence_screen_limit": 25,
+  "descriptive_sentence_screen_max": 21,
+  "sentences_over_25_words": [],
+  "procedural_sentence_screen_limit": 20,
+  "procedural_sentence_screen_max": 14,
+  "procedural_sentences_over_20_words": [],
+  "latex_exit_code": 0,
+  "pages": 17,
+  "all_five_authors_in_metadata": true,
+  "all_five_names_on_cover": true,
+  "all_sections_present": true,
+  "embedded_graphs": 7,
+  "undefined_references_or_citations": false,
+  "overfull_boxes": 0,
+  "original_report_pdf_unchanged": true,
+  "pass": true
+}

@@ -1,0 +1,87 @@
+
+\clearpage
+\section*{5. Result and Analysis}
+\label{sec:results}
+\subsection*{5.1 Experimental parameters}
+
+The campaign ran on Ubuntu 26.04 LTS with the \texttt{7.0.0-38-generic} x86-64 kernel. The environment record identifies GCC 15.2.0 and CMake 4.2.3 \cite{ref13}. Each revision ran the same scenarios on Linux network namespaces. Netem used 20 Mbit/s, 25 ms one-way delay, and a 1000-packet limit in each direction. The nominal bandwidth-delay product at a 50 ms RTT is about 122 KiB.
+
+The analysis uses the server's application bytes and connection duration for single-flow throughput. It reads the final smoothed RTT, retransmissions, and window samples from the sender qlogs. The graphs below use the archived Ubuntu figures. Detailed traces show repetition one. The tables use all three repetitions in each mode.
+\begin{center}
+\includegraphics[width=\linewidth,height=.32\textheight,keepaspectratio]{images/native-overview.png}
+\captionof{figure}{Three-run means with sample standard-deviation bars for fixed-rate cwnd and bulk throughput.}
+\end{center}
+
+\clearpage
+\subsection*{5.2 Fixed-rate workload}
+\begin{center}\small\begin{tabular}{lrrrr}
+Mode & Rate (Mbit/s) & Final cwnd (KiB) & Mean cwnd (KiB) & Final RTT (ms) \\ \hline
+Original & 0.190179 & 15.00 & 15.00 & 51.115 \\
+RLI & 0.190186 & 30.00 & 29.81 & 50.944 \\
+\end{tabular}\end{center}
+
+Each transfer delivers 480,000 bytes. The application supplies approximately 192 kbit/s, so both versions measure about 0.190 Mbit/s. The largest observed flight is 3426 bytes. The initialized 15 KiB maxFS therefore sets the 30 KiB slow-start ceiling. This increase gives the sender additional capacity for a later burst. The experiment does not measure that burst.
+\begin{center}
+\includegraphics[width=\linewidth,height=.25\textheight,keepaspectratio]{images/native-rate-limited-baseline-1.png}
+\captionof{figure}{Original CUBIC, fixed-rate repetition one.}
+\end{center}
+\begin{center}
+\includegraphics[width=\linewidth,height=.25\textheight,keepaspectratio]{images/native-rate-limited-rli-1.png}
+\captionof{figure}{CUBIC with RLI, fixed-rate repetition one.}
+\end{center}
+
+\clearpage
+\subsection*{5.3 Single-flow bulk transfers}
+\begin{center}\small\begin{tabular}{lrrrr}
+Mode & Rate (Mbit/s) & Final cwnd (KiB) & Mean cwnd (KiB) & Final RTT (ms) \\ \hline
+Original & 17.731656 & 294.59 & 213.42 & 109.409 \\
+RLI & 17.949780 & 264.92 & 234.48 & 119.322 \\
+\end{tabular}\end{center}
+
+Mean throughput rises by 1.23\% in this campaign. The paired differences are 0.208, 0.135, 0.312 Mbit/s. These three repetitions describe this test path. Final smoothed RTT is an endpoint statistic. A queue trace would be needed to attribute delay changes to occupancy at the bottleneck. The twelve single-flow runs record zero retransmissions.
+\begin{center}
+\includegraphics[width=\linewidth,height=.25\textheight,keepaspectratio]{images/native-bulk-baseline-1.png}
+\captionof{figure}{Original CUBIC, bulk repetition one.}
+\end{center}
+\begin{center}
+\includegraphics[width=\linewidth,height=.25\textheight,keepaspectratio]{images/native-bulk-rli-1.png}
+\captionof{figure}{CUBIC with RLI, bulk repetition one.}
+\end{center}
+
+\clearpage
+\subsection*{5.4 Two flows sharing the dumbbell}
+\begin{center}\small\begin{tabular}{lrrr}
+Mode & Combined Mbit/s & Jain index & Mean retransmissions \\ \hline
+Original & 18.665 & 0.99953 & 450.0 \\
+RLI & 18.625 & 0.99984 & 432.7 \\
+\end{tabular}\end{center}
+
+Combined throughput uses the interval from the launch of the clients to the exit of both clients. The Jain index uses each flow's rate over its own connection interval. The index is close to one in both modes. Both connections use the same algorithm in a given experiment. The retransmission totals show recovery activity in these runs.
+\begin{center}
+\includegraphics[width=\linewidth,height=.25\textheight,keepaspectratio]{images/native-dumbbell-baseline-1.png}
+\captionof{figure}{Two competing flows with original CUBIC, repetition one.}
+\end{center}
+\begin{center}
+\includegraphics[width=\linewidth,height=.25\textheight,keepaspectratio]{images/native-dumbbell-rli-1.png}
+\captionof{figure}{Two competing flows with RLI, repetition one.}
+\end{center}
+
+\clearpage
+\subsection*{5.5 Validation and comparison}
+
+All six fixed-rate server qlogs stay in slow start. Each of the six bulk qlogs records a transition to congestion avoidance. The RLI trace checks pass for all six single-flow RLI runs and all six competing RLI connections. The fixed-rate cases show an active cap. The RLI bulk cases record a window reduction and a flight-history reset.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}p{0.25\linewidth}XX@{}}
+\textbf{Aspect} & \textbf{Reference behavior} & \textbf{Result in picoquic}\\ \hline
+Application limitation & RFC 9438 suppresses growth in application-limited intervals \cite{ref2}. & RLI grows cwnd from 15 to 30 KiB at the slow-start cap.\\[3pt]
+Growth bound & The RLI draft bounds increases using flight history \cite{ref1}. & The live fixed-rate test reaches the slow-start cap. The focused test exercises the selected congestion-avoidance cap.\\[3pt]
+Window retention & RFC 7661 considers the lifetime of a window that has not been exercised \cite{ref6}. & The implementation covers bounded growth. The experiments do not evaluate window aging.\\
+\end{tabularx}
+\end{center}
+
+\subsection*{5.6 Test coverage}
+
+A live test with a bulk phase followed by a fixed-rate phase on the same connection would exercise RLI under rate limitation in congestion avoidance. A final burst would measure the effect of the larger window on completion time. The competing-flow experiments compare two instances of the same algorithm. Controlled packet loss, competition against other algorithms, receiver flow-control limits, and multipath behavior remain separate test cases.
+
+\label{sec:results-end}

@@ -115,6 +115,105 @@ int cubic_jitter_test(void)
     return congestion_control_test(picoquic_cubic_algorithm, 3550000, 5000, 5);
 }
 
+static int cubic_rli_edge_test(void)
+{
+    picoquic_cnx_t cnx = { 0 };
+    picoquic_path_t path = { 0 };
+    picoquic_path_t other = { 0 };
+    picoquic_per_ack_state_t ack = { 0 };
+    char const* options[] = { "rli", "rli=on", "on", "rli=off", "off", "invalid", NULL };
+    int ret = 0;
+
+    path.cnx = &cnx;
+    path.send_mtu = 1200;
+    path.smoothed_rtt = PICOQUIC_INITIAL_RTT;
+    other.cnx = &cnx;
+    other.send_mtu = path.send_mtu;
+    other.smoothed_rtt = path.smoothed_rtt;
+
+    for (size_t i = 0; i < sizeof(options) / sizeof(options[0]); i++) {
+        picoquic_cubic_algorithm->alg_init(&path, options[i], 0);
+        if (path.congestion_alg_state == NULL || path.is_rli_enabled != (i < 3)) {
+            ret = -1;
+        }
+        picoquic_cubic_algorithm->alg_delete(&path);
+    }
+    picoquic_dcubic_algorithm->alg_init(&path, "rli=on", 0);
+    if (path.congestion_alg_state == NULL || path.is_rli_enabled) {
+        ret = -1;
+    }
+    picoquic_dcubic_algorithm->alg_delete(&path);
+    if (ret != 0) {
+        DBG_PRINTF("%s", "RLI option or DCUBIC isolation test failed");
+        return ret;
+    }
+
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    picoquic_cubic_algorithm->alg_init(&other, "rli=on", 0);
+    if (path.congestion_alg_state == NULL || other.congestion_alg_state == NULL) {
+        ret = -1;
+        goto exit;
+    }
+    path.bytes_in_transit = 3 * PICOQUIC_CWIN_INITIAL;
+    picoquic_update_max_flight_size(&path);
+    if (other.rli_max_flight_size != PICOQUIC_CWIN_INITIAL ||
+        path.rli_max_flight_size != path.bytes_in_transit) {
+        DBG_PRINTF("%s", "RLI path state leaked between instances");
+        ret = -1;
+        goto exit;
+    }
+
+    /* Exercise both the saturating SS limit and saturating ACK addition. */
+    path.rli_max_flight_size = UINT64_MAX;
+    path.cwin = UINT64_MAX - 4;
+    ack.nb_bytes_acknowledged = 16;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack, 1000);
+    if (path.cwin != UINT64_MAX || path.rli_cwin_limit != UINT64_MAX) {
+        DBG_PRINTF("%s", "RLI Slow Start arithmetic wrapped");
+        ret = -1;
+        goto exit;
+    }
+    picoquic_cubic_algorithm->alg_delete(&path);
+    picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
+    if (path.congestion_alg_state == NULL) {
+        ret = -1;
+        goto exit;
+    }
+    ack.nb_bytes_acknowledged = 4 * PICOQUIC_CWIN_INITIAL;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_seed_cwin, &ack, 0);
+    path.rli_max_flight_size = UINT64_MAX - 1000;
+    ack.nb_bytes_acknowledged = path.send_mtu;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack, 1000);
+    if (path.rli_cwin_limit != UINT64_MAX) {
+        DBG_PRINTF("%s", "RLI Congestion Avoidance arithmetic wrapped");
+        ret = -1;
+        goto exit;
+    }
+
+    /* A live bulk run found this case when the last application bytes were
+     * sent: resetting the epoch lowered W_cubic and shrank cwnd on an ACK.
+     * ACK-driven growth must retain the previously allowed window. */
+    path.rli_max_flight_size = 8 * PICOQUIC_CWIN_INITIAL;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack, 10000000);
+    uint64_t previous_cwin = path.cwin;
+    path.last_sender_limited_time = 10000000;
+    picoquic_cubic_algorithm->alg_notify(&cnx, &path,
+        picoquic_congestion_notification_acknowledgement, &ack, 10001000);
+    if (path.cwin < previous_cwin) {
+        DBG_PRINTF("%s", "RLI ACK reduced cwnd after the epoch changed");
+        ret = -1;
+    }
+
+exit:
+    picoquic_cubic_algorithm->alg_delete(&path);
+    picoquic_cubic_algorithm->alg_delete(&other);
+    return ret;
+}
+
 int cubic_rli_test(void)
 {
     picoquic_cnx_t cnx;
@@ -136,7 +235,7 @@ int cubic_rli_test(void)
 
     picoquic_cubic_algorithm->alg_init(&path, "rli=on", 0);
     if (path.congestion_alg_state == NULL || !path.is_rli_enabled ||
-        path.rli_max_flight_size != initial_cwin) {
+        path.rli_max_flight_size != initial_cwin || path.rli_reset_count != 0) {
         DBG_PRINTF("RLI initialization failed, enabled=%u, maxFS=%llu",
             path.is_rli_enabled, (unsigned long long)path.rli_max_flight_size);
         ret = -1;
@@ -200,7 +299,7 @@ int cubic_rli_test(void)
     picoquic_cubic_algorithm->alg_notify(&cnx, &path,
         picoquic_congestion_notification_ecn_ec, &ack_state,
         path.smoothed_rtt + 2000);
-    if (path.rli_max_flight_size != 0) {
+    if (path.rli_max_flight_size != 0 || path.rli_reset_count != 1) {
         DBG_PRINTF("RLI recovery reset failed, maxFS=%llu",
             (unsigned long long)path.rli_max_flight_size);
         ret = -1;
@@ -479,6 +578,9 @@ int cubic_rli_test(void)
 exit:
     if (path.congestion_alg_state != NULL) {
         picoquic_cubic_algorithm->alg_delete(&path);
+    }
+    if (ret == 0) {
+        ret = cubic_rli_edge_test();
     }
     return ret;
 }

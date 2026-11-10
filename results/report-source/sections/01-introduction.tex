@@ -1,0 +1,43 @@
+\clearpage
+\section*{1. Introduction}
+\label{sec:introduction}
+\subsection*{1.1 Motivation and transport context}
+
+Transport congestion control decides how much outstanding data a sender may place on a network path. Its congestion window, cwnd, is a permission limit rather than a measurement of current demand. An application can generate data slowly even when the path and congestion controller permit more transmission. In that case, a low sending rate does not by itself mean that the network is congested. Treating every quiet interval as evidence for more capacity is also unsafe: unused permission has not actually exercised the path.
+
+
+Interactive applications, periodic updates, and media-like frame generation provide practical examples. A producer may release a small frame, wait for the next production interval, and repeat. Acknowledgements can arrive throughout this process although the sender never fills the permitted window. If every acknowledged byte triggers unrestricted growth, cwnd can become much larger than the largest flight that was tested. If growth is always suppressed, the sender retains a conservative window even while successfully delivering successive flights. The project studies the space between these two behaviours.
+
+
+QUIC is an appropriate setting because it separates reliable transport operation from the application workload while allowing the congestion controller to be implemented in a user-space library. RFC 9000 defines the transport, including streams and flow control \cite{ref4}. The present work changes the sender-side CUBIC controller in picoquic; it does not redesign the application protocol, cryptography, or receiver. A receiver still acknowledges data normally. This keeps the experiment focused on the relationship between transmitted flight size and future sending permission.
+
+
+\subsection*{1.2 Meaning of rate limitation}
+
+Three quantities must be distinguished: application supply, bytes currently in flight, and cwnd. The application can offer less data than cwnd allows. FlightSize represents outstanding congestion-controlled data, while cwnd bounds how much may remain outstanding. Receiver flow control can impose a further limit. Pacing introduces deliberate spacing between packets and should not automatically be mistaken for insufficient application demand. The live workload here deliberately limits application supply; receiver-credit exhaustion is outside its measured coverage.
+
+
+A larger congestion window therefore need not produce a higher receive rate. If a workload releases only 1200 bytes twenty times per second, its nominal payload production rate is fixed near 192 kbit/s. Raising its window from 15 KiB to 30 KiB cannot create extra application bytes. The expected observation is controlled growth of permission followed by a stable ceiling. This distinction guides both workload design and the interpretation of the final graphs.
+
+
+The project goal is consequently a change in sender behaviour with observable bounds, rather than a promise of throughput improvement in every application. Its usefulness must be assessed through state accounting, reset behaviour, and compatibility as well as transfer completion. The following sections connect those requirements to the inspected implementation and the retained experiments \cite{ref12,ref13}.
+
+
+\clearpage
+\subsection*{1.3 Problem addressed in this implementation}
+
+The pre-RLI picoquic CUBIC implementation uses sender-limited timing information to suppress ordinary window increases when the application has not used its allowance. It also relies on common slow-start helpers that can gate increases on whether the sender was congestion-window blocked. Removing only one timing condition would therefore be incomplete. The new behaviour has to permit the candidate increase at the correct locations, then apply a consistent limit before exposing the new cwnd to subsequent transmission \cite{ref12}.
+
+
+The central implementation problem is to preserve evidence of actual flight-size peaks. An acknowledgement reduces outstanding data, so measuring only at ACK time can miss the largest flight that existed between acknowledgements. The maximum must be updated where send and removal accounting changes bytes\_in\_transit. A congestion-window reduction begins a new observation interval, so a previously large flight must not silently authorize future growth indefinitely after recovery. These requirements cross the sender, congestion-control, and logging modules.
+
+
+\subsection*{1.4 Objectives and deliverables}
+
+The work has five connected objectives. First, inspect picoquic's congestion-control structures and build a genuine pre-change baseline. Second, construct the supplied Linux namespace topology and collect original CUBIC traces. Third, implement optional RLI state, bounded growth, and reduction resets for CUBIC. Fourth, repeat identical workloads with RLI enabled and retain enough metadata to trace each graph to its source and executable. Fifth, validate the expected growth and record limits that cannot be resolved from the campaign alone.
+
+
+The Ubuntu experiment records are archived in the repository under \path{results/}. The main campaign compares fixed-rate and bulk workloads with three repetitions per mode. A second experiment runs two competing connections on a shared bottleneck. The archive contains measurements, plots, and raw traces \cite{ref13}.
+
+
+\label{sec:introduction-end}

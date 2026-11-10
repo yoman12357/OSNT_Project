@@ -85,3 +85,15 @@ token_store_test.bin
 ack_disorder_test.csv
 ack_horizon_test.csv
 ech_ticket_store.bin
+
+# Local tools, unpacked evidence, and report compiler intermediates
+/.local-deps/
+/.venv/
+/graphify-out/
+/results/runs/
+/results/dumbbell/baseline/
+/results/dumbbell/rli/
+/results/archive/
+/results/pdf-preview/
+/results/report1-preview/
+/results/report-source/build/

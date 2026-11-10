@@ -10,8 +10,10 @@ Usage:
 """
 
 import argparse
+import gzip
 import json
 import os
+import re
 import sys
 
 
@@ -22,17 +24,27 @@ METRICS = (
     "rli_max_flight_size",
     "rli_cwnd_limit",
     "rli_capped",
+    "rli_reset_count",
+    "latest_rtt",
+    "smoothed_rtt",
+    "min_rtt",
 )
+
+
+def open_qlog(path):
+    """Read either a plain qlog or a losslessly compressed retained trace."""
+    opener = gzip.open if str(path).endswith(".gz") else open
+    return opener(path, "rt", encoding="utf-8", errors="strict")
 
 
 def detect_time_divisor(path):
     """Return the number of qlog time units per second."""
-    with open(path, "r", encoding="utf-8", errors="ignore") as qlog_file:
+    with open_qlog(path) as qlog_file:
         preamble = qlog_file.read(2000)
-    if '"time_units": "ms"' in preamble:
-        return 1_000.0
-    if '"time_units": "us"' in preamble:
-        return 1_000_000.0
+    match = re.search(r'"time_units"\s*:\s*"(s|ms|us|ns)"', preamble)
+    if match:
+        return {"s": 1.0, "ms": 1_000.0, "us": 1_000_000.0,
+                "ns": 1_000_000_000.0}[match.group(1)]
     return 1_000_000.0
 
 
@@ -48,7 +60,7 @@ def parse_qlog(path, selected_path=None):
     states = {}
     samples = []
 
-    with open(path, "r", encoding="utf-8", errors="ignore") as qlog_file:
+    with open_qlog(path) as qlog_file:
         for raw_line in qlog_file:
             line = raw_line.strip().rstrip(",")
             if not line.startswith("["):
@@ -76,10 +88,16 @@ def parse_qlog(path, selected_path=None):
             state = states.setdefault(
                 path_id, {metric: None for metric in METRICS}
             )
+            # The qlog writer's delta cache starts at zero for these fields.
+            # An omitted first zero therefore means false/zero, not unknown.
+            for metric in ("app_limited", "rli_capped", "bytes_in_flight"):
+                if state[metric] is None:
+                    state[metric] = 0
 
             for metric in METRICS:
                 if metric in data:
-                    state[metric] = float(data[metric])
+                    # Preserve uint64 values exactly for overflow validation.
+                    state[metric] = data[metric]
 
             if state["cwnd"] is not None:
                 sample = dict(state)

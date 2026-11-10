@@ -1,0 +1,13 @@
+{
+  "latex_compiler_exit_code": 0,
+  "pages": 24,
+  "pdf_author_is_correct": true,
+  "text_extracts": true,
+  "expected_sections_present": true,
+  "undefined_references_or_citations": false,
+  "overfull_boxes": 0,
+  "embedded_plot_images": 19,
+  "pdf_size_bytes": 2944252,
+  "all_five_names_on_cover": true,
+  "technical_pdf_checks_pass": true
+}

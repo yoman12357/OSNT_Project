@@ -45,6 +45,7 @@ typedef struct st_qlog_fns_path_context_t {
     uint64_t cc_param;
     uint64_t rli_max_flight_size;
     uint64_t rli_cwin_limit;
+    uint64_t rli_reset_count;
 
     unsigned int last_bw_estimate_path_limited : 1;
     unsigned int rli_capped : 1;
@@ -836,7 +837,8 @@ void qlog_fns_cc_dump_path(picoquic_path_t* path,
             (path->is_rli_enabled &&
                 (path->rli_max_flight_size != path_ctx->rli_max_flight_size ||
                     path->rli_cwin_limit != path_ctx->rli_cwin_limit ||
-                    path->was_cwin_limited_by_rli != path_ctx->rli_capped))
+                    path->was_cwin_limited_by_rli != path_ctx->rli_capped ||
+                    path->rli_reset_count != path_ctx->rli_reset_count))
 #if 1
         /* Bug compatibility with first implementation */
 #else
@@ -907,6 +909,14 @@ void qlog_fns_cc_dump_path(picoquic_path_t* path,
         if (path->is_rli_enabled && path->was_cwin_limited_by_rli != path_ctx->rli_capped) {
             fprintf(f, "%s\"rli_capped\": %u", comma, path->was_cwin_limited_by_rli);
             path_ctx->rli_capped = path->was_cwin_limited_by_rli;
+            comma = ",";
+        }
+
+        if (path->is_rli_enabled) {
+            /* Keep resets observable even if FlightSize is rebuilt before
+             * the next logged sample. The initial zero is explicit. */
+            fprintf(f, "%s\"rli_reset_count\": %" PRIu64, comma, path->rli_reset_count);
+            path_ctx->rli_reset_count = path->rli_reset_count;
         }
 
         fprintf(f, "}]");
