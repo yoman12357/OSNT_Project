@@ -1,0 +1,15 @@
+samples=848, cwnd_increases=13, cwnd_reductions=0, maxfs_resets=0, maxfs_increases=0, cap_active_samples=819
+metric,baseline,rli,delta,rli_change_percent
+duration_seconds,20.0537,20.0541,0.000475,0.00236864
+cwnd_min_bytes,15360,15360,0,0
+cwnd_max_bytes,15360,30720,15360,100
+cwnd_final_bytes,15360,30720,15360,100
+cwnd_time_average_bytes,15360,30522.9,15162.9,98.7169
+flight_max_bytes,3426,3426,0,0
+flight_time_average_bytes,1619.1,1635.75,16.6498,1.02833
+app_limited_time_fraction,1,1,0,0
+rli_capped_time_fraction,,1,,
+Saved comparison to: /home/aryy_02/Desktop/OSNT_Project/results 1/comparisons/rate-limited-1.csv
+PASS: comparison uses observed values; it does not assume that a larger or smaller cwnd is inherently better
+
+Report analysis includes the logger's initial zero cap interval when calculating rli_capped_time_fraction. The report CSV supersedes that field in the raw tool output.

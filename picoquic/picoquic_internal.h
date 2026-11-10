@@ -1159,6 +1159,7 @@ typedef struct st_picoquic_path_t {
      * recent congestion-window reduction. */
     uint64_t rli_max_flight_size;
     uint64_t rli_cwin_limit;
+    uint64_t rli_reset_count;
     uint64_t last_sender_limited_time;
     uint64_t last_cwin_blocked_time;
     uint64_t last_time_acked_data_frame_sent;

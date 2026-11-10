@@ -1,61 +1,51 @@
 # Rate-limited sender project progress
 
-Steps 1-5 are complete. Step 6 is implemented locally and awaiting the full
-native-Linux regression run. Steps 7-8 require new experiment data.
+The final retained campaign was executed on Ubuntu 26.04 LTS, Linux kernel
+7.0.0-38-generic. See [results/README.md](results/README.md) for the report,
+measurements, test logs, environment record, and reproducible commands.
 
-## Completed
+| Step | Recorded completion evidence |
+|---|---|
+| 1. Installation and build | Separate baseline and RLI builds; results/tests/status.json |
+| 2. Congestion-control study | IMPLEMENTATION_PLAN.md; report-source/sections/04-implementation.tex |
+| 3. Linux topology | Four-namespace single-flow path and six-namespace two-flow dumbbell; topology checks retained |
+| 4. Original baseline | Pre-RLI revision 5a4eba47; three runs for each main workload |
+| 5. RLI design | Per-path maximum-flight tracking; Slow Start and additive CA limits |
+| 6. Implementation and testing | Both registered CTest suites and the focused cubic_rli test passed in the retained campaign |
+| 7. RLI experiments | Six main RLI runs and three two-flow RLI experiments |
+| 8. Validation and comparison | 18 experiments, 24 completed connections; main and supplementary RLI checks passed |
 
-1. **Picoquic installed and verified** on native Linux. See
-   `project_docs/step-1-installation-and-verification.md`.
-2. **Congestion-control architecture and CUBIC studied**. See
-   `project_docs/step-2-congestion-control-study.md`.
-3. **Linux netns dumbbell topology created and tested**. See `topology/`.
-4. **Baseline bulk CUBIC experiment and cwnd plot captured**. See
-   `project_docs/step-4-baseline-experiment.md` and
-   `experiments/baseline/cubic_cwnd_baseline.png`.
-5. **RLI changes mapped to picoquic**. See
-   `project_docs/step-5-rli-design.md`.
-
-## In progress
-
-6. **CUBIC RLI implementation**:
-   - opt-in using `-G cubic -H rli=on`;
-   - per-path `maxFS` accounting;
-   - Slow Start and Congestion Avoidance caps;
-   - reset/recovery and spurious-loss handling;
-   - qlog metrics, plotting, and focused `cubic_rli` test.
-
-   The changed C files compile. Native-Linux focused and full-suite execution
-   remains before Step 6 is complete. See
-   `project_docs/step-6-implementation.md`.
-
-## Remaining
-
-7. Run matched baseline/RLI experiments three times for the rate-limited and
-   bulk workloads using `experiments/run_comparison.sh`.
-8. Validate every cwnd increase against the recorded RLI limit and compare
-   throughput/loss behavior with the baseline.
-
-## Important files
+## Final evidence layout
 
 ```text
-IMPLEMENTATION_PLAN.md
-project_docs/
-    step-1-installation-and-verification.md
-    step-2-congestion-control-study.md
-    step-4-baseline-experiment.md
-    step-5-rli-design.md
-    step-6-implementation.md
-topology/
-    setup.sh
-    check.sh
-    cleanup.sh
-experiments/
-    README.md
-    run_comparison.sh
-    baseline/cubic_cwnd_baseline.png
-plot_cwnd.py
-picoquic/cubic.c
-picoquic/sender.c
-picoquictest/congestion_test.c
+results/
+  Final report.pdf
+  README.md
+  report-source/           # Editable source and assets for the final PDF
+  environment.json        # Recorded Linux environment and source/binary identities
+  measurements.csv
+  summary.json
+  plots/                  # 12 main plots, overview, and 6 two-flow plots
+  tests/                  # Build and regression evidence
+  comparisons/
+  validation/
+  dumbbell/               # Two-flow measurements and checks
+  raw-evidence.tar.gz     # 240 raw files, including 48 qlogs
+  SHA256SUMS
 ```
+
+The raw archive restores the main runs and the two-flow run directories.
+The consolidated bundle supersedes the earlier results layout. Historical
+verification JSON and source identifiers describe the runs when collected.
+The existing local runtime edits are separate from the evaluated revision
+60323926; this repository cleanup does not establish a new C regression run.
+
+## Interpretation and limits
+
+RLI increased the limited-sender window from 15 KiB to 30 KiB. Its fixed
+application supply kept throughput essentially unchanged. The reported bulk
+and competing-flow measurements describe three repetitions of the tested
+conditions. They do not establish a universal speedup or full IETF conformance.
+The implementation uses the conservative maxFS + send_mtu CA ceiling.
+
+Reproduction instructions are in [experiments/README.md](experiments/README.md).

@@ -1,5 +1,11 @@
 # picoquic
 
+This OSNT fork implements and evaluates Rate-Limited Increase (RLI) for CUBIC.
+The final report, Linux verification, original/RLI comparisons, raw evidence, and graphs are in
+[results/README.md](results/README.md). See [PROJECT_PROGRESS.md](PROJECT_PROGRESS.md)
+for completion status and [experiments/README.md](experiments/README.md) to reproduce
+the Ubuntu Linux build, tests, and experiments. The upstream documentation follows.
+
 Minimalist implementation of the QUIC protocol, as defined by the IETF.
 The IETF spec started with the version of QUIC defined by Google and
 implemented in Chrome, but the IETF spec is independent of Chrome, and

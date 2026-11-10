@@ -1,0 +1,250 @@
+{
+  "runs": [
+    {
+      "mode": "baseline",
+      "repetition": 1,
+      "client_wall_seconds": 17.973646462000033,
+      "combined_wall_throughput_mbps": 18.668743302001165,
+      "sum_of_connection_rates_mbps": 17.470608,
+      "jain_fairness": 0.9999999585240986,
+      "source_commit": "5a4eba475555a2b0d67fbd9000714be35b3db4b4",
+      "binary_sha256": "2f2a8d4f3e1472e83694ecfafe3e30d0b2ad3bdfecd9fc7a05d4b63fa57c859a",
+      "flows": [
+        {
+          "flow": 1,
+          "qlog": "dumbbell/baseline/run-1/flow-1/518b502c1f23df34.e99c.server.qlog",
+          "throughput_mbps": 8.737083,
+          "duration_seconds": 19.20237,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 302,
+          "validation_errors": [],
+          "counters": {}
+        },
+        {
+          "flow": 2,
+          "qlog": "dumbbell/baseline/run-1/flow-2/0993b4ac2f884123.f5e.server.qlog",
+          "throughput_mbps": 8.733525,
+          "duration_seconds": 19.210192,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 313,
+          "validation_errors": [],
+          "counters": {}
+        }
+      ]
+    },
+    {
+      "mode": "rli",
+      "repetition": 1,
+      "client_wall_seconds": 17.963231834999533,
+      "combined_wall_throughput_mbps": 18.679566966687137,
+      "sum_of_connection_rates_mbps": 17.523760000000003,
+      "jain_fairness": 0.9999951836647931,
+      "source_commit": "60323926df8ef75c440f959789ac4d043071879d",
+      "binary_sha256": "cd25e2c67aa61c81a38757bd3d581bb7bd6b55c15ef2a4a1de657ac7fd92d05c",
+      "flows": [
+        {
+          "flow": 1,
+          "qlog": "dumbbell/rli/run-1/flow-1/b19a56ae48551300.178.server.qlog",
+          "throughput_mbps": 8.742651,
+          "duration_seconds": 19.190139,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 216,
+          "validation_errors": [],
+          "counters": {
+            "samples": 16445,
+            "cwnd_increases": 1225,
+            "cwnd_reductions": 32,
+            "maxfs_resets": 3,
+            "maxfs_increases": 700,
+            "cap_active_samples": 4851
+          }
+        },
+        {
+          "flow": 2,
+          "qlog": "dumbbell/rli/run-1/flow-2/d373ef88650b041f.587.server.qlog",
+          "throughput_mbps": 8.781109,
+          "duration_seconds": 19.106094,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 229,
+          "validation_errors": [],
+          "counters": {
+            "samples": 16476,
+            "cwnd_increases": 1223,
+            "cwnd_reductions": 33,
+            "maxfs_resets": 3,
+            "maxfs_increases": 689,
+            "cap_active_samples": 5134
+          }
+        }
+      ]
+    },
+    {
+      "mode": "rli",
+      "repetition": 2,
+      "client_wall_seconds": 18.065292501998556,
+      "combined_wall_throughput_mbps": 18.574035928999145,
+      "sum_of_connection_rates_mbps": 15.751476,
+      "jain_fairness": 0.9995387888788891,
+      "source_commit": "60323926df8ef75c440f959789ac4d043071879d",
+      "binary_sha256": "cd25e2c67aa61c81a38757bd3d581bb7bd6b55c15ef2a4a1de657ac7fd92d05c",
+      "flows": [
+        {
+          "flow": 1,
+          "qlog": "dumbbell/rli/run-2/flow-1/0f107be38ba0ca83.6fd4.server.qlog",
+          "throughput_mbps": 8.044915,
+          "duration_seconds": 20.854502,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 241,
+          "validation_errors": [],
+          "counters": {
+            "samples": 16443,
+            "cwnd_increases": 1193,
+            "cwnd_reductions": 34,
+            "maxfs_resets": 3,
+            "maxfs_increases": 703,
+            "cap_active_samples": 5100
+          }
+        },
+        {
+          "flow": 2,
+          "qlog": "dumbbell/rli/run-2/flow-2/c3d3718c5ca4bc50.b133.server.qlog",
+          "throughput_mbps": 7.706561,
+          "duration_seconds": 21.770112,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 236,
+          "validation_errors": [],
+          "counters": {
+            "samples": 16457,
+            "cwnd_increases": 1194,
+            "cwnd_reductions": 35,
+            "maxfs_resets": 3,
+            "maxfs_increases": 712,
+            "cap_active_samples": 5413
+          }
+        }
+      ]
+    },
+    {
+      "mode": "baseline",
+      "repetition": 2,
+      "client_wall_seconds": 17.979661813998973,
+      "combined_wall_throughput_mbps": 18.662497407973724,
+      "sum_of_connection_rates_mbps": 18.206249,
+      "jain_fairness": 0.998713082296298,
+      "source_commit": "5a4eba475555a2b0d67fbd9000714be35b3db4b4",
+      "binary_sha256": "2f2a8d4f3e1472e83694ecfafe3e30d0b2ad3bdfecd9fc7a05d4b63fa57c859a",
+      "flows": [
+        {
+          "flow": 1,
+          "qlog": "dumbbell/baseline/run-2/flow-1/d8ed90c278492e7c.eb5f.server.qlog",
+          "throughput_mbps": 9.429897,
+          "duration_seconds": 17.791573,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 204,
+          "validation_errors": [],
+          "counters": {}
+        },
+        {
+          "flow": 2,
+          "qlog": "dumbbell/baseline/run-2/flow-2/356ab7987b31d197.8611.server.qlog",
+          "throughput_mbps": 8.776352,
+          "duration_seconds": 19.116451,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 239,
+          "validation_errors": [],
+          "counters": {}
+        }
+      ]
+    },
+    {
+      "mode": "baseline",
+      "repetition": 3,
+      "client_wall_seconds": 17.977426122000907,
+      "combined_wall_throughput_mbps": 18.664818296171838,
+      "sum_of_connection_rates_mbps": 17.708676,
+      "jain_fairness": 0.9998713727690675,
+      "source_commit": "5a4eba475555a2b0d67fbd9000714be35b3db4b4",
+      "binary_sha256": "2f2a8d4f3e1472e83694ecfafe3e30d0b2ad3bdfecd9fc7a05d4b63fa57c859a",
+      "flows": [
+        {
+          "flow": 1,
+          "qlog": "dumbbell/baseline/run-3/flow-1/15304433df715807.6148.server.qlog",
+          "throughput_mbps": 8.753911,
+          "duration_seconds": 19.165456,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 146,
+          "validation_errors": [],
+          "counters": {}
+        },
+        {
+          "flow": 2,
+          "qlog": "dumbbell/baseline/run-3/flow-2/4019b40734f2f3be.95b7.server.qlog",
+          "throughput_mbps": 8.954765,
+          "duration_seconds": 18.735577,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 146,
+          "validation_errors": [],
+          "counters": {}
+        }
+      ]
+    },
+    {
+      "mode": "rli",
+      "repetition": 3,
+      "client_wall_seconds": 18.0193959169992,
+      "combined_wall_throughput_mbps": 18.62134521854043,
+      "sum_of_connection_rates_mbps": 17.525546,
+      "jain_fairness": 0.9999986344229876,
+      "source_commit": "60323926df8ef75c440f959789ac4d043071879d",
+      "binary_sha256": "cd25e2c67aa61c81a38757bd3d581bb7bd6b55c15ef2a4a1de657ac7fd92d05c",
+      "flows": [
+        {
+          "flow": 1,
+          "qlog": "dumbbell/rli/run-3/flow-1/b1d27e2c5d40e36f.2cc8.server.qlog",
+          "throughput_mbps": 8.752533,
+          "duration_seconds": 19.168473,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 184,
+          "validation_errors": [],
+          "counters": {
+            "samples": 16393,
+            "cwnd_increases": 1127,
+            "cwnd_reductions": 53,
+            "maxfs_resets": 3,
+            "maxfs_increases": 702,
+            "cap_active_samples": 6325
+          }
+        },
+        {
+          "flow": 2,
+          "qlog": "dumbbell/rli/run-3/flow-2/fe52774d5631e4f8.870.server.qlog",
+          "throughput_mbps": 8.773013,
+          "duration_seconds": 19.123725,
+          "sent_bytes": 20971587,
+          "received_bytes": 20971587,
+          "retransmissions": 192,
+          "validation_errors": [],
+          "counters": {
+            "samples": 16436,
+            "cwnd_increases": 1100,
+            "cwnd_reductions": 13,
+            "maxfs_resets": 3,
+            "maxfs_increases": 743,
+            "cap_active_samples": 6652
+          }
+        }
+      ]
+    }
+  ]
+}

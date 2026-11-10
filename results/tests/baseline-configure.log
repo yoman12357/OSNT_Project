@@ -1,0 +1,28 @@
+cwd=/home/aryy_02/Desktop/OSNT_Project
+command=['cmake', '-S', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline', '-B', '/home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline/build', '-G', 'Ninja', '-DPICOQUIC_FETCH_PTLS=Y', '-DWITH_OPENSSL=ON', '-DCMAKE_BUILD_TYPE=RelWithDebInfo', '-DCMAKE_C_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu', '-DCMAKE_CXX_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu', '-DFETCHCONTENT_SOURCE_DIR_PICOTLS=/home/aryy_02/Desktop/OSNT_Project/build/_deps/picotls-src', '-DOPENSSL_INCLUDE_DIR=/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include', '-DOPENSSL_CRYPTO_LIBRARY=/usr/lib/x86_64-linux-gnu/libcrypto.so.3', '-DOPENSSL_SSL_LIBRARY=/usr/lib/x86_64-linux-gnu/libssl.so.3']
+-- Initial CMAKE_C_FLAGS=-I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu
+-- Detecting USDT support
+-- Detecting USDT support - not found
+-- Detecting fusion support
+-- Can use fusion
+-- Enabling 'fusion' AES-GCM engine
+-- Checking for module 'libbrotlidec'
+--   Package 'libbrotlidec' not found
+-- Checking for module 'libbrotlienc'
+--   Package 'libbrotlienc' not found
+--   Enabling OpenSSL support
+-- picotls/include: /home/aryy_02/Desktop/OSNT_Project/build/_deps/picotls-src/include
+-- picotls libraries: picotls-core;picotls-openssl;picotls-fusion;picotls-minicrypto
+-- PTLS Fusion is enabled
+-- root: 
+-- OpenSSL_VERSION: 3.5.5
+-- OpenSSL_INCLUDE_DIR: /home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include
+-- OpenSSL_LIBRARIES: /usr/lib/x86_64-linux-gnu/libssl.so.3;/usr/lib/x86_64-linux-gnu/libcrypto.so.3
+-- CMAKE_C_FLAGS: -I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu
+-- CMAKE_CXX_FLAGS: -I/home/aryy_02/Desktop/OSNT_Project/.local-deps/libssl-dev/usr/include/x86_64-linux-gnu
+-- Defining picoquic-core
+-- mbedtls/include: 
+-- Project version: 0.0.0-60323926
+-- Configuring done (0.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/aryy_02/Desktop/OSNT_Project/.local-deps/report-baseline/build

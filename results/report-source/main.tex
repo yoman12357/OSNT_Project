@@ -1,0 +1,66 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage[left=0.95in,right=0.95in,top=0.8in,bottom=0.8in,headheight=15pt,headsep=12pt]{geometry}
+\usepackage{graphicx,array,tabularx,caption}
+\usepackage{titlesec,fancyhdr,microtype}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Implementation of Rate-Limited Sender Functionality in picoquic},
+  pdfauthor={Aryan Bokolia, Affan Arshad, Soumyadeep Raj, Kevin Shiju George, Aryan Palimkar}}
+\urlstyle{same}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlength{\emergencystretch}{3em}
+\titleformat{\section}{\fontsize{16}{19}\selectfont\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\fontsize{13}{16}\selectfont\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{0.6em}{0.7em}
+\titlespacing*{\subsection}{0pt}{0.65em}{0.4em}
+\captionsetup{font=small,labelfont=bf,justification=centering,hypcap=false}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small Rate-Limited Increase in picoquic}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{1.25cm}
+{\Large\bfseries OSNT Mini-Project Report\par}
+\vspace{0.3cm}
+{\large Project \#16\par}
+\vspace{0.8cm}
+\rule{0.9\linewidth}{0.9pt}\par
+\vspace{0.55cm}
+{\fontsize{23}{28}\selectfont\bfseries Implementation of Rate-Limited Sender Functionality in the picoquic Library\par}
+\vspace{0.35cm}
+{\large CUBIC congestion control for QUIC\par}
+\vspace{0.55cm}
+\rule{0.9\linewidth}{0.45pt}\par
+\vspace{1.3cm}
+{\large\bfseries Project team\par}
+\vspace{0.35cm}
+{\large
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{c}
+Aryan Bokolia\\
+Affan Arshad\\
+Soumyadeep Raj\\
+Kevin Shiju George\\
+Aryan Palimkar
+\end{tabular}\par}
+\vfill
+{\large 9 November 2026\par}
+\vspace{1.2cm}
+\end{center}
+\input{sections/00-abstract}
+\input{sections/01-introduction}
+\input{sections/02-literature-review}
+\input{sections/03-proposed-approach}
+\input{sections/04-implementation}
+\input{sections/05-results-analysis}
+\input{sections/06-conclusions}
+\input{sections/07-references}
+\input{sections/08-appendix}
+\end{document}

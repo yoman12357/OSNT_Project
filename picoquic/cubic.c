@@ -91,6 +91,9 @@ static void cubic_rli_reset_after_reduction(picoquic_path_t* path_x)
         path_x->rli_max_flight_size = 0;
         path_x->rli_cwin_limit = 0;
         path_x->was_cwin_limited_by_rli = 0;
+        if (path_x->rli_reset_count < UINT64_MAX) {
+            path_x->rli_reset_count++;
+        }
     }
 }
 
@@ -101,6 +104,14 @@ static void cubic_rli_apply_limit(picoquic_cubic_state_t* cubic_state,
         uint64_t limit = cubic_rli_limit(cubic_state, path_x);
         path_x->rli_cwin_limit = limit;
         path_x->was_cwin_limited_by_rli = 0;
+
+        /* Moving the epoch past an application-limited interval can lower
+         * W_cubic. An ACK is a growth opportunity, not a congestion signal:
+         * do not turn that lower candidate into a cwnd reduction without
+         * the recovery/reset processing required by RLI. */
+        if (path_x->cwin < previous_cwin) {
+            path_x->cwin = previous_cwin;
+        }
 
         if (path_x->cwin > previous_cwin && path_x->cwin > limit) {
             /* RLI limits increases; it does not reduce an already larger
@@ -133,6 +144,7 @@ static void cubic_reset(picoquic_cubic_state_t* cubic_state, picoquic_path_t* pa
     cubic_state->W_reno = PICOQUIC_CWIN_INITIAL;
     cubic_state->recovery_sequence = 0;
     path_x->rli_max_flight_size = path_x->is_rli_enabled ? PICOQUIC_CWIN_INITIAL : 0;
+    path_x->rli_reset_count = 0;
     path_x->rli_cwin_limit = path_x->is_rli_enabled ? 2 * PICOQUIC_CWIN_INITIAL : 0;
     path_x->was_cwin_limited_by_rli = 0;
 }
@@ -677,6 +689,7 @@ static void cubic_delete(picoquic_path_t* path_x)
     path_x->was_cwin_limited_by_rli = 0;
     path_x->rli_max_flight_size = 0;
     path_x->rli_cwin_limit = 0;
+    path_x->rli_reset_count = 0;
 }
 
 /* Observe the state of congestion control */

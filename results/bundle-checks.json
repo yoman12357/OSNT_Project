@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "main_experiments": 12,
+  "supplementary_experiments": 6,
+  "completed_connections": 24,
+  "raw_files": 240,
+  "raw_qlogs": 48,
+  "plots": 19,
+  "current_validator_traces_with_errors": 9,
+  "validation_note": "Inventory completeness is separate from the newer validator's findings; see current-validator-checks.json.",
+  "recorded_linux_uname": "Linux aryy-Victus-by-HP-Gaming-Laptop-15-fa1xxx 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026 x86_64 GNU/Linux",
+  "scope": "Inventory and archive checks of retained evidence; no new network experiments or C regression run.",
+  "errors": []
+}

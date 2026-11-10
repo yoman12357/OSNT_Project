@@ -1,0 +1,57 @@
+\clearpage
+\section*{2. Literature Review}
+\label{sec:literature}
+\subsection*{2.1 Window-based congestion control}
+
+RFC 5681 provides the TCP baseline for slow start, congestion avoidance, and recovery \cite{ref5}. Slow start probes available capacity through comparatively rapid window increases, whereas congestion avoidance grows more cautiously. These mechanisms relate acknowledgement feedback to outstanding transmission. The relevant lesson for this project is that successfully acknowledging a small amount of data is weaker evidence than successfully carrying a full large window. The review therefore emphasizes how much of the permitted window was exercised, rather than the existence of ACKs alone.
+
+
+A flight-history-based bound makes this distinction explicit. It ties future permission to an outstanding-data quantity that the sender has actually observed. For implementation, this means that data-accounting semantics matter as much as the final growth formula. A maximum computed after acknowledgement removal alone could understate a peak, whereas a maximum kept unchanged through genuine reductions could retain stale permission. Both errors can occur even if the top-level congestion-control equation appears reasonable.
+
+
+\subsection*{2.2 QUIC transport and congestion feedback}
+
+RFC 9000 supplies the QUIC transport context \cite{ref4}. Independent streams and connection-level operation make it possible for demand and available sending credit to vary without implying a change in path capacity. For the project, the relevant separation is between the application's production schedule and the transport controller's allowance. The experiment changes the latter while keeping the workload definition fixed, so the cause of an observed cwnd difference is easier to identify.
+
+
+RFC 9002 describes QUIC loss detection and congestion control \cite{ref3}. Its underutilization guidance discourages congestion-window increases when bytes in flight are below the window for reasons other than pacing. This provides a conservative reference for the original implementation. The new experiment asks whether bounded growth can replace that suppression while retaining the ordinary congestion response. It does not treat RLI as permission to ignore loss, ECN, or the distinction between an ACK event and a congestion event.
+
+
+
+
+
+\clearpage
+\subsection*{2.3 CUBIC as the baseline controller}
+
+RFC 9438 specifies the CUBIC window function and its Reno-friendly alternative \cite{ref2}. The cubic curve is conventionally written W\_cubic(t) = C(t - K)\textasciicircum{}3 + W\_max. The controller selects a candidate using both the cubic and Reno-friendly calculations. The RFC also excludes application-limited intervals from elapsed growth time and conservatively suppresses window growth for application-limited flows. These features are directly relevant to the project because enabling bounded growth must not accidentally count idle time as capacity-probing time.
+
+
+The inspected picoquic fork has a private CUBIC state structure holding phase, threshold, epoch, and curve variables. Its constants include C = 0.4, a loss beta of 3/4, and an ECN beta of 7/8 \cite{ref12}. These are properties of the tested source; they should not be substituted with values remembered from a different CUBIC implementation. Both experiment versions inherit the fork's controller choices. The measured baseline is therefore the recorded picoquic revision, not a claim that every parameter exactly reproduces every aspect of the RFC.
+
+
+A further implementation consequence concerns the Reno-friendly shadow window. Applying a limit only to the exposed cwnd can leave an internal candidate above the permitted value. On the next acknowledgement, that state may restore the growth that was just removed. The project clips the shadow window to the allowed result. This is a source-level consistency measure that a plot of cwnd alone would not reveal, and it motivates focused state-transition tests in addition to live transfers.
+
+
+\subsection*{2.4 Delay-based startup interpretation}
+
+RFC 9406 describes HyStart++, which uses delay information to leave slow start and includes protection against premature exit \cite{ref7}. The inspected picoquic implementation uses its own HyStart-related RTT filter and recovery path. The report does not assert full RFC 9406 equivalence. This literature supports a narrower interpretive point: a startup window reduction need not prove packet loss. In the single-flow runs, recorded retransmissions are zero, so the drop in the bulk cwnd graph is described as consistent with the implementation's delay response.
+
+
+\clearpage
+\subsection*{2.5 Rate-Limited Increase specification}
+
+The principal specification is \nolinkurl{draft-ietf-ccwg-ratelimited-increase-11}, published on 6 September 2026 \cite{ref1}. It introduces maxFS as flight-size history, initializes it using the initial window, updates it when FlightSize changes, and resets it after a window reduction. Growth is then limited according to what one successfully acknowledged maxFS-sized flight would permit. The document gives explicit slow-start and ordinary congestion-avoidance expressions and updates the conservative application-limited guidance for CUBIC and QUIC.
+
+
+Section 3 defines the limit in terms of the growth allowed after one maxFS-sized flight. Its additive congestion-avoidance example follows RFC 5681. Section 4.5 applies the Section 3 rules to CUBIC \cite{ref1}. In this implementation, CUBIC computes its usual candidate and the Reno-friendly estimate. RLI caps the larger value at maxFS + send\_mtu \cite{ref12}. This applies the additive example as a conservative implementation choice for the time-based CUBIC curve.
+
+
+\subsection*{2.6 Implementation and emulation resources}
+
+The official picoquic repository provides the implementation context \cite{ref8}. The local checkout supplies a congestion-control callback interface, per-path transport state, packet accounting, tests, and logging. The project extends those existing facilities instead of introducing a separate transport model. This is why implementation validation must consider packet accounting and internal CUBIC state, rather than merely draw a theoretical congestion curve.
+
+
+Linux network namespaces isolate networking resources such as interfaces and routing tables \cite{ref9}. Virtual Ethernet links connect the endpoint and router namespaces. The tc-netem manual describes delay, rate, queue limits, and other emulation controls \cite{ref10}. The project uses these facilities to execute actual QUIC connections over a controlled local path. Accordingly, the experiments are network emulation, not a discrete-event simulation with synthetic transport results.
+
+
+\label{sec:literature-end}

@@ -27,6 +27,7 @@ def validate(samples, expect_reduction=False, require_cap=False,
         "maxfs_resets": 0,
         "maxfs_increases": 0,
         "cap_active_samples": 0,
+        "unobserved_peak_intervals": 0,
     }
 
     if not samples:
@@ -65,10 +66,25 @@ def validate(samples, expect_reduction=False, require_cap=False,
         previous_maxfs = previous["rli_max_flight_size"]
         flight = sample["bytes_in_flight"]
         capped = sample["rli_capped"] == 1
+        reset_count = sample.get("rli_reset_count")
+        previous_reset_count = previous.get("rli_reset_count")
+        has_reset_counter = reset_count is not None and previous_reset_count is not None
+        reset_seen = has_reset_counter and reset_count > previous_reset_count
         reduced = (
             cwnd is not None and previous_cwnd is not None
             and cwnd < previous_cwnd
         )
+
+        if has_reset_counter and reset_count < previous_reset_count:
+            errors.append(f"sample {index}: RLI reset counter decreased")
+        if reset_seen:
+            counters["maxfs_resets"] += reset_count - previous_reset_count
+        if reduced:
+            if has_reset_counter and not reset_seen:
+                errors.append(f"sample {index}: cwnd decreased without resetting maxFS")
+            elif not has_reset_counter and maxfs is not None and previous_maxfs is not None:
+                if maxfs >= previous_maxfs and maxfs != 0:
+                    errors.append(f"sample {index}: cwnd decreased without an observable maxFS reset")
 
         if capped:
             counters["cap_active_samples"] += 1
@@ -97,9 +113,9 @@ def validate(samples, expect_reduction=False, require_cap=False,
 
         if maxfs is not None and previous_maxfs is not None:
             if maxfs < previous_maxfs:
-                if reduced:
+                if reduced and not has_reset_counter:
                     counters["maxfs_resets"] += 1
-                else:
+                elif not reduced and not reset_seen:
                     errors.append(
                         f"sample {index}: maxFS fell from {int(previous_maxfs)} "
                         f"to {int(maxfs)} without a visible cwnd reduction"
@@ -107,16 +123,22 @@ def validate(samples, expect_reduction=False, require_cap=False,
             elif maxfs > previous_maxfs:
                 counters["maxfs_increases"] += 1
 
-            if not reduced and flight is not None:
+            if not reduced and not reset_seen and flight is not None:
                 expected_maxfs = max(previous_maxfs, flight)
-                if maxfs != expected_maxfs:
+                # qlog snapshots can combine several packet sends/dequeues.
+                # A peak between snapshots is retained by the C sender even
+                # when it is larger than either sampled FlightSize. Only the
+                # lower bound can be reconstructed from these snapshots.
+                if maxfs < expected_maxfs:
                     errors.append(
-                        f"sample {index}: maxFS {int(maxfs)} does not equal "
+                        f"sample {index}: maxFS {int(maxfs)} is below "
                         f"max(previous maxFS {int(previous_maxfs)}, "
                         f"FlightSize {int(flight)})"
                     )
+                elif maxfs > expected_maxfs:
+                    counters["unobserved_peak_intervals"] += 1
 
-        if maxfs is not None and flight is not None and not reduced and maxfs < flight:
+        if maxfs is not None and flight is not None and not reduced and not reset_seen and maxfs < flight:
             errors.append(
                 f"sample {index}: maxFS {int(maxfs)} is below FlightSize "
                 f"{int(flight)}"

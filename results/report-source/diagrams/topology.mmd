@@ -1,0 +1,25 @@
+---
+title: Four-namespace Linux experiment topology
+config:
+  htmlLabels: false
+  theme: base
+  themeVariables:
+    fontFamily: Arial
+    fontSize: 18px
+    primaryColor: '#edf4f8'
+    primaryTextColor: '#173b59'
+    primaryBorderColor: '#173b59'
+    lineColor: '#173b59'
+---
+flowchart LR
+  C["Client namespace<br/>rls-client<br/>10.10.1.2"]
+  R1["Forwarding namespace<br/>rls-r1<br/>10.10.12.1"]
+  R2["Forwarding namespace<br/>rls-r2<br/>10.10.12.2"]
+  S["Server namespace<br/>rls-server<br/>10.10.2.2"]
+  C <--> R1
+  R1 <-->|"20 Mbit/s per direction<br/>25 ms one-way delay<br/>Queue: 1000 packets"| R2
+  R2 <--> S
+  classDef endpoint fill:#dff0e9,stroke:#173b59,color:#173b59,stroke-width:2px
+  classDef router fill:#edf4f8,stroke:#173b59,color:#173b59,stroke-width:2px
+  class C,S endpoint
+  class R1,R2 router

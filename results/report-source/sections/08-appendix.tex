@@ -1,0 +1,25 @@
+
+\clearpage
+\section*{Appendix A. Run records}
+\label{sec:appendix}
+\begin{center}\small\begin{tabular}{lrrrrr}
+Workload & Mode & Run & Mbit/s & Duration (s) & Final cwnd (KiB) \\ \hline
+rate-limited & baseline & 1 & 0.190202 & 20.189041 & 15.00 \\
+rate-limited & rli & 1 & 0.190171 & 20.192343 & 30.00 \\
+rate-limited & baseline & 2 & 0.190196 & 20.189743 & 15.00 \\
+rate-limited & rli & 2 & 0.190194 & 20.189867 & 30.00 \\
+rate-limited & baseline & 3 & 0.19014 & 20.195616 & 15.00 \\
+rate-limited & rli & 3 & 0.190192 & 20.19008 & 30.00 \\
+bulk & baseline & 1 & 17.731435 & 9.461879 & 283.41 \\
+bulk & rli & 1 & 17.939509 & 9.352134 & 268.04 \\
+bulk & baseline & 2 & 17.823301 & 9.41311 & 304.68 \\
+bulk & rli & 2 & 17.957932 & 9.34254 & 261.98 \\
+bulk & baseline & 3 & 17.640233 & 9.510798 & 295.67 \\
+bulk & rli & 3 & 17.951898 & 9.34568 & 264.75 \\
+\end{tabular}\end{center}
+
+\subsection*{A.1 Source and trace records}
+
+The original build uses commit \texttt{5a4eba47}. The RLI build uses commit \texttt{60323926}. The Ubuntu archive records executable hashes and contains the original qlogs and test logs. Use each run's provenance record for the baseline executable's source revision. The supplementary dumbbell measurements and topology checks are in the archive's \path{dumbbell/} directory \cite{ref13}.
+
+\label{sec:appendix-end}

@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-07",
+  "runtime_source_files_preserved": true,
+  "submission_evidence_preserved": true,
+  "build_qlogs_compressed_losslessly": 529,
+  "original_qlog_bytes": 1476640414,
+  "compressed_qlog_bytes": 110967827,
+  "bytes_saved": 1365672587,
+  "build_directory_after": "271 MiB",
+  "compiler_smoke_files_and_download_archive": "Moved to desktop Trash; compiler executable retained",
+  "ignored_local_artifacts": ["build/", ".local-deps/", ".venv/", "results 1/pdf-preview/", "unpacked raw experiment directories"],
+  "raw_evidence_distribution": "All 240 raw experiment files are preserved in raw-evidence.tar.gz and verified byte-for-byte",
+  "independent_archive_restore": "PASS: 48 qlogs restored in a temporary directory",
+  "git_commit_or_push_performed": false
+}

@@ -1221,6 +1221,7 @@ void binlog_cc_dump(picoquic_cnx_t* cnx, void* log_ctx, picoquic_path_t* path_x,
     bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->rli_max_flight_size : 0);
     bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->rli_cwin_limit : 0);
     bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->was_cwin_limited_by_rli : 0);
+    bytewrite_vint(ps_msg, path_x->is_rli_enabled ? path_x->rli_reset_count : 0);
 
     bytestream_buf stream_head;
     bytestream* ps_head = bytestream_buf_init(&stream_head, BYTESTREAM_MAX_BUFFER_SIZE);

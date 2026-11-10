@@ -1,81 +1,117 @@
-# CUBIC experiment workflow
+# Linux build, test, and experiment workflow
 
-The comparison runner uses the four-namespace topology from `topology/` and
-stores every run in a unique directory under `experiments/results/`.
+The retained final campaign is in [../results/README.md](../results/README.md).
+Its environment record identifies Ubuntu 26.04 LTS and Linux kernel
+7.0.0-38-generic. It includes twelve single-flow runs, six two-flow experiments,
+the final report, and the complete compressed raw evidence.
 
-Build picoquic, start the topology, and verify it:
+## Linux dependencies
+
+From the repository root on Ubuntu:
+
+```bash
+sudo apt update
+sudo apt install build-essential cmake ninja-build git libssl-dev \
+  python3-venv iproute2 iputils-ping texlive-latex-extra \
+  texlive-fonts-recommended poppler-utils
+python3 -m venv .venv
+.venv/bin/python -m pip install -r experiments/requirements.txt pypdf
+```
+
+## Verify the retained bundle
+
+```bash
+.venv/bin/python results/check_bundle.py
+.venv/bin/python results/package_evidence.py --unpack
+cd results
+sha256sum --check --quiet SHA256SUMS
+cd ..
+```
+
+The archive restores `results/runs/`, `results/dumbbell/baseline/`, and
+`results/dumbbell/rli/`. Saved metadata and source hashes are historical
+records of the evaluated revisions. `check_bundle.py` inspects the current
+bundle without building or rerunning network transfers.
+
+## Rebuild the final report
+
+```bash
+.venv/bin/python results/build_final_report.py
+xdg-open 'results/Final report.pdf'
+```
+
+The editable source is `results/report-source/main.tex`, with its sections,
+diagrams, and images beside it. The older `report.tex` and `report1.tex`
+editions remain available separately. Their original check records describe
+those editions; `final-report-checks.json` describes the current final PDF.
+
+## Reproduce the recorded campaign
+
+The baseline revision is `5a4eba475555a2b0d67fbd9000714be35b3db4b4`.
+The evaluated RLI revision is `60323926df8ef75c440f959789ac4d043071879d`.
+Use separate Linux checkouts/builds of those revisions to reproduce their
+behavior. Tests of a newer local revision are a new campaign.
+
+Configure the RLI checkout before invoking the retained test helper:
 
 ```bash
 cmake -S . -B build -G Ninja -DPICOQUIC_FETCH_PTLS=Y \
   -DWITH_OPENSSL=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build build --parallel "$(nproc)"
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r experiments/requirements.txt
-sudo topology/setup.sh
-sudo topology/check.sh
+cmake --build build --parallel 4
+.venv/bin/python results/run_tests.py
 ```
 
-Run matched baseline and RLI experiments:
+`run_tests.py` builds the exact baseline separately and tests both versions.
+It uses system OpenSSL development packages; optional locally unpacked headers
+are supported when present. Preserve the supplied evidence before running any
+script that regenerates tests, measurements, or plots.
+
+Run main network experiments in an isolated root-mapped Linux user namespace:
 
 ```bash
-sudo env PYTHON_BIN="$PWD/.venv/bin/python" \
-  bash experiments/run_comparison.sh baseline rate-limited
-sudo env PYTHON_BIN="$PWD/.venv/bin/python" \
-  bash experiments/run_comparison.sh rli rate-limited
-
-# Regression/control workload: continuously backlogged sender
-sudo env PYTHON_BIN="$PWD/.venv/bin/python" \
-  bash experiments/run_comparison.sh baseline bulk
-sudo env PYTHON_BIN="$PWD/.venv/bin/python" \
-  bash experiments/run_comparison.sh rli bulk
+unshare --user --map-root-user --net --mount \
+  bash results/run_experiments.sh
+.venv/bin/python results/analyze_results.py
 ```
 
-The rate-limited workload is a 20-second quicperf media stream at about
-192 kbit/s over a 20 Mbit/s bottleneck. This makes the server application
-limited without changing the network capacity. The bulk workload checks that
-RLI does not materially alter fully utilized CUBIC.
+The main helper uses `results/run_single_comparison.sh`, the interface retained
+for this campaign. It supplies a 20-second stream at 192 kbit/s or downloads
+20 MiB, using three repetitions per mode over the 20 Mbit/s, 50 ms path.
+Existing main runs are moved to `results/archive/` before another collection.
 
-Each run contains raw qlogs, stdout, performance CSV files, metadata, Git
-working-tree status, file hashes, and a PNG showing `cwnd`, bytes in flight,
-and (when enabled) `maxFS`, the RLI limit, and cap-active samples. RLI runs
-also contain `validation.txt`. Raw results are ignored by Git but are not
-deleted by the runner.
-
-Check an RLI sender log mechanically:
+For the six-namespace competing-flow topology:
 
 ```bash
-python3 experiments/validate_rli.py \
-  check experiments/results/rli/rate-limited/<run-id>/*.server.qlog \
-  --require-cap
+unshare --user --map-root-user --net --mount sh -c \
+  'mount --make-rprivate /; mount -t tmpfs tmpfs /run; mkdir -p /run/netns; exec .venv/bin/python results/run_dumbbell.py'
+.venv/bin/python results/analyze_dumbbell.py
 ```
 
-Do not require a reset for the loss-free workloads above. For a separate
-experiment that deliberately causes a cwnd reduction, add
-`--expect-reduction`; that mode requires both an observed cwnd reduction and
-an associated fall in `maxFS`.
+Preserve or relocate existing `results/dumbbell/baseline` and
+`results/dumbbell/rli` first. The script refuses to overwrite those runs.
+The topology helpers include both endpoint pairs and clean up all six namespaces.
+Unprivileged user namespaces must be enabled for the `unshare` workflow.
 
-Compare matched baseline and RLI measurements without assuming either is
-automatically better:
+## Current working-tree campaign
+
+`experiments/run_all.sh` is a separate paired collector for the current local
+source. It builds both checkouts, runs regression and focused tests, and
+collects the same main workloads. Run it as root on Linux, or inside a suitable
+root-mapped user namespace. Its default output is
+`experiments/results/paired-campaign/`, preserving the final submission bundle.
+`WORK_ROOT`, `ORIGINAL_ROOT`, `RLI_ROOT`, `RESULTS_ROOT`, `PYTHON_BIN`, and
+`REPETITIONS` can be set explicitly. Use fresh output for different builds.
+
+## Individual trace checks
 
 ```bash
-python3 experiments/validate_rli.py compare \
-  experiments/results/baseline/rate-limited/<run-id>/*.server.qlog \
-  experiments/results/rli/rate-limited/<run-id>/*.server.qlog \
-  --workload rate-limited --output rate-limited-comparison.csv
-
-python3 experiments/validate_rli.py compare \
-  experiments/results/baseline/bulk/<run-id>/*.server.qlog \
-  experiments/results/rli/bulk/<run-id>/*.server.qlog \
-  --workload bulk --output bulk-comparison.csv
+python3 experiments/validate_rli.py check <sender.qlog.gz> --require-cap
+python3 experiments/validate_rli.py check <bulk-sender.qlog.gz> --expect-reduction
+python3 plot_cwnd.py <sender.qlog.gz> output.png
+python3 -m unittest discover -s experiments -p 'test_*.py' -v
 ```
 
-The comparison reports duration, minimum/maximum/final/time-weighted cwnd,
-FlightSize, application-limited fraction, and RLI cap fraction. Interpret the
-performance CSV alongside these congestion-control measurements.
-
-Run each mode/workload combination at least three times. When finished:
-
-```bash
-sudo topology/cleanup.sh
-```
+The checker evaluates observed growth, cap, and reset information. Snapshot
+data cannot reconstruct every send/dequeue. Compare cwnd with throughput,
+RTT, retransmissions, and application supply. Three repetitions describe the
+tested conditions; they do not establish a universal speedup.

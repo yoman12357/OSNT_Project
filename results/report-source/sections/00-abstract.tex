@@ -1,0 +1,22 @@
+\clearpage
+\section*{Abstract}
+\label{sec:abstract}
+This project implements Rate-Limited Increase (RLI) as an option for CUBIC in picoquic. RLI uses the largest recorded flight size on each path to cap congestion-window growth. A window reduction starts a new flight-size history. We compared original CUBIC and CUBIC with RLI using Linux network namespaces on Ubuntu. The workloads included a fixed-rate stream, bulk transfers, and competing connections on a shared bottleneck.
+
+With a fixed application rate, RLI grew the window to its slow-start limit while throughput stayed essentially unchanged. The bulk and competing-flow tests measured behavior under higher demand. The live traces confirmed slow-start capping, and focused C tests exercised the selected congestion-avoidance cap. Both builds passed their registered regression suites, and the RLI traces passed the applicable checks.
+
+\clearpage
+\section*{Contents}
+\begin{tabularx}{\linewidth}{@{}Xr@{}}
+Introduction & \pageref{sec:introduction}--\pageref{sec:introduction-end}\\
+Literature Review & \pageref{sec:literature}--\pageref{sec:literature-end}\\
+Proposed Approach & \pageref{sec:approach}--\pageref{sec:approach-end}\\
+Implementation & \pageref{sec:implementation}--\pageref{sec:implementation-end}\\
+Result and Analysis & \pageref{sec:results}--\pageref{sec:results-end}\\
+Conclusions and Future Work & \pageref{sec:conclusions}\\
+References & \pageref{sec:references}\\
+Appendix: Run Records & \pageref{sec:appendix}\\
+\end{tabularx}
+\par\vspace{0.8em}
+All sizes labelled KiB use 1024 bytes. Mbit/s uses 1,000,000 bits per second.
+Means and sample standard deviations summarize three repetitions.

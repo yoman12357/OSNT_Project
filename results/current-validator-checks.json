@@ -1,0 +1,359 @@
+{
+  "validator": "experiments/validate_rli.py",
+  "traces_checked": 12,
+  "traces_passing": 3,
+  "traces_with_errors": 9,
+  "scope": "Additional strict reset checks on archived traces, using the pre-existing local working-tree validator. This does not replace historical campaign records.",
+  "records": [
+    {
+      "trace": "runs/bulk/rli/run-1/304bb838cf0e6c77.1470.server.qlog",
+      "errors": [
+        "sample 15651: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 15662,
+        "cwnd_increases": 714,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 337,
+        "cap_active_samples": 1,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "runs/bulk/rli/run-2/91e13183e18bcaf2.7e6.server.qlog",
+      "errors": [
+        "sample 15627: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 15638,
+        "cwnd_increases": 693,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 295,
+        "cap_active_samples": 1,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "runs/bulk/rli/run-3/855fd99005a952ab.ad19.server.qlog",
+      "errors": [
+        "sample 15616: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 15625,
+        "cwnd_increases": 681,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 315,
+        "cap_active_samples": 1,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "runs/rate-limited/rli/run-1/46c14b243cabb047.c48a.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 848,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819,
+        "unobserved_peak_intervals": 0
+      }
+    },
+    {
+      "trace": "runs/rate-limited/rli/run-2/ad46a67a0c001513.971c.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 849,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819,
+        "unobserved_peak_intervals": 0
+      }
+    },
+    {
+      "trace": "runs/rate-limited/rli/run-3/acc3747759f5cf5e.80be.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 848,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819,
+        "unobserved_peak_intervals": 0
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-1/flow-1/b19a56ae48551300.178.server.qlog",
+      "errors": [
+        "sample 16387: cwnd decreased without an observable maxFS reset",
+        "sample 16388: cwnd decreased without an observable maxFS reset",
+        "sample 16390: cwnd decreased without an observable maxFS reset",
+        "sample 16391: cwnd decreased without an observable maxFS reset",
+        "sample 16394: cwnd decreased without an observable maxFS reset",
+        "sample 16395: cwnd decreased without an observable maxFS reset",
+        "sample 16397: cwnd decreased without an observable maxFS reset",
+        "sample 16399: cwnd decreased without an observable maxFS reset",
+        "sample 16403: cwnd decreased without an observable maxFS reset",
+        "sample 16406: cwnd decreased without an observable maxFS reset",
+        "sample 16407: cwnd decreased without an observable maxFS reset",
+        "sample 16408: cwnd decreased without an observable maxFS reset",
+        "sample 16411: cwnd decreased without an observable maxFS reset",
+        "sample 16413: cwnd decreased without an observable maxFS reset",
+        "sample 16415: cwnd decreased without an observable maxFS reset",
+        "sample 16417: cwnd decreased without an observable maxFS reset",
+        "sample 16418: cwnd decreased without an observable maxFS reset",
+        "sample 16422: cwnd decreased without an observable maxFS reset",
+        "sample 16425: cwnd decreased without an observable maxFS reset",
+        "sample 16426: cwnd decreased without an observable maxFS reset",
+        "sample 16427: cwnd decreased without an observable maxFS reset",
+        "sample 16431: cwnd decreased without an observable maxFS reset",
+        "sample 16432: cwnd decreased without an observable maxFS reset",
+        "sample 16434: cwnd decreased without an observable maxFS reset",
+        "sample 16436: cwnd decreased without an observable maxFS reset",
+        "sample 16439: cwnd decreased without an observable maxFS reset",
+        "sample 16441: cwnd decreased without an observable maxFS reset",
+        "sample 16442: cwnd decreased without an observable maxFS reset",
+        "sample 16445: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 16445,
+        "cwnd_increases": 1225,
+        "cwnd_reductions": 32,
+        "maxfs_resets": 3,
+        "maxfs_increases": 700,
+        "cap_active_samples": 4851,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-1/flow-2/d373ef88650b041f.587.server.qlog",
+      "errors": [
+        "sample 14425: cwnd decreased without an observable maxFS reset",
+        "sample 14512: cwnd decreased without an observable maxFS reset",
+        "sample 15570: cwnd decreased without an observable maxFS reset",
+        "sample 15613: cwnd decreased without an observable maxFS reset",
+        "sample 16417: cwnd decreased without an observable maxFS reset",
+        "sample 16421: cwnd decreased without an observable maxFS reset",
+        "sample 16422: cwnd decreased without an observable maxFS reset",
+        "sample 16425: cwnd decreased without an observable maxFS reset",
+        "sample 16426: cwnd decreased without an observable maxFS reset",
+        "sample 16429: cwnd decreased without an observable maxFS reset",
+        "sample 16431: cwnd decreased without an observable maxFS reset",
+        "sample 16434: cwnd decreased without an observable maxFS reset",
+        "sample 16437: cwnd decreased without an observable maxFS reset",
+        "sample 16438: cwnd decreased without an observable maxFS reset",
+        "sample 16440: cwnd decreased without an observable maxFS reset",
+        "sample 16444: cwnd decreased without an observable maxFS reset",
+        "sample 16446: cwnd decreased without an observable maxFS reset",
+        "sample 16448: cwnd decreased without an observable maxFS reset",
+        "sample 16451: cwnd decreased without an observable maxFS reset",
+        "sample 16454: cwnd decreased without an observable maxFS reset",
+        "sample 16456: cwnd decreased without an observable maxFS reset",
+        "sample 16457: cwnd decreased without an observable maxFS reset",
+        "sample 16461: cwnd decreased without an observable maxFS reset",
+        "sample 16463: cwnd decreased without an observable maxFS reset",
+        "sample 16464: cwnd decreased without an observable maxFS reset",
+        "sample 16466: cwnd decreased without an observable maxFS reset",
+        "sample 16469: cwnd decreased without an observable maxFS reset",
+        "sample 16471: cwnd decreased without an observable maxFS reset",
+        "sample 16473: cwnd decreased without an observable maxFS reset",
+        "sample 16474: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 16476,
+        "cwnd_increases": 1223,
+        "cwnd_reductions": 33,
+        "maxfs_resets": 3,
+        "maxfs_increases": 689,
+        "cap_active_samples": 5134,
+        "unobserved_peak_intervals": 0
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-2/flow-1/0f107be38ba0ca83.6fd4.server.qlog",
+      "errors": [
+        "sample 14287: cwnd decreased without an observable maxFS reset",
+        "sample 15276: cwnd decreased without an observable maxFS reset",
+        "sample 16378: cwnd decreased without an observable maxFS reset",
+        "sample 16383: cwnd decreased without an observable maxFS reset",
+        "sample 16384: cwnd decreased without an observable maxFS reset",
+        "sample 16385: cwnd decreased without an observable maxFS reset",
+        "sample 16386: cwnd decreased without an observable maxFS reset",
+        "sample 16389: cwnd decreased without an observable maxFS reset",
+        "sample 16392: cwnd decreased without an observable maxFS reset",
+        "sample 16394: cwnd decreased without an observable maxFS reset",
+        "sample 16395: cwnd decreased without an observable maxFS reset",
+        "sample 16396: cwnd decreased without an observable maxFS reset",
+        "sample 16397: cwnd decreased without an observable maxFS reset",
+        "sample 16400: cwnd decreased without an observable maxFS reset",
+        "sample 16402: cwnd decreased without an observable maxFS reset",
+        "sample 16404: cwnd decreased without an observable maxFS reset",
+        "sample 16406: cwnd decreased without an observable maxFS reset",
+        "sample 16409: cwnd decreased without an observable maxFS reset",
+        "sample 16411: cwnd decreased without an observable maxFS reset",
+        "sample 16414: cwnd decreased without an observable maxFS reset",
+        "sample 16418: cwnd decreased without an observable maxFS reset",
+        "sample 16420: cwnd decreased without an observable maxFS reset",
+        "sample 16422: cwnd decreased without an observable maxFS reset",
+        "sample 16424: cwnd decreased without an observable maxFS reset",
+        "sample 16429: cwnd decreased without an observable maxFS reset",
+        "sample 16430: cwnd decreased without an observable maxFS reset",
+        "sample 16433: cwnd decreased without an observable maxFS reset",
+        "sample 16434: cwnd decreased without an observable maxFS reset",
+        "sample 16439: cwnd decreased without an observable maxFS reset",
+        "sample 16441: cwnd decreased without an observable maxFS reset",
+        "sample 16442: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 16443,
+        "cwnd_increases": 1193,
+        "cwnd_reductions": 34,
+        "maxfs_resets": 3,
+        "maxfs_increases": 703,
+        "cap_active_samples": 5100,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-2/flow-2/c3d3718c5ca4bc50.b133.server.qlog",
+      "errors": [
+        "sample 14349: cwnd decreased without an observable maxFS reset",
+        "sample 16385: cwnd decreased without an observable maxFS reset",
+        "sample 16387: cwnd decreased without an observable maxFS reset",
+        "sample 16390: cwnd decreased without an observable maxFS reset",
+        "sample 16392: cwnd decreased without an observable maxFS reset",
+        "sample 16395: cwnd decreased without an observable maxFS reset",
+        "sample 16398: cwnd decreased without an observable maxFS reset",
+        "sample 16400: cwnd decreased without an observable maxFS reset",
+        "sample 16401: cwnd decreased without an observable maxFS reset",
+        "sample 16404: cwnd decreased without an observable maxFS reset",
+        "sample 16406: cwnd decreased without an observable maxFS reset",
+        "sample 16408: cwnd decreased without an observable maxFS reset",
+        "sample 16410: cwnd decreased without an observable maxFS reset",
+        "sample 16412: cwnd decreased without an observable maxFS reset",
+        "sample 16414: cwnd decreased without an observable maxFS reset",
+        "sample 16418: cwnd decreased without an observable maxFS reset",
+        "sample 16419: cwnd decreased without an observable maxFS reset",
+        "sample 16421: cwnd decreased without an observable maxFS reset",
+        "sample 16422: cwnd decreased without an observable maxFS reset",
+        "sample 16424: cwnd decreased without an observable maxFS reset",
+        "sample 16428: cwnd decreased without an observable maxFS reset",
+        "sample 16431: cwnd decreased without an observable maxFS reset",
+        "sample 16433: cwnd decreased without an observable maxFS reset",
+        "sample 16436: cwnd decreased without an observable maxFS reset",
+        "sample 16437: cwnd decreased without an observable maxFS reset",
+        "sample 16440: cwnd decreased without an observable maxFS reset",
+        "sample 16443: cwnd decreased without an observable maxFS reset",
+        "sample 16446: cwnd decreased without an observable maxFS reset",
+        "sample 16449: cwnd decreased without an observable maxFS reset",
+        "sample 16450: cwnd decreased without an observable maxFS reset",
+        "sample 16456: cwnd decreased without an observable maxFS reset",
+        "sample 16457: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 16457,
+        "cwnd_increases": 1194,
+        "cwnd_reductions": 35,
+        "maxfs_resets": 3,
+        "maxfs_increases": 712,
+        "cap_active_samples": 5413,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-3/flow-1/b1d27e2c5d40e36f.2cc8.server.qlog",
+      "errors": [
+        "sample 16125: cwnd decreased without an observable maxFS reset",
+        "sample 16143: cwnd decreased without an observable maxFS reset",
+        "sample 16254: cwnd decreased without an observable maxFS reset",
+        "sample 16262: cwnd decreased without an observable maxFS reset",
+        "sample 16266: cwnd decreased without an observable maxFS reset",
+        "sample 16269: cwnd decreased without an observable maxFS reset",
+        "sample 16273: cwnd decreased without an observable maxFS reset",
+        "sample 16277: cwnd decreased without an observable maxFS reset",
+        "sample 16283: cwnd decreased without an observable maxFS reset",
+        "sample 16285: cwnd decreased without an observable maxFS reset",
+        "sample 16290: cwnd decreased without an observable maxFS reset",
+        "sample 16293: cwnd decreased without an observable maxFS reset",
+        "sample 16295: cwnd decreased without an observable maxFS reset",
+        "sample 16298: cwnd decreased without an observable maxFS reset",
+        "sample 16301: cwnd decreased without an observable maxFS reset",
+        "sample 16304: cwnd decreased without an observable maxFS reset",
+        "sample 16306: cwnd decreased without an observable maxFS reset",
+        "sample 16309: cwnd decreased without an observable maxFS reset",
+        "sample 16312: cwnd decreased without an observable maxFS reset",
+        "sample 16314: cwnd decreased without an observable maxFS reset",
+        "sample 16315: cwnd decreased without an observable maxFS reset",
+        "sample 16319: cwnd decreased without an observable maxFS reset",
+        "sample 16321: cwnd decreased without an observable maxFS reset",
+        "sample 16324: cwnd decreased without an observable maxFS reset",
+        "sample 16325: cwnd decreased without an observable maxFS reset",
+        "sample 16329: cwnd decreased without an observable maxFS reset",
+        "sample 16330: cwnd decreased without an observable maxFS reset",
+        "sample 16334: cwnd decreased without an observable maxFS reset",
+        "sample 16336: cwnd decreased without an observable maxFS reset",
+        "sample 16338: cwnd decreased without an observable maxFS reset",
+        "sample 16340: cwnd decreased without an observable maxFS reset",
+        "sample 16343: cwnd decreased without an observable maxFS reset",
+        "sample 16347: cwnd decreased without an observable maxFS reset",
+        "sample 16353: cwnd decreased without an observable maxFS reset",
+        "sample 16354: cwnd decreased without an observable maxFS reset",
+        "sample 16357: cwnd decreased without an observable maxFS reset",
+        "sample 16361: cwnd decreased without an observable maxFS reset",
+        "sample 16364: cwnd decreased without an observable maxFS reset",
+        "sample 16365: cwnd decreased without an observable maxFS reset",
+        "sample 16368: cwnd decreased without an observable maxFS reset",
+        "sample 16370: cwnd decreased without an observable maxFS reset",
+        "sample 16372: cwnd decreased without an observable maxFS reset",
+        "sample 16374: cwnd decreased without an observable maxFS reset",
+        "sample 16378: cwnd decreased without an observable maxFS reset",
+        "sample 16379: cwnd decreased without an observable maxFS reset",
+        "sample 16381: cwnd decreased without an observable maxFS reset",
+        "sample 16384: cwnd decreased without an observable maxFS reset",
+        "sample 16388: cwnd decreased without an observable maxFS reset",
+        "sample 16389: cwnd decreased without an observable maxFS reset",
+        "sample 16390: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 16393,
+        "cwnd_increases": 1127,
+        "cwnd_reductions": 53,
+        "maxfs_resets": 3,
+        "maxfs_increases": 702,
+        "cap_active_samples": 6325,
+        "unobserved_peak_intervals": 1
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-3/flow-2/fe52774d5631e4f8.870.server.qlog",
+      "errors": [
+        "sample 16167: cwnd decreased without an observable maxFS reset",
+        "sample 16170: cwnd decreased without an observable maxFS reset",
+        "sample 16174: cwnd decreased without an observable maxFS reset",
+        "sample 16177: cwnd decreased without an observable maxFS reset",
+        "sample 16180: cwnd decreased without an observable maxFS reset",
+        "sample 16183: cwnd decreased without an observable maxFS reset",
+        "sample 16185: cwnd decreased without an observable maxFS reset",
+        "sample 16187: cwnd decreased without an observable maxFS reset",
+        "sample 16189: cwnd decreased without an observable maxFS reset",
+        "sample 16229: cwnd decreased without an observable maxFS reset"
+      ],
+      "counters": {
+        "samples": 16436,
+        "cwnd_increases": 1100,
+        "cwnd_reductions": 13,
+        "maxfs_resets": 3,
+        "maxfs_increases": 743,
+        "cap_active_samples": 6652,
+        "unobserved_peak_intervals": 0
+      }
+    }
+  ]
+}

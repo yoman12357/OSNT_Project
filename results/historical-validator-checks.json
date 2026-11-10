@@ -1,0 +1,152 @@
+{
+  "evaluated_source": "60323926df8ef75c440f959789ac4d043071879d",
+  "traces_checked": 12,
+  "traces_passing": 12,
+  "traces_with_errors": 0,
+  "records": [
+    {
+      "trace": "runs/bulk/rli/run-1/304bb838cf0e6c77.1470.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 15662,
+        "cwnd_increases": 714,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 337,
+        "cap_active_samples": 1
+      }
+    },
+    {
+      "trace": "runs/bulk/rli/run-2/91e13183e18bcaf2.7e6.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 15638,
+        "cwnd_increases": 693,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 295,
+        "cap_active_samples": 1
+      }
+    },
+    {
+      "trace": "runs/bulk/rli/run-3/855fd99005a952ab.ad19.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 15625,
+        "cwnd_increases": 681,
+        "cwnd_reductions": 2,
+        "maxfs_resets": 1,
+        "maxfs_increases": 315,
+        "cap_active_samples": 1
+      }
+    },
+    {
+      "trace": "runs/rate-limited/rli/run-1/46c14b243cabb047.c48a.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 848,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819
+      }
+    },
+    {
+      "trace": "runs/rate-limited/rli/run-2/ad46a67a0c001513.971c.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 849,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819
+      }
+    },
+    {
+      "trace": "runs/rate-limited/rli/run-3/acc3747759f5cf5e.80be.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 848,
+        "cwnd_increases": 13,
+        "cwnd_reductions": 0,
+        "maxfs_resets": 0,
+        "maxfs_increases": 0,
+        "cap_active_samples": 819
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-1/flow-1/b19a56ae48551300.178.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 16445,
+        "cwnd_increases": 1225,
+        "cwnd_reductions": 32,
+        "maxfs_resets": 3,
+        "maxfs_increases": 700,
+        "cap_active_samples": 4851
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-1/flow-2/d373ef88650b041f.587.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 16476,
+        "cwnd_increases": 1223,
+        "cwnd_reductions": 33,
+        "maxfs_resets": 3,
+        "maxfs_increases": 689,
+        "cap_active_samples": 5134
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-2/flow-1/0f107be38ba0ca83.6fd4.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 16443,
+        "cwnd_increases": 1193,
+        "cwnd_reductions": 34,
+        "maxfs_resets": 3,
+        "maxfs_increases": 703,
+        "cap_active_samples": 5100
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-2/flow-2/c3d3718c5ca4bc50.b133.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 16457,
+        "cwnd_increases": 1194,
+        "cwnd_reductions": 35,
+        "maxfs_resets": 3,
+        "maxfs_increases": 712,
+        "cap_active_samples": 5413
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-3/flow-1/b1d27e2c5d40e36f.2cc8.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 16393,
+        "cwnd_increases": 1127,
+        "cwnd_reductions": 53,
+        "maxfs_resets": 3,
+        "maxfs_increases": 702,
+        "cap_active_samples": 6325
+      }
+    },
+    {
+      "trace": "dumbbell/rli/run-3/flow-2/fe52774d5631e4f8.870.server.qlog",
+      "errors": [],
+      "counters": {
+        "samples": 16436,
+        "cwnd_increases": 1100,
+        "cwnd_reductions": 13,
+        "maxfs_resets": 3,
+        "maxfs_increases": 743,
+        "cap_active_samples": 6652
+      }
+    }
+  ]
+}

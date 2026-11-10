@@ -1,0 +1,16 @@
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrrr}\toprule
+Mode & Final cwnd & Avg. cwnd & Rate & Time & Retrans.\\
+ & (KiB) & (KiB) & (Mbit/s) & (s) & \\\midrule
+baseline & 15.00 & 15.00 & 0.190 & 20.191 & 0.0 \\
+rli & 30.00 & 29.81 & 0.190 & 20.191 & 0.0 \\
+\bottomrule\end{tabular}
+\caption{Rate-limited workload: means of all three repetitions. Time uses the server connection duration.}\end{table}
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrrr}\toprule
+Mode & Final cwnd & Avg. cwnd & Rate & Time & Retrans.\\
+ & (KiB) & (KiB) & (Mbit/s) & (s) & \\\midrule
+baseline & 294.59 & 213.42 & 17.732 & 9.462 & 0.0 \\
+rli & 264.92 & 234.48 & 17.950 & 9.347 & 0.0 \\
+\bottomrule\end{tabular}
+\caption{Bulk workload: means of all three repetitions. Time uses the server connection duration.}\end{table}

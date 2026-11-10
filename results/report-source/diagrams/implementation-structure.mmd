@@ -1,0 +1,51 @@
+---
+title: Picoquic CUBIC RLI - core C structures
+config:
+  htmlLabels: false
+  theme: base
+  themeVariables:
+    fontFamily: Arial
+    fontSize: 18px
+    primaryColor: '#edf4f8'
+    primaryTextColor: '#173b59'
+    primaryBorderColor: '#173b59'
+    lineColor: '#173b59'
+    tertiaryColor: '#dff0e9'
+---
+classDiagram
+direction LR
+class Connection["picoquic_cnx_t"] {
+  <<struct>>
+  path[]
+  congestion_alg
+}
+class Path["picoquic_path_t"] {
+  <<struct>>
+  uint64_t cwin
+  uint64_t bytes_in_transit
+  uint64_t rli_max_flight_size
+  uint64_t rli_cwin_limit
+  uint64_t rli_reset_count
+  unsigned is_rli_enabled
+  void* congestion_alg_state
+}
+class Algorithm["picoquic_congestion_algorithm_t"] {
+  <<callback_interface>>
+  alg_init()
+  alg_notify()
+  alg_delete()
+  alg_observe()
+}
+class CubicState["picoquic_cubic_state_t"] {
+  <<struct>>
+  alg_state
+  uint64_t ssthresh
+  uint64_t start_of_epoch
+  double K
+  double W_max
+  double W_reno
+}
+Connection "1" *-- "1..*" Path : owns paths
+Connection --> Algorithm : selects callbacks
+Path "1" *-- "1" CubicState : congestion_alg_state
+Algorithm ..> CubicState : callbacks access state
