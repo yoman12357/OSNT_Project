@@ -1,65 +1,26 @@
 {
   "source": "report-source/main.tex",
   "output": "Final report.pdf",
-  "pages": 21,
+  "pages": 19,
   "text_extracts": true,
   "all_five_names_on_cover": true,
+  "undefined_references_or_citations": false,
   "obsolete_local_paths": false,
-  "sha256": "3ba069b22644c6677bd939cef027befcd25847df7600863f04f638eb9c28e00d",
-  "scope": "Overleaf recompilation and downloaded PDF/source checks; no new experiment run.",
+  "overfull_boxes": 0,
+  "sha256": "a670d625e46e300a471c9987fb6ea7457116f599da1d1cdc820fdd8aed2f991a",
+  "scope": "Report source synchronization, local compilation, and downloaded Overleaf PDF checks; no new network experiments or C regression run.",
   "pass": true,
-  "origin": "Overleaf project OSNT_RLI_LaTeX_Report",
-  "overleaf_project_url": "https://www.overleaf.com/project/6aed7a8cc22c8421025a9958",
-  "requested_sections_removed": [
-    {
-      "number": "1.5",
-      "title": "Scope and research questions",
-      "file": "01-introduction.tex"
-    },
-    {
-      "number": "2.3",
-      "title": "Implications for evaluation",
-      "file": "02-literature-review.tex"
-    },
-    {
-      "number": "2.5",
-      "title": "Congestion Window Validation and related work",
-      "file": "02-literature-review.tex"
-    },
-    {
-      "number": "2.9",
-      "title": "State-of-the-art comparison and project gap",
-      "file": "02-literature-review.tex"
-    },
-    {
-      "number": "3.3",
-      "title": "Validation properties",
-      "file": "03-proposed-approach.tex"
-    },
-    {
-      "number": "3.5",
-      "title": "Matched versions and scenarios",
-      "file": "03-proposed-approach.tex"
-    }
-  ],
-  "remaining_number_mapping": {
-    "1.1": "1.1",
-    "1.2": "1.2",
-    "1.3": "1.3",
-    "1.4": "1.4",
-    "2.1": "2.1",
-    "2.2": "2.2",
-    "2.4": "2.3",
-    "2.6": "2.4",
-    "2.7": "2.5",
-    "2.8": "2.6",
-    "3.1": "3.1",
-    "3.2": "3.2",
-    "3.4": "3.3",
-    "3.6": "3.4"
-  },
+  "origin": "Downloaded from the recompiled Overleaf project after applying PDF annotations",
+  "overleaf_project": "https://www.overleaf.com/project/6aed7a8cc22c8421025a9958",
   "overleaf_sources_match_local": true,
-  "local_compile_overfull_boxes": 0,
-  "local_compile_undefined_references_or_citations": false,
-  "downloaded_pdf_sections_checked": true
+  "overleaf_tex_files_verified": 10,
+  "local_and_overleaf_pdf_text_layout_match": true,
+  "review_comments": {
+    "abstract_expanded": true,
+    "contents_units_note_removed": true,
+    "subsection_forced_page_breaks_removed": true,
+    "traceability_3_3_before_topology_3_4": true,
+    "test_coverage_5_6_removed": true,
+    "diagram_and_caption_kept_together": true
+  }
 }

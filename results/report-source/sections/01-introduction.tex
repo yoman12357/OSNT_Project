@@ -23,7 +23,6 @@ A larger congestion window therefore need not produce a higher receive rate. If 
 The project goal is consequently a change in sender behaviour with observable bounds, rather than a promise of throughput improvement in every application. Its usefulness must be assessed through state accounting, reset behaviour, and compatibility as well as transfer completion. The following sections connect those requirements to the inspected implementation and the retained experiments \cite{ref12,ref13}.
 
 
-\clearpage
 \subsection*{1.3 Problem addressed in this implementation}
 
 The pre-RLI picoquic CUBIC implementation uses sender-limited timing information to suppress ordinary window increases when the application has not used its allowance. It also relies on common slow-start helpers that can gate increases on whether the sender was congestion-window blocked. Removing only one timing condition would therefore be incomplete. The new behaviour has to permit the candidate increase at the correct locations, then apply a consistent limit before exposing the new cwnd to subsequent transmission \cite{ref12}.

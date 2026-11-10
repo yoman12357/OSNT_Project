@@ -17,7 +17,6 @@ The sender module updates flight history where packet enqueue and dequeue accoun
 State is per path even though the live campaign selects one path. Focused tests create independent path instances to check isolation. That unit-level check does not establish correct live multipath behaviour, which would require dedicated connections and trace selection.
 
 
-\clearpage
 \subsection*{4.2 Initialization and packet accounting pseudocode}
 
 
@@ -66,7 +65,6 @@ plot\_cwnd.py; experiments/*.py & Time-unit handling, trace parsing, graphs, val
 Cap arithmetic saturates at UINT64\_MAX. Reset counting also saturates, avoiding wraparound in a long-running path. The Ubuntu verification did not separately exercise the overflow boundary.
 
 
-\clearpage
 \subsection*{4.4 Growth and reduction pseudocode}
 
 
