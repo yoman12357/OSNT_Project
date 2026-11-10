@@ -77,14 +77,26 @@ ip -n "$RIGHT_NS" route add 10.10.1.0/24 via 10.10.12.1
 ip netns exec "$LEFT_NS" sysctl -q -w net.ipv4.ip_forward=1
 ip netns exec "$RIGHT_NS" sysctl -q -w net.ipv4.ip_forward=1
 
+ip netns exec "$CLIENT_NS" tc qdisc replace dev eth0 root \
+    netem delay 5ms rate 1000mbit limit 1000
+ip netns exec "$LEFT_NS" tc qdisc replace dev veth-r1-client root \
+    netem delay 5ms rate 1000mbit limit 1000
+
 ip netns exec "$LEFT_NS" tc qdisc replace dev veth-r1-core root \
     netem delay 25ms rate 20mbit limit 1000
 ip netns exec "$RIGHT_NS" tc qdisc replace dev veth-r2-core root \
     netem delay 25ms rate 20mbit limit 1000
 
+ip netns exec "$RIGHT_NS" tc qdisc replace dev veth-r2-server root \
+    netem delay 5ms rate 1000mbit limit 1000
+ip netns exec "$SERVER_NS" tc qdisc replace dev eth0 root \
+    netem delay 5ms rate 1000mbit limit 1000
+
 trap - ERR
 
 echo "Dumbbell topology created."
 echo "client: 10.10.1.2   server: 10.10.2.2"
-echo "bottleneck: 20 Mbit/s each direction, about 50 ms base RTT"
+echo "Client-R1: 1000 Mbit/s, 5 ms each direction"
+echo "R1-R2 bottleneck: 20 Mbit/s, 25 ms each direction"
+echo "R2-Server: 1000 Mbit/s, 5 ms each direction"
 echo "Verify with: $(dirname "$0")/check.sh"
