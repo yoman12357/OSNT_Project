@@ -7,8 +7,21 @@
   "undefined_references_or_citations": false,
   "obsolete_local_paths": false,
   "overfull_boxes": 0,
-  "sha256": "57c4b75b6e522b8dc5db77313f8de56216090f4fd3d883182bd25b365ee3af53",
+  "sha256": "a34a19676cd6dd4b31376d9128923b23211d5c336eded95d600f37d44ae11f40",
   "scope": "Report compilation and PDF checks. Fresh network and C regression results are recorded separately in campaign-checks.json.",
   "pass": true,
-  "visual_review_completed": true
+  "visual_review_completed": true,
+  "origin": "Downloaded from synchronized Overleaf source for the 10 November 70 ms campaign",
+  "overleaf_sources_match_local": true,
+  "overleaf_tex_files_verified": 10,
+  "local_and_overleaf_pdf_text_layout_match": true,
+  "topology_update": {
+    "access_rate_mbit_s": 1000,
+    "access_delay_ms_each_direction": 5,
+    "core_rate_mbit_s": 20,
+    "core_delay_ms_each_direction": 25,
+    "configured_rtt_ms": 70,
+    "campaign_commit": "e8a58d3b",
+    "matching_mermaid_source": true
+  }
 }
