@@ -1,15 +1,19 @@
 # Final report: Rate-Limited Sender functionality in picoquic
 
-Project #16 · Linux verification: 7 November 2026
+Project #16 Â· Linux verification: 7 November 2026
 
 Team members: Aryan Bokolia, Affan Arshad, Soumyadeep Raj, Kevin Shiju George,
 and Aryan Sanjay palimkar.
 
 Open [Final report.pdf](Final%20report.pdf) for the final report. Download
 [Final report LaTeX.zip](Final%20report%20LaTeX.zip) for its matching Overleaf
-source. The topology figure includes the updated 1000 Mbit/s access links
-with 5 ms one-way delay. The report identifies the earlier setup used for
-the saved comparison measurements.
+source. The diagram and report use the 10 November campaign, with 1000 Mbit/s
+access links and 5 ms one-way access delay. The nominal base RTT is 70 ms.
+
+[Current campaign evidence](https://github.com/yoman12357/OSNT_Project/blob/e8a58d3b/results/README.md) is retained on the
+implementation branch at revision e8a58d3b. The measurement files and older
+LaTeX files directly in this folder describe the archived 7 November campaign.
+The sections below retain that earlier campaign record.
 
 ## Is the output correct?
 

@@ -8,9 +8,9 @@ and Aryan Sanjay palimkar.
 - [Final PDF report](results%201/Final%20report.pdf)
 - [Final LaTeX source ZIP](results%201/Final%20report%20LaTeX.zip)
 - [Verification and reproduction guide](results%201/README.md)
-- [Main measured results](results%201/SUMMARY.md)
-- [Two-flow dumbbell results](results%201/dumbbell/measurements.csv)
-- [Complete compressed experiment evidence](results%201/raw-evidence.tar.gz)
+- [Current measured results](https://github.com/yoman12357/OSNT_Project/blob/e8a58d3b/results/SUMMARY.md)
+- [Current two-flow dumbbell results](https://github.com/yoman12357/OSNT_Project/blob/e8a58d3b/results/dumbbell/measurements.csv)
+- [Current compressed experiment evidence](https://github.com/yoman12357/OSNT_Project/blob/e8a58d3b/results/raw-evidence.tar.gz)
 
 The implementation adds opt-in RLI to CUBIC (`-G cubic -H rli=on`). The
 unchanged baseline and implementation passed all registered CTest suites.
