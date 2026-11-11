@@ -5,9 +5,11 @@ Project #16 · Linux verification: 7 November 2026
 Team members: Aryan Bokolia, Affan Arshad, Soumyadeep Raj, Kevin Shiju George,
 and Aryan Sanjay palimkar.
 
-Open [Final report.pdf](Final%20report.pdf) for the final report. The
-[earlier LaTeX source](report.tex) and its generated inputs are kept for
-reproducing the earlier edition.
+Open [Final report.pdf](Final%20report.pdf) for the final report. Download
+[Final report LaTeX.zip](Final%20report%20LaTeX.zip) for its matching Overleaf
+source. The topology figure includes the updated 1000 Mbit/s access links
+with 5 ms one-way delay. The report identifies the earlier setup used for
+the saved comparison measurements.
 
 ## Is the output correct?
 
@@ -90,7 +92,7 @@ the adjustment and retain the raw tool output.
 
 ## Submission files
 
-- Final report.pdf: final submission.
+- Final report.pdf and Final report LaTeX.zip: final PDF and matching source.
 - report.tex, team.json, and generated-*.tex: inputs for the earlier edition.
 - plots/: 12 main graphs, one overview, and six competing-flow graphs.
 - raw-evidence.tar.gz: lossless archive of all raw experiment runs.

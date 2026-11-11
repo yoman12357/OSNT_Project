@@ -6,7 +6,7 @@ and Aryan Sanjay palimkar.
 ## Submission
 
 - [Final PDF report](results%201/Final%20report.pdf)
-- [Earlier LaTeX source](results%201/report.tex)
+- [Final LaTeX source ZIP](results%201/Final%20report%20LaTeX.zip)
 - [Verification and reproduction guide](results%201/README.md)
 - [Main measured results](results%201/SUMMARY.md)
 - [Two-flow dumbbell results](results%201/dumbbell/measurements.csv)
